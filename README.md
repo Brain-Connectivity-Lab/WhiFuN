@@ -29,8 +29,5 @@ This GUI-based toolbox offers researchers a user-friendly suite of automated too
    i) Now first Select the Output folder button and select an empty folder where all the outputs and quality control plots will be saved. Alternatively one can also paste the path of the output folder on the text field besides the Output folder button.
 
    ii) Click the 'Select Data Folder' button and select the folder that has all the Subjects folders. As an example, we show how WhiFuN can be used with some practice data that can be downloaded here https://drive.google.com/drive/folders/1l7dhG8dYYRCW5EWhkPZbBpA7TOau1W-B?usp=sharing . Download the practice data, unzip the contents and select the folder 'practice_NYU_abide' using the select 'Subject folder button' or paste the complete path to the practice_NYU_data.
-   
-![alt text](https://www.reddit.com/media?url=https%3A%2F%2Fi.redd.it%2F8hp7oggd1q5e1.png)
-   
-
- 
+    
+![Screenshot 2024-12-08 194913](https://github.com/user-attachments/assets/242c7345-dbd2-45ab-9fd7-e5ecc720d757)
