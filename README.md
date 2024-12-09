@@ -55,3 +55,7 @@ This GUI-based toolbox offers researchers a user-friendly suite of automated too
       (the .nii or .nii.gz anatomical image name, sometimes the subject name is there in the anatomical image name, then the common part can be mentioned and the subject name that changes for every subject can be replaced by a * . For instance if the func file name is sub-1001.nii for subject 1001 and sub-1002.nii for subject 2, one can put sub-*)
          
 ![Screenshot 2024-12-08 201926](https://github.com/user-attachments/assets/64f6c251-aa94-462a-b15b-766ea4261269)
+
+   iv) Next check 'All subjects' checkbox, this means we want to process every subject, alternatively one can just select a subset of subjects if all subjects should not be processed. This will say the number of subjects that will be processed by WhiFuN. (see screenshot below)
+
+   ![Screenshot 2024-12-08 202504](https://github.com/user-attachments/assets/e4982c4d-cade-406c-bd22-c28bf8abcd6b)
