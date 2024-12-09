@@ -28,6 +28,30 @@ This GUI-based toolbox offers researchers a user-friendly suite of automated too
 
    i) Now first Select the Output folder button and select an empty folder where all the outputs and quality control plots will be saved. Alternatively one can also paste the path of the output folder on the text field besides the Output folder button.
 
-   ii) Click the 'Select Data Folder' button and select the folder that has all the Subjects folders. As an example, we show how WhiFuN can be used with some practice data that can be downloaded here https://drive.google.com/drive/folders/1l7dhG8dYYRCW5EWhkPZbBpA7TOau1W-B?usp=sharing . Download the practice data, unzip the contents and select the folder 'practice_NYU_abide' using the select 'Subject folder button' or paste the complete path to the practice_NYU_data.
+   ii) Click the 'Select Data Folder' button and select the folder that has all the Subjects folders. As an example, we show how WhiFuN can be used with some practice data that can be downloaded here https://drive.google.com/drive/folders/1l7dhG8dYYRCW5EWhkPZbBpA7TOau1W-B?usp=sharing . Download the practice data, unzip the contents and select the folder 'practice_NYU_abide' using the select 'Subject folder button' or paste the complete path to the practice_NYU_data. Please see the example screenshot below.
     
 ![Screenshot 2024-12-08 194913](https://github.com/user-attachments/assets/242c7345-dbd2-45ab-9fd7-e5ecc720d757)
+
+   iii) Now this dataset is not in Brain Imaging Data Structure (BIDS) format (more information on BIDS here :  https://bids.neuroimaging.io/ ) hence uncheck the BIDS check box on the right of the 'Subject Data Folder' text field. That will open a new window where the folder names can be entered. Type the following in the fields  
+
+      a) Intermidiate Folder --> session_1 
+      
+      (there is an intermediate folder between the subject folder and the anatomical and functional file folder, if there are more than one folders session_1 and then 'MRI' folder, one can put the path as session_1/MRI for windows or session_1\MRI for linux or mac users )
+
+      b) Functional Folder Name --> rest_1
+
+      (the folder that contains the functional image)
+
+      c) Anatomical Folder Name --> rest_1
+
+      (the folder that contains the anatomical image)
+      
+      d) Anatomical Image Name --> mprage
+
+      (the .nii or .nii.gz anatomical image name, sometimes the subject name is there in the anatomical image name, then the common part can be mentioned and the subject name that changes for every subject can be replaced by a * . For instance if the func file name is sub-1001.nii for subject 1001 and sub-1002.nii for subject 2, one can put sub-*)
+      
+      e) Functional Image Name --> rest
+
+      (the .nii or .nii.gz functional image name, sometimes the subject name is there in the functional image name, then the common part can be mentioned and the subject name that changes for every subject can be replaced by a * . For instance if the func file name is sub-1001.nii for subject 1001 and sub-1002.nii for subject 2, one can put sub-*)
+
+      
