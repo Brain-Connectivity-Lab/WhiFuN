@@ -30,7 +30,7 @@ This GUI-based toolbox offers researchers a user-friendly suite of automated too
 
    ii) Click the 'Select Data Folder' button and select the folder that has all the Subjects folders. As an example, we show how WhiFuN can be used with some practice data that can be downloaded here https://drive.google.com/drive/folders/1l7dhG8dYYRCW5EWhkPZbBpA7TOau1W-B?usp=sharing . Download the practice data, unzip the contents and select the folder 'practice_NYU_abide' using the select 'Subject folder button' or paste the complete path to the practice_NYU_data.
    
-![alt text](https://drive.google.com/file/d/1EpuQD-6aNXfvc5fn_ycmi_lcCbGOZtbM/view?usp=drive_link)
+![alt text](https://drive.google.com/file/d/1EpuQD-6aNXfvc5fn_ycmi_lcCbGOZtbM/view?usp=drive_link](https://www.reddit.com/media?url=https%3A%2F%2Fi.redd.it%2F8hp7oggd1q5e1.png)
    
 
  
