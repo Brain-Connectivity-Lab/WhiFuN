@@ -59,3 +59,11 @@ This GUI-based toolbox offers researchers a user-friendly suite of automated too
    iv) Next check 'All subjects' checkbox, this means we want to process every subject, alternatively one can just select a subset of subjects if all subjects should not be processed. This will say the number of subjects that will be processed by WhiFuN. (see screenshot below)
 
    ![Screenshot 2024-12-08 202504](https://github.com/user-attachments/assets/e4982c4d-cade-406c-bd22-c28bf8abcd6b)
+
+   v) Next click on Run Data check and make sure that the functional and Anatomical images are present for every subject and that all the MRI parameters of all the images are correct.
+
+6) After Data check a Data check report will be shown. Make sure it says 'Data check completed successfully'.
+7) Have a look at the preprocessing step parameters, if something needs to be changed it can be changed (for more details refer paper)
+9) Click Run Preprocessing.
+10) Preprocessing will take some time depending on the PC used to preprocess. After Preprocessing for one subject is done, WHiFuN will also display the estimated time to complete the preprocessing.
+11) Once preprocessing is  complete 
