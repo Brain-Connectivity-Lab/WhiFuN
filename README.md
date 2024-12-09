@@ -2,6 +2,19 @@
 This GUI-based toolbox offers researchers a user-friendly suite of automated tools for investigating brain functional connectivity in WM and GM. One of the key advantages of WhiFuN is that it fully automates the preprocessing steps to derive data that can be used to analyze the WM and GM BOLD signals.
 
 ## New to WhiFuN? 
+WhiFuN is based on MATLAB; hence, it will not work if MATLAB is not installed. 
+MATLAB R2022a or later versions are recommended.
+
+
+Additionally WhiFuN uses 
+1) Image Processing Toolbox
+2) Signal processing Toolbox
+3) Statistics and Machine Learning Toolbox
+4) Bioinformatics toolbox
+
+These toolboxes can be downloaded by using the Add ons feature in Matlab. More details here: https://www.mathworks.com/help/matlab/matlab_env/get-add-ons.html
+
+
 ### Follow these steps to get started
 
 1) Download WhiFuN in a local folder and unzip all the contents (Download WhiFuN by clicking on the green 'Code' button and then selecting Download zip)
