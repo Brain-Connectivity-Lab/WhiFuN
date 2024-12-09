@@ -70,7 +70,7 @@ This GUI-based toolbox offers researchers a user-friendly suite of automated too
 9) Click _Run Preprocessing_.
 10) Preprocessing will take some time, depending on the PC used to preprocess. After Preprocessing for one subject is done, WhiFuN will also display the estimated time to complete the preprocessing.
 11) Once preprocessing is complete, please go to the output folder (using the file browser) and check the quality control plots saved for every subject (refer to the paper for more details).
-12) Based on the quality control, subjects with bad data should be discarded by checking the manually exclude subjects checkbox in the _Contrsuct FN and FC_ section. Once the subjects are excluded, the White Matter Functional Networks can be created. (Refer to the paper for more details on the parameters).
-13) Click _Create WM-FN_, and WhiFuN will start creating the networks with the different values of K specified. After the cross-validation for every value of K specified is done, WhiFuN will plot the average dice coefficient and the distortion for every value of K. (refer to the paper to find the optimal K value).
-14) Choose the desired value of K and the WM-FN will be saved as a .nii file in <outputs_folder>/Analysis/WM_Networks .
+12) Based on the quality control, subjects with bad data should be discarded by checking the manually exclude subjects checkbox in the _Contrsuct FN and FC_ section. Once the subjects are excluded, the White Matter Functional Networks (WM-FN) can be created. (Refer to the paper for more details on the parameters).
+13) Click _Create WM-FN_, and WhiFuN will start creating the FN with the different values of K specified. After the cross-validation for every value of K specified is done, WhiFuN will plot the average dice coefficient and the distortion for every value of K. (refer to the paper to find the optimal K value).
+14) Choose the desired value of K and the WM-FN will be saved as a .nii file in <outputs_folder>/Analysis/WM_FN .
 15) Similarly, GM-FN can be created.
