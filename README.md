@@ -74,3 +74,5 @@ This GUI-based toolbox offers researchers a user-friendly suite of automated too
 13) Click _Create WM-FN_, and WhiFuN will start creating the FN with the different values of K specified. After the cross-validation for every value of K specified is done, WhiFuN will plot the average dice coefficient and the distortion for every value of K. (refer to the paper to find the optimal K value).
 14) Choose the desired value of K and the WM-FN will be saved as a .nii file in <outputs_folder>/Analysis/WM_FN .
 15) Similarly, GM-FN can be created.
+16) Once the FNs are created _Display_FN_ can be used to see the FNs using SPM or BrainNet viewer (already included in the toolbox).
+17) _Display_FC_ can be used to see the Functional connectivity Matrix. If behavioural scores or age, sex csv file is also present one can use the statistics module to fit a GLM and find the associations of behaviour data with the FC. (More details in the paper).
