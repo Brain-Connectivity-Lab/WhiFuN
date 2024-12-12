@@ -72,7 +72,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 ![Screenshot_20241209_094427](https://github.com/user-attachments/assets/a157b977-2064-44b8-8043-11aad02a8376)
 
 
-   iv) Next, check the 'All subjects' checkbox; this means we want to process every subject. Alternatively, one can just select a subset of subjects if all subjects should not be processed. This will display the number of subjects that will be processed by WhiFuN. (see screenshot below)
+   iv) Next, check the 'All folders are subjects' checkbox; this means we want to process every subject. Alternatively, one can just select a subset of subjects if all subjects should not be processed. This will display the number of subjects that will be processed by WhiFuN. (see screenshot below)
 
    ![Screenshot 2024-12-08 202504](https://github.com/user-attachments/assets/e4982c4d-cade-406c-bd22-c28bf8abcd6b)
 
@@ -83,7 +83,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 9) Click _Run Preprocessing_.
 10) Preprocessing will take some time, depending on the PC used to preprocess. After Preprocessing for one subject is done, WhiFuN will also display the estimated time to complete the preprocessing.
 11) Once preprocessing is complete, please go to the output folder (using the file browser) and check the quality control plots saved for every subject (refer to the paper for more details).
-12) Based on the quality control, subjects with bad data should be discarded by checking the manually exclude subjects checkbox in the _Contrsuct FN and FC_ section. Once the subjects are excluded, the White Matter Functional Networks (WM-FN) can be created. (Refer to the paper for more details on the parameters).
+12) Based on the quality control, subjects with bad data should be discarded by checking the manually exclude subjects checkbox in the _Construct FN and FC_ section. Once the subjects are excluded, the White Matter Functional Networks (WM-FN) can be created. (Refer to the paper for more details on the parameters).
 13) Click _Create WM-FN_, and WhiFuN will start creating the FN with the different values of K specified. After the cross-validation for every value of K specified is done, WhiFuN will plot the average dice coefficient and the distortion for every value of K. (refer to the paper to find the optimal K value).
 14) Choose the desired value of K and the WM-FN will be saved as a .nii file in <outputs_folder>/Analysis/WM_FN .
 15) Similarly, GM-FN can be created.
