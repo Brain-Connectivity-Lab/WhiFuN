@@ -49,7 +49,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 
    iii) Now, this dataset is not in Brain Imaging Data Structure (BIDS) format (more information on BIDS here : https://bids.neuroimaging.io/ ); hence, uncheck the _BIDS_ check box on the right of the 'Subject Data Folder' text field. That will open a new window where the folder names can be entered. Type the following in the fields  (as shown in the screenshot)
 
-   a) Intermidiate Folder --> session_1 
+   a) Intermediate Folder --> session_1 
    
    (there is an intermediate folder between the subject folder and the anatomical and functional file folder. If there is more than one folder session_1 and then 'MRI' folder, one can put the path as session_1\MRI for windows or session_1/MRI for linux or mac users )
 
@@ -57,7 +57,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 
    (the folder that contains the functional image)
 
-   c) Anatomical Folder Name --> rest_1
+   c) Anatomical Folder Name --> anat_1
 
    (the folder that contains the anatomical image)
    
@@ -67,7 +67,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
    
    e) Anatomical Image Name --> mprage
 
-   (the .nii or .nii.gz anatomical image name, sometimes the subject name is there in the anatomical image name, then the common part can be mentioned and the subject name that changes for every subject can be replaced by a * . For instance if the func file name is sub-1001.nii for subject 1001 and sub-1002.nii for subject 2, one can put sub-*)
+   (the .nii or .nii.gz anatomical image name, sometimes the subject name is there in the anatomical image name, then the common part can be mentioned and the subject name that changes for every subject can be replaced by a * . For instance if the anat file name is sub-1001.nii for subject 1001 and sub-1002.nii for subject 2, one can put sub-*)
          
 ![Screenshot_20241209_094427](https://github.com/user-attachments/assets/a157b977-2064-44b8-8043-11aad02a8376)
 
