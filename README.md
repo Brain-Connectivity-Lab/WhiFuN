@@ -17,7 +17,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 
 ### Follow these steps to get started
 
-1) Download WhiFuN in a local folder and unzip all the contents (Download WhiFuN by clicking on the green 'Code' button and then selecting Download zip, the toolbox will take about 24MB od disk space)
+1) Download WhiFuN in a local folder and unzip all the contents (Download WhiFuN by clicking on the green 'Code' button and then selecting Download zip, the toolbox will take about 24MB of disk space)
 2) Open MATLAB and addpath of the WhifuN toolbox to MATLAB
    
      i) by using the addpath function: Type the following in the MATLAB command window and press enter.
@@ -26,7 +26,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
    
    or
    
-     ii) Click _home_ when you are on the main screen of MATLAB (top left) and then under the environment section click on _set path_. Next, click on _Add Folder_, select the WhiFuN-main folder with the _whifun.m_ code and click on _Select folder_. Finally, click _save_ and then _close_.
+     ii) Click _home_ when you are on the main screen of MATLAB (top left), and then under the environment section, click on _set path_. Next, click on _Add Folder_, select the WhiFuN-main folder with the _whifun.m_ code and click on _Select folder_. Finally, click _save_ and then _close_.
 
 4) If SPM12 toolbox is not downloaded, Please download the SPM12 toolbox from https://www.fil.ion.ucl.ac.uk/spm/software/download/ , and addpath of the spm toolbox in MATLAB
    
@@ -36,7 +36,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
    
    or
    
-     ii) Click _home_ when you are on the main screen of MATLAB (top left) and then under the environment section click on _set path_. Next, click on _Add Folder_, select the SPM folder with the _spm.m_ code, and click _Select folder_. Finally, click _save_ and then _close_.
+     ii) Click _home_ when you are on the main screen of MATLAB (top left), and then under the environment section, click on _set path_. Next, click on _Add Folder_, select the SPM folder with the _spm.m_ code, and click _Select folder_. Finally, click _save_ and then _close_.
 
 6) Once all the paths are set, type _whifun_ in the MATLAB command and press enter.
 7) The main GUI window of WhiFuN will open.
@@ -51,7 +51,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 
    a) Intermediate Folder --> session_1 
    
-   (there is an intermediate folder between the subject folder and the anatomical and functional file folder. If there is more than one folder session_1 and then 'MRI' folder, one can put the path as session_1\MRI for windows or session_1/MRI for linux or mac users )
+   (there is an intermediate folder between the subject folder and the anatomical and functional file folder. If there is more than one folder session_1 and then 'MRI' folder, one can put the path as session_1\MRI for Windows or session_1/MRI for Linux or Mac users )
 
    b) Functional Folder Name --> rest_1
 
@@ -71,7 +71,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
          
 ![Screenshot_20241209_094427](https://github.com/user-attachments/assets/a157b977-2064-44b8-8043-11aad02a8376)
 
-   f) Once all the field are filled, click submit. If the toolbox doesnt find a folder or file for the first subject, it will notify the folder or file not found and changes can be made accordingly.
+   f) Once all the fields are filled, click submit. If the toolbox doesn't find a folder or file for the first subject, it will notify the folder or file not found, and changes can be made accordingly.
 
 
    iv) Next, check the 'All folders are subjects' checkbox; this means we want to process every subject. Alternatively, one can just select a subset of subjects if all subjects should not be processed. This will display the number of subjects that will be processed by WhiFuN. (see screenshot below)
@@ -81,7 +81,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
    v) Next, click on _Run Data check_ and make sure that the functional and Anatomical images are present for every subject and that all the MRI parameters of all the images are correct.
 
 6) After the Data check, a Data check report will be shown. Make sure it says, 'Data check completed successfully'.
-7) Have a look at the preprocessing step parameters. If something needs to be changed, it can be changed (for more details, refer paper)
+7) Have a look at the preprocessing step parameters. If something needs to be changed, it can be changed (for more details, refer to the paper)
 9) Click _Run Preprocessing_.
 10) Preprocessing will take some time, depending on the PC used to preprocess. After Preprocessing for one subject is done, WhiFuN will also display the estimated time to complete the preprocessing.
 11) Once preprocessing is complete, please go to the output folder (using the file browser) and check the quality control plots saved for every subject (refer to the paper for more details).
