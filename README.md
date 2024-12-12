@@ -17,7 +17,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 
 ### Follow these steps to get started
 
-1) Download WhiFuN in a local folder and unzip all the contents (Download WhiFuN by clicking on the green 'Code' button and then selecting Download zip)
+1) Download WhiFuN in a local folder and unzip all the contents (Download WhiFuN by clicking on the green 'Code' button and then selecting Download zip, the toolbox will take about 24MB od disk space)
 2) Open MATLAB and addpath of the WhifuN toolbox to MATLAB
    
      i) by using the addpath function: Type the following in the MATLAB command window and press enter.
