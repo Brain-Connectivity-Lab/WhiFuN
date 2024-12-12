@@ -71,6 +71,8 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
          
 ![Screenshot_20241209_094427](https://github.com/user-attachments/assets/a157b977-2064-44b8-8043-11aad02a8376)
 
+   f) Once all the field are filled, click submit. If the toolbox doesnt find a folder or file for the first subject, it will notify the folder or file not found and changes can be made accordingly.
+
 
    iv) Next, check the 'All folders are subjects' checkbox; this means we want to process every subject. Alternatively, one can just select a subset of subjects if all subjects should not be processed. This will display the number of subjects that will be processed by WhiFuN. (see screenshot below)
 
