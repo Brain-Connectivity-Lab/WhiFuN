@@ -7,10 +7,10 @@ MATLAB R2022a or later versions are recommended.
 
 
 Additionally WhiFuN uses 
-1) Image Processing Toolbox
-2) Signal processing Toolbox
-3) Statistics and Machine Learning Toolbox
-4) Bioinformatics toolbox
+1) Bioinformatics toolbox
+2) Image Processing Toolbox
+3) Signal processing Toolbox
+4) Statistics and Machine Learning Toolbox
 
 These toolboxes can be downloaded by using the Add ons feature in Matlab. More details here: https://www.mathworks.com/help/matlab/matlab_env/get-add-ons.html
 
