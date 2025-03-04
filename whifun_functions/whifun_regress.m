@@ -65,10 +65,12 @@ for vi = 1:image_dim_REST(1)
                 % CSF, WM and MOTION Regressors and Regressors from OTHER SESSIONs for the same subject
 
                 [~,~,y_image_REST_regressed(vi,vj,vk,:)] = regress(shiftdim(y_image_REST(vi,vj,vk,:),3),[b_init ones(nt,1)]);
-                y_image_REST_regressed(vi,vj,vk,:) = y_image_REST_regressed(vi,vj,vk,:) + mean_image_REST(vi,vj,vk);
+                y_image_REST_regressed(vi,vj,vk,:) = y_image_REST_regressed(vi,vj,vk,:) + mean_image_REST(vi,vj,vk);  
             end
         end
 
     end
 end
-niftisave(uint16(y_image_REST_regressed),fullfile(now_func_path.folder,[Reg_pre ,now_func_path.name]),func_info);
+y_image_REST_regressed = cast(y_image_REST_regressed,func_info.Datatype);
+
+niftisave((y_image_REST_regressed),fullfile(now_func_path.folder,[Reg_pre ,now_func_path.name]),func_info);
