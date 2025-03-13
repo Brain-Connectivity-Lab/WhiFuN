@@ -45,9 +45,10 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 
    ii) Click the _Participant Data Folder_ button and select the folder with all the participants folders. As an example, we show how WhiFuN can be used with some practice data that can be downloaded here https://drive.google.com/drive/folders/1l7dhG8dYYRCW5EWhkPZbBpA7TOau1W-B?usp=sharing . Download the practice data, unzip the contents, and select the folder 'practice_NYU_abide' using the _participant data folder button_ or paste the complete path into the practice_NYU_data. Please see the example screenshot below.
     
-![Screenshot 2025-03-13 162609](https://github.com/user-attachments/assets/529d958d-e955-4249-8de9-ac20debcde98)
+![Screenshot 2025-03-13 165540](https://github.com/user-attachments/assets/ea662e73-07e9-42da-9455-8f98b97f466d)
 
-   iii) Now, this dataset is not in Brain Imaging Data Structure (BIDS) format (more information on BIDS here : https://bids.neuroimaging.io/ ); hence, uncheck the _BIDS_ check box on the right of the 'participant Data Folder' text field. That will open a new window where the folder names can be entered. Type the following in the fields  (as shown in the screenshot)
+   iii) Now, this dataset is not in Brain Imaging Data Structure (BIDS) format (more information on BIDS here : https://bids.neuroimaging.io/ ); hence, uncheck the _BIDS_ check box on the right of the.
+ 'participant Data Folder' text field. That will open a new window where the folder names can be entered. Type the following in the fields  (as shown in the screenshot)
 
    a) Intermediate
  Folder --> session_1 
@@ -77,10 +78,10 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 
    iv) Next, check the 'All folders are participants' checkbox; this means we want to process every participant. Alternatively, one can just select a subset of participants if all participants should not be processed. This will display the number of participants that will be processed by WhiFuN. (see screenshot below)
  
-![Screenshot 2024-12-08 202504](https://github.com/user-attachments/assets/e4982c4d-cade-406c-bd22-c28bf8abcd6b)
-
+![Screenshot 2025-03-13 164504](https://github.com/user-attachments/assets/9b2f6ad0-be93-4130-a110-3399da96f157)
 
    v) Next, click on _Run Data check_ and make sure that the functional and Anatomical images are present for every participant and that all the MRI parameters of all the images are correct.
+
 
 6) After the Data check, a Data check report will be shown. Make sure it says, 'Data check completed successfully'.
 7) Have a look at the preprocessing step parameters. If something needs to be changed, it can be changed (for more details, refer to the paper)
