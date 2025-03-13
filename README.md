@@ -45,11 +45,12 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 
    ii) Click the _Participant Data Folder_ button and select the folder with all the participants folders. As an example, we show how WhiFuN can be used with some practice data that can be downloaded here https://drive.google.com/drive/folders/1l7dhG8dYYRCW5EWhkPZbBpA7TOau1W-B?usp=sharing . Download the practice data, unzip the contents, and select the folder 'practice_NYU_abide' using the _participant data folder button_ or paste the complete path into the practice_NYU_data. Please see the example screenshot below.
     
-![Screenshot 2024-12-08 194913](https://github.com/user-attachments/assets/242c7345-dbd2-45ab-9fd7-e5ecc720d757)
+![Screenshot 2025-03-13 162609](https://github.com/user-attachments/assets/529d958d-e955-4249-8de9-ac20debcde98)
 
    iii) Now, this dataset is not in Brain Imaging Data Structure (BIDS) format (more information on BIDS here : https://bids.neuroimaging.io/ ); hence, uncheck the _BIDS_ check box on the right of the 'participant Data Folder' text field. That will open a new window where the folder names can be entered. Type the following in the fields  (as shown in the screenshot)
 
-   a) Intermediate Folder --> session_1 
+   a) Intermediate
+ Folder --> session_1 
    
    (there is an intermediate folder between the participant data folder and the anatomical and functional file folder. If there is more than one folder session_1 and then 'MRI' folder, one can put the path as session_1\MRI for Windows or session_1/MRI for Linux or Mac users )
 
@@ -69,14 +70,15 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 
    (the .nii or .nii.gz anatomical image name, sometimes the participant name is there in the anatomical image name, then the common part can be mentioned and the participant name that changes for every participant can be replaced by a * . For instance if the anat file name is sub-1001.nii for participant 1001 and sub-1002.nii for participant 2, one can put sub-*)
          
-![Screenshot_20241209_094427](https://github.com/user-attachments/assets/a157b977-2064-44b8-8043-11aad02a8376)
+![Screenshot 2025-03-13 164232](https://github.com/user-attachments/assets/4841cb8a-878e-48d6-87cc-41d8671b602a)
 
    f) Once all the fields are filled, click submit. If the toolbox doesn't find a folder or file for the first participant, it will notify the folder or file not found, and changes can be made accordingly.
 
 
    iv) Next, check the 'All folders are participants' checkbox; this means we want to process every participant. Alternatively, one can just select a subset of participants if all participants should not be processed. This will display the number of participants that will be processed by WhiFuN. (see screenshot below)
  
-   ![Screenshot 2024-12-08 202504](https://github.com/user-attachments/assets/e4982c4d-cade-406c-bd22-c28bf8abcd6b)
+![Screenshot 2024-12-08 202504](https://github.com/user-attachments/assets/e4982c4d-cade-406c-bd22-c28bf8abcd6b)
+
 
    v) Next, click on _Run Data check_ and make sure that the functional and Anatomical images are present for every participant and that all the MRI parameters of all the images are correct.
 
