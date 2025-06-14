@@ -5,6 +5,10 @@ Version History
 
 WhiFuN version 1 (https://github.com/Brain-Connectivity-Lab/WhiFuN_v1)
 
+Beta Testing 
+
+WhiFuN Version 2
+
 ## New to WhiFuN? 
 WhiFuN is based on MATLAB; hence, it will not work if MATLAB is not installed. 
 MATLAB R2022a or later versions are recommended.
