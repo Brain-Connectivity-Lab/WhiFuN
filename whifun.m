@@ -210,6 +210,6 @@ switch Action
         run(fullfile(preproc_code_path,'main_csv_parfor_QC_different_one_mat_for_all_subs.mlapp'))
 
     case 'ver'
-        disp('Version : WhiFuN v2 Beta')
+        disp('Version : WhiFuN v2')
 
 end
