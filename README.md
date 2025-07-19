@@ -1,6 +1,6 @@
 # WhiFuN Version 2
 
-We are open to feedback and comments. Please reach out if you get any issues, email: (pj44[at]njit[dot]com).
+We are open to feedback and comments. Please reach out if you get any issues, email: (jainpratik412[at]gmail[dot]com).
 
 This GUI-based toolbox offers researchers a user-friendly suite of automated tools for investigating brain functional connectivity in WM and GM. One of the key advantages of WhiFuN is that it fully automates the preprocessing steps to derive data that can be used to analyze the WM and GM BOLD signals.
 
