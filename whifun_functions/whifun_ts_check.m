@@ -34,7 +34,7 @@ clear ar_mask dtr
 
 
 rest_img = niftiread(fullfile(now_func_path_pro.folder,now_func_path_pro.name));
-rest_mask1 = reslice_data(fullfile(now_anat_path.folder,'wanat_mask.nii'),fullfile(now_func_path_pro.folder,[now_func_path_pro.name ]),1,1,fullfile(now_func_path_pro.folder,'rest_mask.nii'));
+rest_mask1 = reslice_data(fullfile(now_anat_path.folder,'wanat_mask.nii'),fullfile(now_func_path_pro.folder,[now_func_path_pro.name ]),1,1,fullfile(now_func_path_pro.folder,'wrest_mask.nii'));
 
 [x,y,z,nt] = size(rest_img);
 rest_mask1 = reshape(rest_mask1,x*y*z,1);

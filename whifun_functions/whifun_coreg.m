@@ -1,4 +1,4 @@
-function whifun_coreg(now_anat_path,now_func_path,mean_func,nt)
+function output = whifun_coreg(now_anat_path,now_func_path,mean_func,nt)
 
 matlabbatch{1}.spm.spatial.coreg.estimate.ref = {[fullfile(now_anat_path.folder,now_anat_path.name),',1']};   % Reference image (this does not change) (Here its the anatomical image)
 
@@ -16,4 +16,8 @@ matlabbatch{1}.spm.spatial.coreg.estimate.eoptions.sep = [4 2];       % The aver
 matlabbatch{1}.spm.spatial.coreg.estimate.eoptions.tol = [0.02 0.02 0.02 0.001 0.001 0.001 0.01 0.01 0.01 0.001 0.001 0.001]; % Iterations  stop  when differences between successive estimates are less than the required tolerance.
 matlabbatch{1}.spm.spatial.coreg.estimate.eoptions.fwhm = [5 5];      % Histogram smoothing by Gaussian smoothing to apply to the 256x256 joint histogram.
 spm('defaults', 'FMRI');
-spm_jobman('run', matlabbatch);
+spm_jobman('initcfg');
+
+% Suppress GUI
+spm_get_defaults('cmdline', true);
+output = evalc("spm_jobman('run',matlabbatch)");

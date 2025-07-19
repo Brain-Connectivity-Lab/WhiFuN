@@ -1,13 +1,14 @@
-# WhiFuN
+# WhiFuN Version 2 Beta
+
+Version 2 is still in the testing phase. We are open to feedback and comments. Please reach out if you get any issues email: (pj44[at]njit[dot]com).
+
 This GUI-based toolbox offers researchers a user-friendly suite of automated tools for investigating brain functional connectivity in WM and GM. One of the key advantages of WhiFuN is that it fully automates the preprocessing steps to derive data that can be used to analyze the WM and GM BOLD signals.
 
-Version History
+What's new in version 2?
 
-WhiFuN Version 1: https://github.com/Brain-Connectivity-Lab/WhiFuN_v1
+1) Added new columns in the Subj_list.csv file for the functional and anatomical file paths. Now, users can directly paste the paths of the functional and anatomical files in the Subj_list.csv file, and WhiFuN will directly use that. So now WhiFuN is capable of processing any data format/structure.
+2) Parallel functionality added. If the user has the Parallel Computing toolbox installed in MATLAB, they will be able to preprocess the subjects in parallel using multiple cores of the computer for faster preprocessing.
 
-Beta Testing 
-
-WhiFuN Version 2 beta: https://github.com/Brain-Connectivity-Lab/WhiFuN_v2_beta
 
 ## New to WhiFuN? 
 WhiFuN is based on MATLAB; hence, it will not work if MATLAB is not installed. 
@@ -17,8 +18,11 @@ MATLAB R2022a or later versions are recommended.
 Additionally WhiFuN uses 
 1) Bioinformatics toolbox
 2) Image Processing Toolbox
-3) Signal processing Toolbox
+3) Signal Processing Toolbox
 4) Statistics and Machine Learning Toolbox
+
+Optional
+1) Parallel Computing Toolbox
 
 These toolboxes can be downloaded by using the Add ons feature in Matlab. More details here: https://www.mathworks.com/help/matlab/matlab_env/get-add-ons.html
 
@@ -54,6 +58,8 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
    ii) Click the _Participant Data Folder_ button and select the folder with all the participants folders. As an example, we show how WhiFuN can be used with some practice data that can be downloaded here https://drive.google.com/drive/folders/1l7dhG8dYYRCW5EWhkPZbBpA7TOau1W-B?usp=sharing . Download the practice data, unzip the contents, and select the folder 'practice_NYU_abide' using the _participant data folder button_ or paste the complete path into the practice_NYU_data. Please see the example screenshot below.
     
 ![Screenshot 2025-03-13 165540](https://github.com/user-attachments/assets/ea662e73-07e9-42da-9455-8f98b97f466d)
+
+
 
    iii) Now, this dataset is not in Brain Imaging Data Structure (BIDS) format (more information on BIDS here : https://bids.neuroimaging.io/ ); hence, uncheck the _BIDS_ check box on the right of the.
  'participant Data Folder' text field. That will open a new window where the folder names can be entered. Type the following in the fields  (as shown in the screenshot)

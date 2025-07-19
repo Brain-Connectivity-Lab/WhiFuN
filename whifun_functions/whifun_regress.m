@@ -19,7 +19,8 @@ fprintf('loading covariates for REST... \n')
 if motion_reg == 1
     % Loading the motion parameters
     fprintf('First loading the motion parameters for REST... \n')
-    txt_file = dir(fullfile(now_func_path.folder,['rp_' Cut_pre func_data_name '.txt']));
+    func_name_wo_ext = strsplit(func_data_name,'.');
+    txt_file = dir(fullfile(now_func_path.folder,['rp_' Cut_pre func_name_wo_ext{1} '.txt']));
     rp=load(fullfile(txt_file.folder,txt_file.name));
     rp_temp = rp(1:nt,:);
     rp = zscore(rp_temp);
@@ -52,7 +53,7 @@ y_image_REST_regressed = zeros(size(y_image_REST));
 X = image_dim_REST(2);
 Y = image_dim_REST(3);
 for vi = 1:image_dim_REST(1)
-    fprintf('%d ',vi)
+%     fprintf('%d ',vi)
 
     for vj = 1:X
         for vk = 1:Y

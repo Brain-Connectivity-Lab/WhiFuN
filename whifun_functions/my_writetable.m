@@ -20,13 +20,13 @@ try
 catch ex
     switch ex.identifier
         case 'MATLAB:table:write:FileOpenError'
-            response_ = questdlg('The Subj_list.csv file is open, Please close it and hit done. ','Subj_list.csv file open','done','close','done');
+            response_ = questdlg('The Subj_list.csv file is open, Please manually close it and hit done. ','Subj_list.csv file open','done','close msgbox','done');
 
             switch response_
                 case 'done'
                     writetable(Subj_list_all_table,path)
-                case 'close'
-                    writetable(Subj_list_all_table,path)
+                case 'close msgbox'
+                    
             end
     end
 

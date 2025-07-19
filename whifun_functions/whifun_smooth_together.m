@@ -1,4 +1,4 @@
-function whifun_smooth_together(nt,now_func_path,smooth_fwhm,Smooth_pre)
+function output = whifun_smooth_together(nt,now_func_path,smooth_fwhm,Smooth_pre)
 % Load Regressed Images
 reg_images = cell(nt,1);
 for imagei = 1:nt
@@ -12,4 +12,8 @@ matlabbatch{1}.spm.spatial.smooth.prefix = Smooth_pre;
 
 %         cfg_util('run',matlabbatch);
 spm('defaults', 'FMRI');
-spm_jobman('run', matlabbatch);
+spm_jobman('initcfg');
+
+% Suppress GUI
+spm_get_defaults('cmdline', true);
+output = evalc("spm_jobman('run',matlabbatch)");

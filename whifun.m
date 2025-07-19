@@ -207,9 +207,9 @@ switch Action
         preproc_code_path = fileparts(temp_path);
 
         addpath(preproc_code_path)
-        run(fullfile(preproc_code_path,'main.mlapp'))
+        run(fullfile(preproc_code_path,'main_csv_parfor_QC_different_one_mat_for_all_subs.mlapp'))
 
     case 'ver'
-        disp('Version : WhiFuN v1')
+        disp('Version : WhiFuN v2 Beta')
 
 end

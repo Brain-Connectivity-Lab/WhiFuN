@@ -1,4 +1,4 @@
-function whifun_segment(now_anat_path,spm_path)
+function output = whifun_segment(now_anat_path,spm_path)
 
 matlabbatch{1}.spm.spatial.preproc.channel.vols = {fullfile(now_anat_path.folder,now_anat_path.name)};  % Select Volumes for processing
 matlabbatch{1}.spm.spatial.preproc.channel.biasreg = 0.001;
@@ -36,4 +36,8 @@ matlabbatch{1}.spm.spatial.preproc.warp.fwhm = 0;
 matlabbatch{1}.spm.spatial.preproc.warp.samp = 3;
 matlabbatch{1}.spm.spatial.preproc.warp.write = [1 1];                                                  % save inverse and forward deformation field maps
 spm('defaults', 'FMRI');
-spm_jobman('run', matlabbatch);
+spm_jobman('initcfg');
+
+% Suppress GUI
+spm_get_defaults('cmdline', true);
+output = evalc("spm_jobman('run',matlabbatch)");

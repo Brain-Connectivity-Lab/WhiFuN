@@ -1,6 +1,6 @@
 function whifun_extract_csf_ts(now_anat_path,now_func_path,CSF_thres,pca_for_temp_reg,n_pca)
 cd(now_anat_path(1).folder)
-CSF_MASK = spm_vol(['CSF_MASK' CSF_thres '.nii']);                                         % Read the CSF mask info
+CSF_MASK = spm_vol(['CSF_MASK' char(CSF_thres) '.nii']);                                         % Read the CSF mask info
 CSF_files  = spm_read_vols(CSF_MASK);                                                      % Read the CSF mask
 image_dim = CSF_MASK.dim;                                                                  % get the dimentions
 CSF_Files_RS  = reshape(CSF_files,image_dim(1)*image_dim(2)*image_dim(3),1);               % resize to voxels x 1

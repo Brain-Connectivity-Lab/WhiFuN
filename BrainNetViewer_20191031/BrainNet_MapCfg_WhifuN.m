@@ -274,6 +274,15 @@ if ~isempty(CfgFileName)
     if exist("VolFileName",'var')
         % Modified by Pratik jain to make it compatible with WhiFun toolbox
         volfile = niftiread(VolFileName);
+        if exist('draw_',"var")
+            if isempty(volfile(volfile == draw_))
+                return
+            end
+        else
+            if isempty(volfile)
+                return
+            end
+        end
         roi_levels = double(unique(volfile));
         roi_levels(roi_levels == 0) = [];
         EC.vol.roi.drawt = roi_levels;

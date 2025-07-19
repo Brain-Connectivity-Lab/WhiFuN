@@ -24,10 +24,13 @@ if isnumeric(data)
     [mean_,std_] = get_mean_std(data,nanflag,s);
 
 elseif iscell(data)
-    mean_ = zeros(1,length(data));
-    std_ = zeros(1,length(data));
-    for i = 1:length(data)
-        [mean_(i),std_(i)] = get_mean_std(data{i},nanflag,s);
+    mean_ = zeros(size(data));
+    std_ = zeros(size(data));
+    for i1 = 1:size(data,1)
+        for j1 = 1:size(data,2)
+            
+            [mean_(i1,j1),std_(i1,j1)] = get_mean_std(data{i1,j1},nanflag,s);
+        end
     end
     
 end
@@ -39,9 +42,25 @@ if size(size(data)) <= 2
     hold on
     
     er.LineStyle = 'none';
+    [ngroups,nbars] = size(mean_);
+    % Get the x coordinate of the bars
+    x = nan(nbars, ngroups);
+    if ngroups > 1
+        for i = 1:nbars
+            x(i,:) = b(i).XEndPoints;
+        end
+    else
+        if size(data,1) < size(data,2)
+            x = (1:nbars)';
+        else
+            x = 1:nbars;
+        end
+    end
     if iscell(data)
-        for i = 1:length(data)
-            scatter(i,data{i}','black','filled','jitter','on','JitterAmount',0.1)
+        for i = 1:size(data,1)
+            for j = 1:size(data,2)
+                scatter(x(j,i),data{i,j}','black','filled','jitter','on','JitterAmount',0.1)
+            end
         end
     elseif isnumeric(data)
         scatter(1:size(data,2),data,'black','filled','jitter','on','JitterAmount',0.2)
@@ -49,7 +68,7 @@ if size(size(data)) <= 2
     if exist("names","var")
         set(gca,'xtick',1:length(mean_),'xticklabel',names)
     end
-    errorbar(1:length(mean_),mean_,std_,std_, 'LineWidth',3, 'MarkerSize',5,LineStyle = 'none',Color=[1,0,0],CapSize=15);
+    errorbar(x',mean_,std_,std_, 'LineWidth',3, 'MarkerSize',5,LineStyle = 'none',Color=[1,0,0],CapSize=15);
 else
     b = bar(mean_, 'grouped');
     hold on

@@ -1,4 +1,4 @@
-function p_smooth_WM_GM_separately_fast(functional_dir, segmentation_dir, output_dir,op_name, gaussian_FWHM, GM_filename_prefix, WM_filename_prefix, over_write)
+function [output_gm, output_wm] = p_smooth_WM_GM_separately_fast(functional_dir, segmentation_dir, output_dir,op_name, gaussian_FWHM, GM_filename_prefix, WM_filename_prefix, over_write)
 %
 % smooth_WM_GM_separately(functional_dir, segmentation_dir, output_dir, gaussian_FWHM, GM_filename_prefix, WM_filename_prefix)
 %
@@ -7,8 +7,8 @@ function p_smooth_WM_GM_separately_fast(functional_dir, segmentation_dir, output
 % segmentation_dir - directory with segmentation results (grey-matter, white-matter)
 % output_dir - directory to put the new files in
 % gaussian_FWHM - full width at half maximum of the smoothing Gaussian kernel in millimeters (e.g. 4mm, 8mm)
-% GM_filename_prefix - the prefix of the grey-matter file in the segmentation directory (e.g. 'wc1' for normalized grey-matter from SPM)
-% WM_filename_prefix - the prefix of the white-matter file in the segmentation directory (e.g. 'wc2' for normalized white-matter from SPM)
+% GM_filename_prefix - the prefix of the grey-matter file in the segmentation directory (e.g. 'c1' for normalized grey-matter from SPM)
+% WM_filename_prefix - the prefix of the white-matter file in the segmentation directory (e.g. 'c2' for normalized white-matter from SPM)
 %
 % Michael Peer, April 2017
 
@@ -53,7 +53,7 @@ if isempty(WM_file)
 if ~exist(output_dir,'dir'), mkdir(output_dir); end
  
 % loading all of the functional data
-func_mat = niftiread(func_image_1);
+func_mat = double(niftiread(func_image_1));
 
 % saving functional images with only the WM voxels and GM voxels separately in the output directory
 func_mat = reshape(func_mat,[],func_info.ImageSize(4));
@@ -113,7 +113,12 @@ if isempty(gm_smooth)
     spm('defaults','fmri'); spm_jobman('initcfg');      % initializing SPM's jobman
     matlabbatch={struct('spm',struct('spatial',struct('smooth',struct('data','','dtype',0,'fwhm',[gaussian_FWHM gaussian_FWHM gaussian_FWHM],'im',0,'prefix','s'))))};
     matlabbatch{1}.spm.spatial.smooth.data = {fullfile(output_dir,'GM_func_data.nii')};   % grey matter smoothing
-    spm_jobman('run', matlabbatch);
+
+    spm_jobman('initcfg');
+
+    % Suppress GUI
+    spm_get_defaults('cmdline', true);
+    output_gm = evalc("spm_jobman('run',matlabbatch)");
     clear matlabbatch
 end
 
@@ -140,7 +145,11 @@ if isempty(wm_smooth)
     spm('defaults','fmri'); spm_jobman('initcfg');      % initializing SPM's jobman
     matlabbatch={struct('spm',struct('spatial',struct('smooth',struct('data','','dtype',0,'fwhm',[gaussian_FWHM gaussian_FWHM gaussian_FWHM],'im',0,'prefix','s'))))};
     matlabbatch{1}.spm.spatial.smooth.data = {fullfile(output_dir,'WM_func_data.nii')};   % white matter smoothing
-    spm_jobman('run', matlabbatch);
+    spm_jobman('initcfg');
+
+    % Suppress GUI
+    spm_get_defaults('cmdline', true);
+    output_wm = evalc("spm_jobman('run',matlabbatch)");
 
 end
 
