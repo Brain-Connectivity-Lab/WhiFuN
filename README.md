@@ -110,4 +110,4 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 16) Once the FNs are created _Display_FN_ can be used to see the FNs using SPM or BrainNet viewer (already included in the toolbox).
 17) _Display_FC_ can be used to see the Functional connectivity Matrix. If behavioural scores or age, sex csv file is also present one can use the statistics module to fit a GLM and find the associations of behaviour data with the FC. (More details in the paper).
 
-Refer to the WhiFuN Manual for understanding and using all features of WhiFuN.
+Refer to the [WhiFuN Manual]([https://pages.github.com/](https://github.com/Brain-Connectivity-Lab/WhiFuN/blob/WhiFuN_v2/WhiFuN%20Manual.pdf) for understanding and using all features of WhiFuN.
