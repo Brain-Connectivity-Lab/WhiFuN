@@ -58,9 +58,7 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 
    ii) Click the _Participant Data Folder_ button and select the folder with all the participants folders. As an example, we show how WhiFuN can be used with some practice data that can be downloaded here https://drive.google.com/drive/folders/1l7dhG8dYYRCW5EWhkPZbBpA7TOau1W-B?usp=sharing . Download the practice data, unzip the contents, and select the folder 'practice_NYU_abide' using the _participant data folder button_ or paste the complete path into the practice_NYU_data. Please see the example screenshot below.
     
-![Screenshot 2025-03-13 165540](https://github.com/user-attachments/assets/ea662e73-07e9-42da-9455-8f98b97f466d)
-<img width="942" height="817" alt="Screenshot 2025-07-19 101945" src="https://github.com/user-attachments/assets/ff531917-fc67-43ee-a38b-49532bad7664" />
-
+<img width="942" height="817" alt="Screenshot 2025-07-19 103007" src="https://github.com/user-attachments/assets/1ec8a7ed-d7cc-48dc-956e-1cf29d44fc3e" />
 
 
    iii) Now, this dataset is not in Brain Imaging Data Structure (BIDS) format (more information on BIDS here : https://bids.neuroimaging.io/ ); hence, uncheck the _BIDS_ check box on the right of the.
