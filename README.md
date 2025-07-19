@@ -1,6 +1,6 @@
-# WhiFuN Version 2 Beta
+# WhiFuN Version 2
 
-Version 2 is still in the testing phase. We are open to feedback and comments. Please reach out if you get any issues email: (pj44[at]njit[dot]com).
+We are open to feedback and comments. Please reach out if you get any issues, email: (pj44[at]njit[dot]com).
 
 This GUI-based toolbox offers researchers a user-friendly suite of automated tools for investigating brain functional connectivity in WM and GM. One of the key advantages of WhiFuN is that it fully automates the preprocessing steps to derive data that can be used to analyze the WM and GM BOLD signals.
 
@@ -8,6 +8,7 @@ What's new in version 2?
 
 1) Added new columns in the Subj_list.csv file for the functional and anatomical file paths. Now, users can directly paste the paths of the functional and anatomical files in the Subj_list.csv file, and WhiFuN will directly use that. So now WhiFuN is capable of processing any data format/structure.
 2) Parallel functionality added. If the user has the Parallel Computing toolbox installed in MATLAB, they will be able to preprocess the subjects in parallel using multiple cores of the computer for faster preprocessing.
+3) Compatibility with MATLAB R2025a
 
 
 ## New to WhiFuN? 
@@ -109,4 +110,4 @@ These toolboxes can be downloaded by using the Add ons feature in Matlab. More d
 16) Once the FNs are created _Display_FN_ can be used to see the FNs using SPM or BrainNet viewer (already included in the toolbox).
 17) _Display_FC_ can be used to see the Functional connectivity Matrix. If behavioural scores or age, sex csv file is also present one can use the statistics module to fit a GLM and find the associations of behaviour data with the FC. (More details in the paper).
 
-Refer to the WhiFuN Manual for understanding and using all features of WhiFuN.
+Refer to the [WhiFuN Manual](https://github.com/Brain-Connectivity-Lab/WhiFuN/blob/WhiFuN_v2/WhiFuN%20Manual.pdf) for understanding and using all features of WhiFuN.
