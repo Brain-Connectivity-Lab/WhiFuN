@@ -67,6 +67,8 @@ switch use_whifun_gui
 
         Subj_list_all = load_subjects_all(output_folder,'Subj_list.csv');              % Load all participants in the dataset
         load(fullfile(output_folder,'parameters.mat'))                                 % % load parameters saved during initial data check, if they were changed after initial data check, the change will be applied later in the code.
+        K_range_h = K_range_h_now;
+        K_range_l = K_range_l_now;
         if double(string(n_vol_dis)) ~= 0
             Cut_pre = 'c_';                                                         % Prefix for the Discarding Initial volumes File
         else
@@ -103,6 +105,8 @@ switch use_whifun_gui
         Reg_pre = '';
         Realign_pre = '';
         Cut_pre = '';
+        K_range_h = str2double(K_range_h);
+        K_range_l = str2double(K_range_l);
 end
 
 mkdir(fullfile(output_folder,'Analysis','WM_FN'))                            % make the WM Networks results folder
