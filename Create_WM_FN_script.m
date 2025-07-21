@@ -67,7 +67,7 @@ switch use_whifun_gui
 
         Subj_list_all = load_subjects_all(output_folder,'Subj_list.csv');              % Load all participants in the dataset
         load(fullfile(output_folder,'parameters.mat'))                                 % % load parameters saved during initial data check, if they were changed after initial data check, the change will be applied later in the code.
-        if double(string(app.NoofVolumestoDiscardTextArea.Value)) ~= 0
+        if double(string(n_vol_dis)) ~= 0
             Cut_pre = 'c_';                                                         % Prefix for the Discarding Initial volumes File
         else
             Cut_pre = '';
