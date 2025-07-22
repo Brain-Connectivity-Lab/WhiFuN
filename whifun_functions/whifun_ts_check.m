@@ -3,7 +3,7 @@ function whifun_ts_check(now_func_path_raw,now_txt_path,now_func_path_pro,now_an
 if nargin < 10
     pca_for_temp_reg = [];
 end
-figure('position',[10 50 1500 400]);
+f = figure('position',[10 50 1500 400],'Visible','off');
 
 a = niftiread(fullfile(now_func_path_raw.folder,now_func_path_raw.name));
 
@@ -183,5 +183,5 @@ end
 [x,y] = find((corr_dt>0.3).*mat_mask);
 hold on; scatter(x,y,[],'r','filled')
 
-saveas(gcf,fullfile(quality_control_path,'Time_series_check',[name '.png']));
+saveas(f,fullfile(quality_control_path,'Time_series_check',[name '.png']));
 close all
