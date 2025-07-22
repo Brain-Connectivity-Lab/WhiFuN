@@ -12,8 +12,10 @@ end
 if isempty(seg_qc_file) || over_write == 1
     % Quality Control
     imgs = char([now_anat_path(1).folder,filesep, 'wc1' now_anat_path.name],...  % Display the Gray matter segmentation
-        fullfile(spm_path,'canonical','single_subj_T1.nii'));                    % Display the reference single subject MNI space image from SPM
-    spm_check_registration(imgs);
+        fullfile(spm_path,'canonical','single_subj_T1.nii'));                    %#ok<NASGU> % Display the reference single subject MNI space image from SPM
+    fg = spm_figure('Create','Graphics','Visible','off');
+
+    [~] = evalc('spm_check_registration(imgs)');
 
     % Display the participant's ID
     spm_orthviews('Caption', 1, name);
@@ -50,6 +52,6 @@ if isempty(seg_qc_file) || over_write == 1
     %                                     spm_orthviews('Redraw')
     %                                     spm_orthviews('Xhairs','off')
     spm_orthviews('Xhairs','off')
-    saveas(gcf,fullfile(quality_control_path,'Segmentation',[name '.png']) ,'png')
+    saveas(fg,fullfile(quality_control_path,'Segmentation',[name '.png']) ,'png')
     close gcf
 end
