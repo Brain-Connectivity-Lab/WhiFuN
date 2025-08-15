@@ -183,5 +183,5 @@ end
 [x,y] = find((corr_dt>0.3).*mat_mask);
 hold on; scatter(x,y,[],'r','filled')
 
-saveas(f,fullfile(quality_control_path,'Time_series_check',[name '.png']));
+saveas(f,fullfile(quality_control_path,'j_Time_series_check',[name '.png']));
 close all
