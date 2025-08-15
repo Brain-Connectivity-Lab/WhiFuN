@@ -6,15 +6,15 @@ matlabbatch{1}.spm.spatial.preproc.channel.biasfwhm = 60;
 matlabbatch{1}.spm.spatial.preproc.channel.write = [0 1];                                               % save bias corrected images
 matlabbatch{1}.spm.spatial.preproc.tissue(1).tpm = {fullfile(spm_path,'tpm','TPM.nii,1')};              % Gray Matter Tissue probability map (TPM)
 matlabbatch{1}.spm.spatial.preproc.tissue(1).ngaus = 1;
-matlabbatch{1}.spm.spatial.preproc.tissue(1).native = [1 0];
+matlabbatch{1}.spm.spatial.preproc.tissue(1).native = [1 1];
 matlabbatch{1}.spm.spatial.preproc.tissue(1).warped = [1 1];                                            % save segmented images in MNI space
 matlabbatch{1}.spm.spatial.preproc.tissue(2).tpm = {fullfile(spm_path,'tpm','TPM.nii,2')};              % White Matter Tissue probability map (TPM)
 matlabbatch{1}.spm.spatial.preproc.tissue(2).ngaus = 1;
-matlabbatch{1}.spm.spatial.preproc.tissue(2).native = [1 0];
+matlabbatch{1}.spm.spatial.preproc.tissue(2).native = [1 1];
 matlabbatch{1}.spm.spatial.preproc.tissue(2).warped = [1 1];                                            % save segmented images in MNI space
 matlabbatch{1}.spm.spatial.preproc.tissue(3).tpm = {fullfile(spm_path,'tpm','TPM.nii,3')};              % CSF Tissue probability map (TPM)
 matlabbatch{1}.spm.spatial.preproc.tissue(3).ngaus = 2;
-matlabbatch{1}.spm.spatial.preproc.tissue(3).native = [1 0];
+matlabbatch{1}.spm.spatial.preproc.tissue(3).native = [1 1];
 matlabbatch{1}.spm.spatial.preproc.tissue(3).warped = [1 1];                                            % save segmented images in MNI space
 matlabbatch{1}.spm.spatial.preproc.tissue(4).tpm = {fullfile(spm_path,'tpm','TPM.nii,4')};              % skull Tissue Probability map (TPM) (not required for our analysis)
 matlabbatch{1}.spm.spatial.preproc.tissue(4).ngaus = 3;
@@ -41,3 +41,4 @@ spm_jobman('initcfg');
 % Suppress GUI
 spm_get_defaults('cmdline', true);
 output = evalc("spm_jobman('run',matlabbatch)");
+
