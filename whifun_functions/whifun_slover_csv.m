@@ -30,22 +30,25 @@ end
 if norm
     mkdir(fullfile(out_folder, 'Quality_control', 'i_Normalization', space_, [slover_view '_Slice_View']));
 end
+fg = spm_figure('Create','Graphics','Visible','off');
+temp = spm('WinSize','Graphics');
+set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
+set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)]);
 for i = 1:height(T)
-    fg = spm_figure('Create','Graphics','Visible','off');
-    temp = spm('WinSize','Graphics');
-    set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
-    set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)]);
+    
     whifun_slover({T.final_anat_file_path{i},T.final_func_file_path{i}},{'Contours','Structural'},{gray,gray},slover_slices,slover_contour_range,slover_view,[],fg);
     exportgraphics(fg,(fullfile(quality_control_path,'d_Co_registeration',space_,[slover_view '_Slice_View'],[T.name{i} '.png'])))
-    pause(1)
+    % pause(1)
+    % clear fg
     if norm
-        fg = spm_figure('Create','Graphics','Visible','off');
-        temp = spm('WinSize','Graphics');
-        set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
-        set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
+        % fg = spm_figure('Create','Graphics','Visible','off');
+        % temp = spm('WinSize','Graphics');
+        % set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
+        % set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
         whifun_slover({T.final_func_file_path{i},template_path},{'Structural','Contours'},{gray,gray},slover_slices,slover_contour_range,slover_view,[],fg);%
         exportgraphics(fg,(fullfile(quality_control_path,'i_Normalization',space_,[slover_view '_Slice_View'],[T.name{i} '_func_image' '.png'])))
-        pause(1)
+        % pause(1)
+
     end
 
 end
