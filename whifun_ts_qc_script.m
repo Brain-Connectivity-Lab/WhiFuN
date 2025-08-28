@@ -11,3 +11,4 @@ motion_txt_path = 'D:\practice_erode\0050952\session_1\rest_1\rp_c_rest.txt';
 pre_ = '';
 
 whifun_ts_qc(GM_mask_path,WM_mask_path,CSF_mask_path,func_path,motion_txt_path,pre_,num_erosions,'0050952',0)
+clcc

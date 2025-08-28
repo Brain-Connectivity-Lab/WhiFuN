@@ -1,4 +1,4 @@
-function [all_ts,n_gm,n_wm,n_deep_wm,n_csf,output] = whifun_ts_extract(GM_mask_path,WM_mask_path,deep_WM_mask_path,CSF_mask_path,func_path,pre_,over_write,thresh_gm,thresh_wm,thresh_deep_wm,thresh_csf)
+function [all_ts,n_gm,n_wm,n_deep_wm,n_csf] = whifun_ts_extract(GM_mask_path,WM_mask_path,deep_WM_mask_path,CSF_mask_path,func_path,pre_,over_write,thresh_gm,thresh_wm,thresh_deep_wm,thresh_csf)
 
 if ~exist("thresh_gm",'var')
     thresh_gm = 0.5;
