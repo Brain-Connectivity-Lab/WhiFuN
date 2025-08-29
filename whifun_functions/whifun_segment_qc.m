@@ -1,11 +1,11 @@
-function whifun_segment_qc(quality_control_path,preproc_code_path,now_anat_path,name,over_write,skull_pre,slover_slices_ss,slover_slices_mni,slover_contour_range_ss,slover_contour_range_mni,slover_view)
+function whifun_segment_qc(quality_control_path,preproc_code_path,now_anat_path,anat_name,name,over_write,skull_pre,slover_slices_ss,slover_slices_mni,slover_contour_range_ss,slover_contour_range_mni,slover_view)
 
-make_plots(1,quality_control_path,now_anat_path,preproc_code_path,name,over_write,skull_pre,slover_slices_mni,slover_contour_range_mni,slover_view) % MNI space
-make_plots(2,quality_control_path,now_anat_path,preproc_code_path,name,over_write,skull_pre,slover_slices_ss,slover_contour_range_ss,slover_view) % Subject space
+make_plots(1,quality_control_path,now_anat_path,preproc_code_path,anat_name,name,over_write,skull_pre,slover_slices_mni,slover_contour_range_mni,slover_view) % MNI space
+make_plots(2,quality_control_path,now_anat_path,preproc_code_path,anat_name,name,over_write,skull_pre,slover_slices_ss,slover_contour_range_ss,slover_view) % Subject space
 
 end
 
-function make_plots(space,quality_control_path,now_anat_path,preproc_code_path,name,over_write,skull_pre,slover_slices,slover_contour_range,slover_view)
+function make_plots(space,quality_control_path,now_anat_path,preproc_code_path,anat_name,name,over_write,skull_pre,slover_slices,slover_contour_range,slover_view)
 
 
 if space == 1
@@ -15,7 +15,7 @@ if space == 1
     space_name = 'MNI';
 else
     pre = '';
-    ref = [now_anat_path(1).folder,filesep, skull_pre now_anat_path.name];
+    ref = [now_anat_path(1).folder,filesep, skull_pre anat_name];
     ref_cap = [skull_pre now_anat_path.name];
     space_name = 'Subject';
 end
