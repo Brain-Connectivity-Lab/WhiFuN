@@ -28,10 +28,17 @@ end
 % app.func_data_name = 'S40vol' ;       % %   Functional data name
 % app.anat_data_name = 'S2vol';     % %   Anatomical data name
 
+% app.comm_subj_name = '';
+% app.comm_sess_name = 'session_1';
+% app.func_folder_name = 'rest_1';
+% app.anat_folder_name = 'anat_1';
+% app.func_data_name = 'rest' ;       % %   Functional data name
+% app.anat_data_name = 'mprage';     % %   Anatomical data name
+
 app.comm_subj_name = '';
-app.comm_sess_name = 'session_1';
-app.func_folder_name = 'rest_1';
-app.anat_folder_name = 'anat_1';
+app.comm_sess_name = '';
+app.func_folder_name = '';
+app.anat_folder_name = '';
 app.func_data_name = 'rest' ;       % %   Functional data name
 app.anat_data_name = 'mprage';     % %   Anatomical data name
 %% Modify Parameters here
@@ -613,6 +620,17 @@ else
 end
 
 for subji=1:n_tot %par
+    
+
+    file_name = Subj_list(subji).func_name ;    %   Ex: file name.nii.gz
+    separate_name = split(file_name, '.') ;     %   Ex: 3×1 cell array: {'file name'} {'nii'        } {'gz'         }
+    data_name = char(separate_name(1)) ;        %   Ex: file name
+    data_type = char(separate_name(2)) ;        %   Ex: nii
+
+    final_file = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre data_name '.' data_type '.gz'])) ;
+
+    if isempty(final_file)
+
     if ~par_on
         tic
     else
@@ -1418,7 +1436,7 @@ for subji=1:n_tot %par
 
         if isempty(norm_a_dir)
                 now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,['y_' Subj_list(subji).anat_name])) ;
-            norm_op = whifun_normalise(now_anat_path,'',Subj_list(subji).anat_name,0,vox,Norm_pre,skull_pre,0);
+            norm_op = whifun_normalise(now_anat_path,'',Subj_list(subji).anat_name,0,nan,Norm_pre,skull_pre,0);
             fprintf(log_fileID,'#####################################################################################################################\n \n');
             fprintf(log_fileID, 'Normalization of Anatomical images to MNI space\n');
             fprintf(log_fileID,'%s',  norm_op);
@@ -1453,6 +1471,11 @@ for subji=1:n_tot %par
 
     end
     fclose(log_fileID);
+
+    else
+        disp(['Pre-Processing already done for ' Subj_list(subji).name])
+
+    end
 end
 if par_on
     stop(par_p)                                                                         
@@ -1460,10 +1483,19 @@ end
 
 %% update CSV
 for subji = 1:length(Subj_list)
-    Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).func_name = Subj_list(subji).func_name;
-    Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).anat_name = Subj_list(subji).anat_name;
+    file_name = Subj_list(subji).func_name ;    %   Ex: file name.nii.gz
+    separate_name = split(file_name, '.') ;     %   Ex: 3×1 cell array: {'file name'} {'nii'        } {'gz'         }
+    data_name = char(separate_name(1)) ;        %   Ex: file name
+    data_type = char(separate_name(2)) ;        %   Ex: nii
 
-    Subj_list_all = update_csv(Subj_list(subji),Subj_list_all,output_folder);
+    final_file = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre data_name '.' data_type '.gz'])) ;
+
+    if isempty(final_file)
+        Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).func_name = Subj_list(subji).func_name;
+        Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).anat_name = Subj_list(subji).anat_name;
+
+        Subj_list_all = update_csv(Subj_list(subji),Subj_list_all,output_folder);
+    end
 end
 
 %% QC
@@ -1484,8 +1516,12 @@ mkdir(fullfile(quality_control_path,'b_Head_motion'));
 mkdir(fullfile(quality_control_path,'c_Segmentation','Subject_Space','Orthoslice_View'));
 mkdir(fullfile(quality_control_path,'c_Segmentation','Subject_Space',[slover_view '_Slice_View']));
 
+mkdir(fullfile(quality_control_path,'c_Segmentation','Skull_Strip','Subject_Space',[slover_view '_Slice_View']));
+
 mkdir(fullfile(quality_control_path,'c_Segmentation','MNI_Space','Orthoslice_View'));
 mkdir(fullfile(quality_control_path,'c_Segmentation','MNI_Space',[slover_view '_Slice_View']));
+
+mkdir(fullfile(quality_control_path,'c_Segmentation','Skull_Strip','MNI_Space',[slover_view '_Slice_View']));
 
 mkdir(fullfile(quality_control_path,'d_Co_registeration','Subject_Space','Orthoslice_View'));
 mkdir(fullfile(quality_control_path,'d_Co_registeration','Subject_Space',[slover_view '_Slice_View']));
@@ -1557,8 +1593,19 @@ mkdir(fullfile(quality_control_path,'i_Normalization','MNI_Space','Vox_ts'));
 
 mkdir(fullfile(quality_control_path,'j_Time_series_check'));
 
+
+
 for subji = 1:length(Subj_list)
+    file_name = Subj_list(subji).func_name ;    %   Ex: file name.nii.gz
+    separate_name = split(file_name, '.') ;     %   Ex: 3×1 cell array: {'file name'} {'nii'        } {'gz'         }
+    data_name = char(separate_name(1)) ;        %   Ex: file name
+    data_type = char(separate_name(2)) ;        %   Ex: nii
+
+    final_file = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre data_name '.' data_type '.gz'])) ;
+
+    if isempty(final_file)
     if Subj_list(subji).error == 0 && Subj_list(subji).manual_ex == 0
+        log_fileID = fopen(fullfile(quality_control_path,'logs',[Subj_list(subji).name '_log_info.txt']),'a');
 
         %%     2     Anatomical and Functional initial alignment check
         disp(['Anatomical and Functional initial alignment check for ' Subj_list(subji).name])
@@ -2033,6 +2080,42 @@ for subji = 1:length(Subj_list)
 
                 continue
             end
+
+
+            %% Seed Corr plots
+            norm_dir = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+            func_path = fullfile(fullfile(norm_dir.folder,norm_dir.name));
+            name = Subj_list(subji).name;
+            mask_ = fullfile(fullfile(norm_dir.folder,'wrest_mask.nii'));
+            seed_cor_output_path = '/home/biswal5090pc/Downloads/practice_NYU_abide-20250826T132121Z-1-001/practice_NYU_abide/0050955/seed_corr_map_wsREG_rc_rest.nii';
+            thresh = 0.1;
+            slover_view_array = {'sagittal','axial'};
+            rad = 6;
+
+            seed_corr_qc_output_path = fullfile(quality_control_path,"k_Seed_Based_Corr","Default_Mode_Seed_lh_pcc_5_-49_40");
+            for i = 1:length(slover_view_array)
+                mkdir(seed_corr_qc_output_path,[slover_view_array{i} '_Slice_View'])
+            end
+            seed = [5 -49 40];
+
+            whifun_seed_corr_qc_plot(seed_corr_qc_output_path,func_path,name,mask_,seed,rad,seed_cor_output_path,thresh,slover_slices_mni,slover_view_array)
+
+            seed_corr_qc_output_path = fullfile(quality_control_path,"k_Seed_Based_Corr","Visual_Seed_rh_cort_vis_-4_-91_-3");
+            for i = 1:length(slover_view_array)
+                mkdir(seed_corr_qc_output_path,[slover_view_array{i} '_Slice_View'])
+            end
+            seed = [-4 -91 -3];
+
+            whifun_seed_corr_qc_plot(seed_corr_qc_output_path,func_path,name,mask_,seed,rad,seed_cor_output_path,thresh,slover_slices_mni,slover_view_array)
+
+            seed_corr_qc_output_path = fullfile(quality_control_path,"k_Seed_Based_Corr","Auditory_Seed_lh_cort_aud_64_-12_2");
+            for i = 1:length(slover_view_array)
+                mkdir(seed_corr_qc_output_path,[slover_view_array{i} '_Slice_View'])
+            end
+            seed = [64 -12 2];
+
+            whifun_seed_corr_qc_plot(seed_corr_qc_output_path,func_path,name,mask_,seed,rad,seed_cor_output_path,thresh,slover_slices_mni,slover_view_array)
+
         else
             disp(['Participant ' Subj_list(subji).name ' got rejected due to excessive motion during preprocessing. See b_Head_motion folder for more details'])
         end
@@ -2047,6 +2130,8 @@ for subji = 1:length(Subj_list)
 
     Subj_list_all = update_csv(Subj_list(subji),Subj_list_all,output_folder);
 
+    clean_up_after_preprocessing(Subj_list(subji),log_fileID);
+    end
 
 end
 my_writetable(struct2table(Subj_list_all), fullfile(output_folder,"Subj_list.csv"))
