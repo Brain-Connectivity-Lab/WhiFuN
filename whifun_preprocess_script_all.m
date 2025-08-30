@@ -5,29 +5,45 @@
 %% Under guidance of Dr Andrew Micheal and Dr. Bharat Biswal.
 clc
 clear
+cd('/home/biswal5090pc/Downloads/cleveland_clinic')
 %% Addpaths
-current_path = pwd;
-whifun_path = 'C:\Users\krish\Box\Github_desktop\WhiFuN\';
-spm_path = 'D:\toolboxes\spm12\spm12\';
-
+current_dir = pwd;
+whifun_path = fullfile(current_dir,'WhiFuN');
+spm_path = '/home/biswal5090pc/Documents/toolbox/spm_25.01.02/spm';
+afni_ = 1;
 %% Setup Parameters
-data_path = '/mnt/netRAID29/biswal/';
+% data_path = '/mnt/autofs/netRAID29/biswal/';
+data_path = '/home/biswal5090pc/Downloads/practice_NYU_abide-20250826T132121Z-1-001/practice_NYU_abide';
 
-output_folder = 'C:\Users\krish\Box\practice_NY_op';     % Output Folder Path: Select the folder path where all the quality control plots generated during preprocessing, analysis results of the toolbox will be stored.
+output_folder = fullfile(current_dir,'output_folder');     % Output Folder Path: Select the folder path where all the quality control plots generated during preprocessing, analysis results of the toolbox will be stored.
 
 if ~exist(output_folder,'dir')
     mkdir(output_folder)
 end
 
+% app.comm_subj_name = '';
+% app.comm_sess_name = '';
+% app.func_folder_name = '';
+% app.anat_folder_name = '';
+% app.func_data_name = 'S40vol' ;       % %   Functional data name
+% app.anat_data_name = 'S2vol';     % %   Anatomical data name
+
+% app.comm_subj_name = '';
+% app.comm_sess_name = 'session_1';
+% app.func_folder_name = 'rest_1';
+% app.anat_folder_name = 'anat_1';
+% app.func_data_name = 'rest' ;       % %   Functional data name
+% app.anat_data_name = 'mprage';     % %   Anatomical data name
+
 app.comm_subj_name = '';
-app.comm_sess_name = 'session_1';
-app.func_folder_name = 'S40vol.nii.gz';
-app.anat_folder_name = 'S2vol.nii.gz';
+app.comm_sess_name = '';
+app.func_folder_name = '';
+app.anat_folder_name = '';
 app.func_data_name = 'rest' ;       % %   Functional data name
 app.anat_data_name = 'mprage';     % %   Anatomical data name
 %% Modify Parameters here
 % Preprocess Parameters
-n_vol_dis = 10;                  % Discard initial volumes/timepoints to achieve magnetization stability, put 0 if no volumes should be discarded
+n_vol_dis = 5;                  % Discard initial volumes/timepoints to achieve magnetization stability, put 0 if no volumes should be discarded
 
 % FD thresholds for motion outlier detection (mm)
 % Framewise displacement (FD): A measure to reject participants having excessive motion. FD is calculated for every time point using equations given by Power et. al. (2011).
@@ -47,7 +63,6 @@ motion_reg = 1;     % 1 --> this will also regress out the 24 Friston motion par
 
 if strcmp(Reg_drop,'PCA CSF')
     n_pca = 5;                   % number of pca components for CSF
-
 end
 
 % Temporal filtering :Temporal Butterworth bandpass filter of 2nd order
@@ -75,7 +90,7 @@ smooth_fwhm = 4;                 % Smoothing Full width half maximum
 vox = 3;                         % Voxel Size of the Normalized (MNI) space
 
 % Parellel Processing
-par_on = 1;
+par_on = 0;
 if par_on
     parforArg = 4;
 end
@@ -110,60 +125,60 @@ CSF_thres = '0.95';
 
 %%          Defining Important paths and Creating Output directories
 
-temp_path = whifun_path;                % path of the toolbox
-preproc_code_path = fileparts(temp_path);
+preproc_code_path = whifun_path;
 
 addpath(preproc_code_path)
 addpath(fullfile(preproc_code_path,'whifun_functions'))
+addpath(spm_path)
+quality_control_path = whifun_addpath_and_create_preproc_folders(preproc_code_path,output_folder);
+spm_present = which('spm');
+if isempty(spm_present)
+    msgbox("Please set the SPM path by using the 'addpath' MATLAB function",'SPM path not set')
+    return
+end
 
-quality_control_path = fullfile(output_folder,'Quality_control');
+%% Check AFNI
 
-%% Create Output folders
+% setenv("PATH",getenv("PATH") + ":/home/biswal5090pc/abin")
+HasAFNI = system('which afni'); %Test if AFNI installed 
+if HasAFNI ~= 0
+        error('AFNI not found')
+        
+end
+%%          Get the Anatomical and Functional Image Paths
 
+if strcmp(app.comm_subj_name,'') == 1
+    app.comm_subj_name = '*';
+end
+cd (data_path);
+disp(pwd)
+Subj_list_all = dir( app.comm_subj_name );
+Subj_list_all = Subj_list_all(~ismember({Subj_list_all.name},{'.','..','.DS_Store'}));
+disp(Subj_list_all)
+nt_dir = false(1,length(Subj_list_all));                                        % make a list of other files that are not directories
 
-mkdir(fullfile(output_folder,'Analysis','Group_Masks'))
-mkdir(fullfile(quality_control_path,'Initial_check'))
-mkdir(fullfile(quality_control_path,'Head_motion'));
-mkdir(fullfile(quality_control_path,'Segmentation'))
-mkdir(fullfile(quality_control_path,'Co_registeration'))
-mkdir(fullfile(quality_control_path,'Masks'))
-mkdir(fullfile(quality_control_path,'Regression'))
-mkdir(fullfile(quality_control_path,'Filter'))
-mkdir(fullfile(quality_control_path,'Normalization'))
-mkdir(fullfile(quality_control_path,'Smoothing'))
-mkdir(fullfile(quality_control_path,'Time_series_check'))
-mkdir(fullfile(quality_control_path,'Error_Info'))
-mkdir(fullfile(quality_control_path,'logs'))
-
-    %%          Get the Anatomical and Functional Image Paths
-
-    if strcmp(app.comm_subj_name,'') == 1
-        app.comm_subj_name = '*';
+for i = 1:length(Subj_list_all)
+    if Subj_list_all(i).isdir ~= 1
+        nt_dir(i) = true;
     end
-    cd (data_path);
+    Subj_list_all(i).func_folder = fullfile(Subj_list_all(i).folder, Subj_list_all(i).name ,char(app.comm_sess_name),char(app.func_folder_name));
+    Subj_list_all(i).func_name = [char(app.func_data_name) '.nii'];
+    Subj_list_all(i).anat_folder = fullfile(Subj_list_all(i).folder, Subj_list_all(i).name,char(app.comm_sess_name),char(app.anat_folder_name));
+    Subj_list_all(i).anat_name = [char(app.anat_data_name) '.nii'];
+end
 
-    Subj_list_all = dir( app.comm_subj_name );
-
-    nt_dir = false(1,length(Subj_list_all));                                        % make a list of other files that are not directories
-    for i = 1:length(Subj_list_all)
-        if Subj_list_all(i).isdir ~= 1
-            nt_dir(i) = true;
-        end
-        Subj_list_all(i).func_folder = fullfile(Subj_list_all(i).folder, Subj_list_all(i).name ,char(app.comm_sess_name),char(app.func_folder_name));
-        Subj_list_all(i).func_name = [char(app.func_data_name) '.nii'];
-        Subj_list_all(i).anat_folder = fullfile(Subj_list_all(i).folder, Subj_list_all(i).name,char(app.comm_sess_name),char(app.anat_folder_name));
-        Subj_list_all(i).anat_name = [char(app.anat_data_name) '.nii'];
-    end
-    Subj_list_all = Subj_list_all(~ismember({Subj_list_all.name},{'.','..','.DS_Store'}));
-    Subj_list_all(nt_dir) = [];                                                     % Remove all the files that are not directories (Now Subj_list should have all participant files)
-    clear nt_dir                                                                % Clear nt_dir after use
+Subj_list_all(nt_dir) = [];                                                     % Remove all the files that are not directories (Now Subj_list should have all participant files)
+clear nt_dir                                                                % Clear nt_dir after use
 
 %%          Parameters
 if filter_check
     if filter_lp > filter_hp
         error(sprintf('Please check the filter cutoffs, lower_cutoff should be less than higher cutoff, \nbut found otherwise\n'))
     end
+    return
 end
+
+
 
 %%          Data initial Check
 disp('##########################################################################################')
@@ -180,7 +195,7 @@ no_anat = inf(length(Subj_list_all),1);
 
 mis_data = 0;
 for subji=1:length(Subj_list_all)
-    
+
     disp('..')
     disp(['Currently Processing ' Subj_list_all(subji).name])
     Subj_list_all(subji).error = 0;
@@ -596,15 +611,26 @@ save(fullfile(output_folder,"parameters.mat"),"data_path","output_folder",'comm_
     "over_write",'filter_check','mean_fd','greater_than_20')
 %   Loop all participants in this group
 n_tot = length(Subj_list);
+addpath(fullfile(preproc_code_path,'parTicToc'));
 
 if ~par_on
-    parforArg = 0; % 0 workers means serial execution
+    parforArg = 4; % 0 workers means serial execution
 else
     par_p = Par(n_tot);
 end
-addpath(fullfile(preproc_code_path,'parTicToc'));
 
-parfor (subji=1:n_tot,parforArg) %par
+for subji=1:n_tot %par
+    
+
+    file_name = Subj_list(subji).func_name ;    %   Ex: file name.nii.gz
+    separate_name = split(file_name, '.') ;     %   Ex: 3×1 cell array: {'file name'} {'nii'        } {'gz'         }
+    data_name = char(separate_name(1)) ;        %   Ex: file name
+    data_type = char(separate_name(2)) ;        %   Ex: nii
+
+    final_file = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre data_name '.' data_type '.gz'])) ;
+
+    if isempty(final_file)
+
     if ~par_on
         tic
     else
@@ -684,7 +710,7 @@ parfor (subji=1:n_tot,parforArg) %par
         Subj_list(subji).anat_name = [data_name '.' data_type];
     end
 
-    %                 disp('___________________________________________________________________________________________')
+                    disp('___________________________________________________________________________________________')
 
     %% 3  Discarding intial volumes
     %                 disp('___________________________________________________________________________________________')
@@ -862,8 +888,8 @@ parfor (subji=1:n_tot,parforArg) %par
     disp(['Segmentation has started for ' Subj_list(subji).name])
 
     try
-
-        now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,Subj_list(subji).anat_name)) ;
+        
+        now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,Subj_list(subji).anat_name)) ; 
         if length(now_anat_path) > 1
 
             [~,idx] = sort([now_anat_path.datenum]);
@@ -872,14 +898,13 @@ parfor (subji=1:n_tot,parforArg) %par
             warning(['More than one Anatomical files found. Choosing the file ' ,char(now_anat_path(1).name), ' as it was created the first.']);
         end
         if over_write == 1                                                  % Check for a previous segmentation file
-
-            y_banat_dir = dir(fullfile(Subj_list(subji).anat_folder,['y_' Subj_list(subji).anat_name])) ;
+                y_banat_dir = dir(fullfile(Subj_list(subji).anat_folder,['y_' Subj_list(subji).anat_name])) ; 
             if ~isempty(y_banat_dir)
                 delete(fullfile(y_banat_dir.folder,y_banat_dir.name))
             end
             y_banat_dir = [];
         else
-            y_banat_dir = dir(fullfile(Subj_list(subji).anat_folder,['y_' Subj_list(subji).anat_name])) ;
+                y_banat_dir = dir(fullfile(Subj_list(subji).anat_folder,['y_' Subj_list(subji).anat_name])) ; 
         end
         if isempty(y_banat_dir)
             cd(now_anat_path(1).folder)
@@ -997,18 +1022,16 @@ parfor (subji=1:n_tot,parforArg) %par
         disp(['Preprocessing has encountered errors in Skull strip for ' Subj_list(subji).name ', I have saved the variables in the participant folder :-) '])
         disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
 
-        write_error(exception,quality_control_path, Subj_list(subji).name)                % write error to text file and display
-        Subj_list(subji).error = 1;
+        Subj_list(subji).error = 1;                                                                                    % Remove participant from further preprocessing                             % Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).error = 1;
+        write_error(exception,quality_control_path, Subj_list(subji).name)                % write error to text file and display                % write error to text file, update csv and display
+
 
         continue
     end
 
-
-    %                 disp('___________________________________________________________________________________________')
-
     %% 8 COREGISTRATION REST
     % Coregister anatomical image to the functional image
-    disp(['Coregisteration has started for ' Subj_list(subji).name])
+    disp(['AFNI Coregisteration has started for ' Subj_list(subji).name])
 
     try
 
@@ -1033,10 +1056,15 @@ parfor (subji=1:n_tot,parforArg) %par
             mean_func = dir(fullfile(Subj_list(subji).func_folder,['mean' Cut_pre Subj_list(subji).func_name])) ;
 
             nt = Subj_list(subji).nt_dis;
-            coreg_op = whifun_coreg(now_anat_path,now_func_path,mean_func,nt);
+
+            if afni_ 
+                coreg_op = whifun_coreg_afni(now_anat_path,now_func_path);
+            else
+                coreg_op = whifun_coreg(now_anat_path,now_func_path,mean_func,nt); %#ok<UNRCH>
+            end
 
             fprintf(log_fileID,'#####################################################################################################################\n \n');
-            fprintf(log_fileID, 'Coregisteration\n');
+            fprintf(log_fileID, 'AFNI Coregisteration\n');
             fprintf(log_fileID,'%s',  coreg_op);
         else
             disp(['Co-registeration file found, hence skipping this step for ' Subj_list(subji).name]);
@@ -1355,8 +1383,7 @@ parfor (subji=1:n_tot,parforArg) %par
     try
 
         now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
-
-        now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,['y_' Subj_list(subji).anat_name])) ;
+            now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,['y_' Subj_list(subji).anat_name])) ;
 
         if over_write == 1
 
@@ -1408,9 +1435,8 @@ parfor (subji=1:n_tot,parforArg) %par
         end
 
         if isempty(norm_a_dir)
-
-            now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,['y_' Subj_list(subji).anat_name])) ;
-            norm_op = whifun_normalise(now_anat_path,'',Subj_list(subji).anat_name,0,vox,Norm_pre,skull_pre,0);
+                now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,['y_' Subj_list(subji).anat_name])) ;
+            norm_op = whifun_normalise(now_anat_path,'',Subj_list(subji).anat_name,0,nan,Norm_pre,skull_pre,0);
             fprintf(log_fileID,'#####################################################################################################################\n \n');
             fprintf(log_fileID, 'Normalization of Anatomical images to MNI space\n');
             fprintf(log_fileID,'%s',  norm_op);
@@ -1445,424 +1471,668 @@ parfor (subji=1:n_tot,parforArg) %par
 
     end
     fclose(log_fileID);
+
+    else
+        disp(['Pre-Processing already done for ' Subj_list(subji).name])
+
+    end
 end
 if par_on
-    stop(par_p)                                                                         %#ok<UNRCH>
+    stop(par_p)                                                                         
 end
+
+%% update CSV
 for subji = 1:length(Subj_list)
+    file_name = Subj_list(subji).func_name ;    %   Ex: file name.nii.gz
+    separate_name = split(file_name, '.') ;     %   Ex: 3×1 cell array: {'file name'} {'nii'        } {'gz'         }
+    data_name = char(separate_name(1)) ;        %   Ex: file name
+    data_type = char(separate_name(2)) ;        %   Ex: nii
 
-    Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).func_name = Subj_list(subji).func_name;
-    Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).anat_name = Subj_list(subji).anat_name;
+    final_file = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre data_name '.' data_type '.gz'])) ;
 
-    %%     2     Anatomical and Functional initial alignment check
-    disp(['Anatomical and Functional initial alignment check for ' Subj_list(subji).name])
+    if isempty(final_file)
+        Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).func_name = Subj_list(subji).func_name;
+        Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).anat_name = Subj_list(subji).anat_name;
 
-    now_func_path = dir(fullfile(Subj_list(subji).func_folder,Subj_list(subji).func_name)) ;
+        Subj_list_all = update_csv(Subj_list(subji),Subj_list_all,output_folder);
+    end
+end
 
-    now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,Subj_list(subji).anat_name)) ;
-    if length(now_anat_path) > 1
+%% QC
 
-        [~,idx] = sort([now_anat_path.datenum]);
-        now_anat_path = now_anat_path(idx);
-        now_anat_path(2:end) = [];
-        warning(['More than one Anatomical files found. Choosing the file ' ,char(now_anat_path(1).name), ' as it was created the first.']);
+Subj_list = Subj_list_all;
+
+slover_slices_ss = [-65 -57 -43.2 -26.6 -14.4 -5 5 14.4 26.6 43.2 57 65];
+slover_slices_mni = [-68 -65 -57 -43.2 -26.6 -14.4 -5 5 14.4 26.6 43.2 57 65 72 78];
+slover_contour_range_ss = [0 100];
+slover_contour_range_mni = [0 100];
+slover_view = 'axial';
+
+mkdir(fullfile(quality_control_path,'a_Initial_check','Subject_Space','anat'));
+mkdir(fullfile(quality_control_path,'a_Initial_check','Subject_Space','func'));
+
+mkdir(fullfile(quality_control_path,'b_Head_motion'));
+
+mkdir(fullfile(quality_control_path,'c_Segmentation','Subject_Space','Orthoslice_View'));
+mkdir(fullfile(quality_control_path,'c_Segmentation','Subject_Space',[slover_view '_Slice_View']));
+
+mkdir(fullfile(quality_control_path,'c_Segmentation','Skull_Strip','Subject_Space',[slover_view '_Slice_View']));
+
+mkdir(fullfile(quality_control_path,'c_Segmentation','MNI_Space','Orthoslice_View'));
+mkdir(fullfile(quality_control_path,'c_Segmentation','MNI_Space',[slover_view '_Slice_View']));
+
+mkdir(fullfile(quality_control_path,'c_Segmentation','Skull_Strip','MNI_Space',[slover_view '_Slice_View']));
+
+mkdir(fullfile(quality_control_path,'d_Co_registeration','Subject_Space','Orthoslice_View'));
+mkdir(fullfile(quality_control_path,'d_Co_registeration','Subject_Space',[slover_view '_Slice_View']));
+
+mkdir(fullfile(quality_control_path,'d_Co_registeration','MNI_Space','Orthoslice_View'));
+mkdir(fullfile(quality_control_path,'d_Co_registeration','MNI_Space',[slover_view '_Slice_View']));
+
+if Reg_
+
+    if exist(fullfile(quality_control_path,'e_Skipped_CSF_Masks_for_Regression'),'dir')
+        delete(fullfile(quality_control_path,'e_Skipped_CSF_Masks_for_Regression'));
     end
 
-    if length(now_func_path) > 1
-
-        [~,idx] = sort([now_func_path.datenum]);
-        now_func_path = now_func_path(idx);
-        now_func_path(2:end) = [];
-        warning(['More than one functional files found. Choosing the file ' ,char(now_func_path(1).name), ' as it was created the first.']);
+    if exist(fullfile(quality_control_path,'f_Skipped_Regression'),'dir')
+        delete(fullfile(quality_control_path,'f_Skipped_Regression'));
     end
-    % Check if the discarded volume file already exists
-    if over_write == 1 % if overwrite is 1, even if the file already exists delete it and create a new one
-        init_check_func_dir = dir(fullfile(quality_control_path,'Initial_check',[Subj_list(subji).name '_func.png'])) ;
-        init_check_anat_dir = dir(fullfile(quality_control_path,'Initial_check',[Subj_list(subji).name '_anat.png'])) ;
-        if ~isempty(init_check_func_dir) && ~isempty(init_check_anat_dir)
-            delete(fullfile(init_check_func_dir.folder,init_check_func_dir.name))
-            delete(fullfile(init_check_anat_dir.folder,init_check_anat_dir.name))
-        end
-        init_check_func_dir = [];
-        init_check_anat_dir = [];
+    mkdir(fullfile(quality_control_path,'e_CSF_Masks_for_Regression','Subject_Space','Orthoslice_View'));
+    mkdir(fullfile(quality_control_path,'e_CSF_Masks_for_Regression','Subject_Space',[slover_view '_Slice_View']));
 
-    else
-        init_check_func_dir = dir(fullfile(quality_control_path,'Initial_check',[Subj_list(subji).name '_func.png'])) ;
-        init_check_anat_dir = dir(fullfile(quality_control_path,'Initial_check',[Subj_list(subji).name '_anat.png'])) ;
+    mkdir(fullfile(quality_control_path,'f_Regression','Subject_Space','Global_Signal'));
+    mkdir(fullfile(quality_control_path,'f_Regression','Subject_Space','Before_Reg_vox_ts'));
+    mkdir(fullfile(quality_control_path,'f_Regression','Subject_Space','After_Reg_vox_ts'));
+else
+    if exist(fullfile(quality_control_path,'e_CSF_Masks_for_Regression'),'dir')
+        movefile(fullfile(quality_control_path,'e_CSF_Masks_for_Regression'),fullfile(quality_control_path,'e_CSF_Masks_for_Regression_old'));
     end
 
-    if isempty(init_check_func_dir) || isempty(init_check_anat_dir)
-        % Initial anat file check
-        % Plot the anatomical image and check its intitial position with reference to the MNI template
-
-        imgs = char(fullfile(now_anat_path.folder,now_anat_path.name),...
-            fullfile(spm_path,'canonical','single_subj_T1.nii'));
-        [~] = spm_check_registration_evalc(imgs);  % Plot the two images using Check Registration
-
-        % Display the participant's ID
-        spm_orthviews('Caption', 1, Subj_list(subji).name);
-        spm_orthviews('Caption', 2, 'single_subj_T1 (MNI)');
-
-        % Display contour of 1st image onto 2nd
-        spm_orthviews('contour','display',1,2);
-        saveas(gcf,fullfile(quality_control_path,'Initial_check',[Subj_list(subji).name '_anat.png']),'png')
-        close gcf
-
-        % Initial func file check
-        % Plot the first functional image and check its intitial position with reference to the MNI template
-
-        imgs = char(fullfile(now_func_path.folder,[now_func_path.name ',1']),...
-            fullfile(spm_path,'canonical','single_subj_T1.nii'));
-        [~] = spm_check_registration_evalc(imgs);  % Plot the two images using Check Registration
-
-        % Display the participant's ID
-        spm_orthviews('Caption', 1, Subj_list(subji).name);
-        spm_orthviews('Caption', 2, 'single_subj_T1 (MNI)');
-
-        % Display contour of 1st image onto 2nd
-        spm_orthviews('contour','display',1,2);
-        saveas(gcf,fullfile(quality_control_path,'Initial_check',[Subj_list(subji).name '_func.png']),'png')
-        close gcf
-    else
-        disp(['Anatomical and Functional initial alignment check already done for participant ' Subj_list(subji).name ' hence skipping this step'])
+    if exist(fullfile(quality_control_path,'f_Regression'),'dir')
+        movefile(fullfile(quality_control_path,'f_Regression'),fullfile(quality_control_path,'f_Regression_old'));
     end
 
-    disp(['Anatomical and Functional initial alignment check done for' Subj_list(subji).name])
+    mkdir(fullfile(quality_control_path,'e_Skipped_CSF_Masks_for_Regression'));
+    mkdir(fullfile(quality_control_path,'f_Skipped_Regression'));
 
-    %% Head motion QC
+end
 
-    now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Realign_pre Cut_pre Subj_list(subji).func_name])) ;
-    cd(now_func_path(1).folder)
-
-
-    if over_write == 1
-        head_mot_qc_file = dir(fullfile(quality_control_path,'Head_motion',[Subj_list(subji).name '.png'])); % Check for a previous head motion qc file
-        if ~isempty(head_mot_qc_file)
-            delete(fullfile(head_mot_qc_file.folder,head_mot_qc_file.name))
-        end
-        head_mot_qc_file = [];
-    else
-        head_mot_qc_file = dir(fullfile(quality_control_path,'Head_motion',[Subj_list(subji).name '.png'])); % Check for a previous head motion qc file
+if filter_check
+    if exist(fullfile(quality_control_path,'g_Skipped_Filtering'),'dir')
+        delete(fullfile(quality_control_path,'g_Skipped_Filtering'));
+    end
+    mkdir(fullfile(quality_control_path,'g_Filtering','Subject_Space','Global_timeseries_before_and_after_filtering'));
+    mkdir(fullfile(quality_control_path,'g_Filtering','Subject_Space','filter'));
+else
+    if exist(fullfile(quality_control_path,'g_Filtering'),'dir')
+        movefile(fullfile(quality_control_path,'g_Filtering'),fullfile(quality_control_path,'g_Filtering_old'));
     end
 
-    if isempty(head_mot_qc_file)
-        func_image = niftiread(fullfile(now_func_path.folder,now_func_path.name)); % Read the func file
-        [x,y,z,nt] = size(func_image);                                             % get the size
-        func_image = reshape(func_image,x*y*z,nt);                                 % Reshape into voxel x timepoints
+    mkdir(fullfile(quality_control_path,'g_Skipped_Filtering'));
 
-        gm = mean(func_image,'all','omitnan');                                               % grand mean (4D)
 
-        % calculate pairwise variance
-        dt = zeros(1,nt-1);
-        for imagei = 1:nt-1
-            dt(imagei) = (mean((func_image(:,imagei) - func_image(:,imagei+1)).^2,'omitnan'))/gm;
-        end
+end
 
-        meany = mean(func_image,'omitnan')./gm;                                              % scaled global mean
+if Smooth_
+    if exist(fullfile(quality_control_path,'h_Skipped_Smoothing'),'dir')
+        delete(fullfile(quality_control_path,'h_Skipped_Smoothing'));
     end
-    func_name_wo_ext = strsplit(Subj_list(subji).func_name,'.');
-
-    now_func_path = dir(fullfile(Subj_list(subji).func_folder,['rp_' Cut_pre func_name_wo_ext{1} '.txt'])) ;
-    rp_rest = load(fullfile(now_func_path.folder,now_func_path.name));              % input the text file generated at the Realignment stage
-
-    rp_diff_trans = diff(rp_rest(:,1:3));                      % The first 3 parameters tell the displacement in x,y, and z direction in mm. Here the vector difference operator is used to get the derivative of vector. (framewise difference)
-    %                 rp_diff_rotat = diff(rp_rest(:,4:6)*180/pi);             % % The last  3 parameters tell the rotation values pitch, yaw and roll in radians (here we convert them to degrees)
-    rp_diff_rotat = diff(rp_rest(:,4:6)*50);                   % Converting angles to mm by asuming a 50mm radius circle
-
-
-    fd = sum(rp_diff_trans,2) + sum(rp_diff_rotat,2)  ;
-    %                 [fd_max,loc_fd_max_trans] = max(fd);                     % Get the maximum framewize displacement
-    %                 fd_mean = mean(fd);                                               % Get the mean framewize displacement
-    %                 fd_greater_than_02 = nnz(fd>great20_fd_thres)/length(fd)*100;
-    % plots
-    if isempty(head_mot_qc_file) || over_write == 1
-        figure('Position', get(0,'screensize'))
-
-        subplot(2,2,1)
-        plot(meany)
-        title('Global mean (raw)');xlabel('Image number')
-        box off
-
-        subplot(2,2,3)
-        plot(dt)
-        yline(mean(dt)+3*std(dt),'-','3 SD','color',[0 0.4470 0.7410]);
-        title('Pairwise variance (raw)');xlabel('Image pair')
-        box off
-
-        subplot(2,2,2)
-        plot([rp_rest(:,1:3) rp_rest(:,4:6)*180/pi])
-        title('Rigid body motion');xlabel('Image number')
-        legend('Trans: x','Trans: y','Trans: z','Rot: pitch','Rot: roll','Rot: yaw','location','best')
-        box off
-
-        subplot(2,2,4)
-        plot(fd)
-        title('Framewise displacement');xlabel('Image pair')
-        yline(max_fd,'r')
-        yline(str2double(greater_than_20),'k')
-        yline(str2double(mean_fd),'y')
-        legend('Framewise displacement','Max Threshold','Mean Threshold','Greater than 20% threshold','location','best','box','off')
-        saveas(gcf,fullfile(quality_control_path,'Head_motion',[Subj_list(subji).name '.png']));
-        close gcf
-    else
-        disp(['Head motion Quality check file found hence skipping this step for participant ' Subj_list(subji).name])
+    mkdir(fullfile(quality_control_path,'h_Smoothing','Subject_Space','Orthoslice_View'));
+    mkdir(fullfile(quality_control_path,'h_Smoothing','Subject_Space',[slover_view '_Slice_View']));
+else
+    if exist(fullfile(quality_control_path,'h_Smoothing'),'dir')
+        movefile(fullfile(quality_control_path,'h_Smoothing'),fullfile(quality_control_path,'h_Smoothing_old'))
     end
-    %% Segmentation QC
+    mkdir(fullfile(quality_control_path,'h_Skipped_Smoothing'));
+end
 
-    now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,Subj_list(subji).anat_name)) ;
-    whifun_segment_qc(quality_control_path,now_anat_path,spm_path,Subj_list(subji).name,over_write)
-    %                 disp('___________________________________________________________________________________________')
+mkdir(fullfile(quality_control_path,'i_Normalization','MNI_Space','Orthoslice_View'));
+mkdir(fullfile(quality_control_path,'i_Normalization','MNI_Space',[slover_view '_Slice_View']));
+mkdir(fullfile(quality_control_path,'i_Normalization','MNI_Space','Vox_ts'));
 
-    %% Coregisteration QC
-    coreg_qc_file = dir(fullfile(quality_control_path,'Co_registeration',[Subj_list(subji).name '.png']));
-    try
-        if isempty(coreg_qc_file) || over_write == 1
+mkdir(fullfile(quality_control_path,'j_Time_series_check'));
 
-            now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Realign_pre Cut_pre Subj_list(subji).func_name])) ;
-            now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,[skull_pre Subj_list(subji).anat_name])) ;
-            % Quality Control
-            % dsplay the anatomical and the Realigned func image after co-registeration
-            [~] = spm_check_registration_evalc(char(fullfile(now_anat_path.folder,now_anat_path.name),[fullfile(now_func_path.folder,now_func_path.name),',1']));
 
-            % Display the participant's ID
-            spm_orthviews('Caption', 1, Subj_list(subji).name);
 
-            spm_orthviews('contour','display',1,2);
-            saveas(gcf,(fullfile(quality_control_path,'Co_registeration',[Subj_list(subji).name '.png'])))
-            close gcf
-        end
-    catch exception                                                                       % If error is found
+for subji = 1:length(Subj_list)
+    file_name = Subj_list(subji).func_name ;    %   Ex: file name.nii.gz
+    separate_name = split(file_name, '.') ;     %   Ex: 3×1 cell array: {'file name'} {'nii'        } {'gz'         }
+    data_name = char(separate_name(1)) ;        %   Ex: file name
+    data_type = char(separate_name(2)) ;        %   Ex: nii
 
-        disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        disp(['Preprocessing has encountered errors in Co-registeration QC for ' Subj_list(subji).name ', I have saved the error text in the error_info.txt :-) '])
-        disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        write_error(exception,quality_control_path, Subj_list(subji).name)                % write error to text file and display
-        Subj_list(subji).error = 1;
-        continue
-    end
+    final_file = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre data_name '.' data_type '.gz'])) ;
 
-    disp(['Co-registeration done for ' Subj_list(subji).name])
+    if isempty(final_file)
+    if Subj_list(subji).error == 0 && Subj_list(subji).manual_ex == 0
+        log_fileID = fopen(fullfile(quality_control_path,'logs',[Subj_list(subji).name '_log_info.txt']),'a');
 
-    %% CSF mask
-    %                 now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Realign_pre Cut_pre Subj_list(subji).func_name])) ;
-    %                 now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,[skull_pre Subj_list(subji).anat_name])) ;
-    csf_qc_file = dir(fullfile(quality_control_path,'Masks',['CSF_' Subj_list(subji).name '.png']));
-    if isempty(csf_qc_file) || over_write == 1
-        % Quality Control
+        %%     2     Anatomical and Functional initial alignment check
+        disp(['Anatomical and Functional initial alignment check for ' Subj_list(subji).name])
 
-        now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Realign_pre Cut_pre Subj_list(subji).func_name])) ;
-        csf_mask_dir = dir(fullfile(Subj_list(subji).anat_folder,['CSF_MASK' char(CSF_thres) '.nii'])) ;
+        now_func_path = dir(fullfile(Subj_list(subji).func_folder,Subj_list(subji).func_name)) ;
 
-        % Display the csf mask and the func file
-        [~] = spm_check_registration_evalc(char(fullfile(csf_mask_dir.folder,csf_mask_dir.name),[fullfile(now_func_path.folder,now_func_path.name),',1']));
-        % Display the participant's ID
-        spm_orthviews('Caption', 1, [Subj_list(subji).name ' CSF Mask']);
-        spm_orthviews('Caption', 2, [Subj_list(subji).name ' Rest image 1']);
-        spm_orthviews('contour','display',1,2);
-        saveas(gcf,(fullfile(quality_control_path,'Masks',['CSF_' Subj_list(subji).name '.png'])))
-        close gcf
-    end
-    %% Regression QC
+        now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,Subj_list(subji).anat_name)) ;
+        if length(now_anat_path) > 1
 
-    reg_qc_file = dir(fullfile(quality_control_path,'Regression',[Subj_list(subji).name '.png']));
-    if isempty(reg_qc_file) || over_write == 1
-
-        now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Realign_pre Cut_pre Subj_list(subji).func_name])) ;
-        % Quality Control
-        % Plot the mean time series before and after regression
-
-        % Read the raw file
-
-        if ~exist("y_image_REST","var")
-            y_image_REST = double(niftiread(fullfile(now_func_path.folder,now_func_path.name)));
-        end
-        [x,y,z,nt] = size(y_image_REST);
-        raw_file = reshape(y_image_REST,x*y*z,nt);
-        global_ts = mean(raw_file,'omitnan');
-
-        if ~exist("y_image_REST_regressed",'var')
-            y_image_REST_regressed = double(niftiread(fullfile(now_func_path.folder,[Reg_pre, now_func_path.name])));
-        end
-        [x,y,z,nt] = size(y_image_REST_regressed);
-        raw_file = reshape(y_image_REST_regressed,x*y*z,nt);
-        global_ts_r = mean(raw_file,"omitnan");
-        func_name_wo_ext = strsplit(Subj_list(subji).func_name,'.');
-        if motion_reg == 1
-            % Loading the motion parameters
-            fprintf('First loading the motion parameters for REST... \n')
-            txt_file = dir(fullfile(now_func_path.folder,['rp_' Cut_pre func_name_wo_ext{1} '.txt']));
-            rp=load(fullfile(txt_file.folder,txt_file.name));
-            rp_temp = rp(1:nt,:);
-            rp = zscore(rp_temp);
-            rp_previous = [0 0 0 0 0 0; rp(1:end-1,:)];
-            rp_auto = [rp rp.^2 rp_previous rp_previous.^2];
-        else
-            rp_auto = [];
+            [~,idx] = sort([now_anat_path.datenum]);
+            now_anat_path = now_anat_path(idx);
+            now_anat_path(2:end) = [];
+            warning(['More than one Anatomical files found. Choosing the file ' ,char(now_anat_path(1).name), ' as it was created the first.']);
         end
 
-        if ~exist("b_init",'var')
-            load(fullfile(now_func_path.folder,'covariance_csf_REST.mat'));
-            if exist("pca_CSF",'var')
-                b_init = zscore([pca_CSF(:,1:n_pca) rp_auto]);
-            else
-                b_init = zscore([MEAN_CSF_REST rp_auto]);
-            end
-        end
-
-        if pca_for_temp_reg == 1
-            no_of_reg = n_pca;
-            b_init = b_init(:,1:n_pca);   % Choose only the PCA CSF regressors
-        else
-            no_of_reg = 1;
-            b_init = b_init(:,1);   % Choose only the Mean CSF regressors
-        end
-        leg = cell(1,no_of_reg);
-        leg{1} = 'Before regression';
-        leg{2} = 'After regression';
-        if no_of_reg > 1 && exist("pca_CSF",'var')
-            for ir = 1:no_of_reg
-                leg{ir+2} = ['CSF PC no.' num2str(ir)];
-            end
-        else
-            leg{3} = 'Mean CSF';
-        end
-        figure; plot(global_ts-mean(global_ts));
-        hold on
-        plot(global_ts_r -mean(global_ts_r))
-        hold on
-        plot(b_init)
-        title(['Global Time Series (mean subtracted)' ' Subject ' Subj_list(subji).name])
-        legend(leg)
-
-        xlabel('time points')
-        ylabel('Bold Signal (mean substracted)')
-        saveas(gcf,fullfile(quality_control_path,'Regression',[Subj_list(subji).name '.png']))
-
-        close gcf
-    end
-    %% Filtering QC
-
-    fil_qc_file = dir(fullfile(quality_control_path,'Filter',[Subj_list(subji).name '.png']));
-
-
-    if isempty(fil_qc_file) || over_write == 1
-
-        now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
-        % Quality Control
-        % Plot the mean time series before and after regression
-
-        % Read the raw file
-
-        func_image = double(niftiread(fullfile(now_func_path.folder,now_func_path.name)));
-        [x,y,z,nt] = size(func_image);
-        func_image = reshape(func_image,x*y*z,nt);
-
-        global_ts = mean(func_image,'omitnan');
-
-        f_func_image = double(niftiread(fullfile(now_func_path.folder,[f_pre now_func_path.name])));
-        [x,y,z,nt] = size(f_func_image);
-        f_file = reshape(f_func_image,x*y*z,nt);
-        global_ts_f = mean(f_file,'omitnan');
-
-        figure; plot(global_ts-mean(global_ts));
-        hold on
-        plot(global_ts_f -mean(global_ts_f))
-        title(['Global Time Series (mean subtracted)' ' participant ' Subj_list(subji).name])
-        legend('Before filtering','After filtering')
-
-        xlabel('time points')
-        ylabel('Bold Signal (mean substracted)')
-        saveas(gcf,fullfile(quality_control_path,'Filter',[Subj_list(subji).name '.png']))
-
-        close gcf
-    end
-    %% Smoothing QC
-    smooth_qc_file = dir(fullfile(quality_control_path,'Smoothing',[Subj_list(subji).name '.png']));
-    if isempty(smooth_qc_file) || over_write == 1
-        norm_dir = dir(fullfile(Subj_list(subji).func_folder,[Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
-        [~] = spm_check_registration_evalc(char(fullfile(norm_dir.folder,[norm_dir.name ',1'])));
-        spm_orthviews('Caption', 1, [Subj_list(subji).name ' Smooth Image (MNI space)']);
-        saveas(gcf,(fullfile(quality_control_path,'Smoothing',[Subj_list(subji).name '.png'])))
-        close gcf
-    end
-
-    %% normalization QC
-
-    norm_qc_file = dir(fullfile(quality_control_path,'Normalization',[Subj_list(subji).name '_func_image' '.png']));
-
-    if isempty(norm_qc_file) || over_write == 1
-        % Quality Control
-
-        norm_dir = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
-        [~] = spm_check_registration_evalc(char(fullfile(norm_dir.folder,[norm_dir.name ',1']),fullfile(spm_path,'canonical','single_subj_T1.nii')));
-        spm_orthviews('contour','display',1,2);
-        spm_orthviews('Caption', 1, [Subj_list(subji).name ' Normalized Image (MNI space)']);
-        spm_orthviews('Caption', 2,  ' Single Subject MNI space Reference');
-
-        saveas(gcf,(fullfile(quality_control_path,'Normalization',[Subj_list(subji).name '_func_image' '.png'])))
-    end
-
-    %% 16 Time series Quality Check
-
-    disp(['Time-series Quality Check for ' Subj_list(subji).name])
-
-
-    try
-
-        now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Cut_pre Subj_list(subji).func_name])) ;
-        now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,[skull_pre Subj_list(subji).anat_name])) ;
-
-        if length(now_func_path)>1  % If more than one func files found choose the one that was created the first
+        if length(now_func_path) > 1
 
             [~,idx] = sort([now_func_path.datenum]);
             now_func_path = now_func_path(idx);
-            warning(['More than one functional files found. Choosing the file ' ,char(now_func_path(1).name), ' as it was created the first.']);
             now_func_path(2:end) = [];
+            warning(['More than one functional files found. Choosing the file ' ,char(now_func_path(1).name), ' as it was created the first.']);
         end
-        if over_write == 1
-            tqc_dir = dir(fullfile(quality_control_path,'Time_series_check',[Subj_list(subji).name '.png']));
-            if ~isempty(tqc_dir)
-                delete(fullfile(tqc_dir.folder,tqc_dir.name))
+        % Check if the discarded volume file already exists
+        if over_write == 1 % if overwrite is 1, even if the file already exists delete it and create a new one
+            init_check_func_dir_of = dir(fullfile(quality_control_path,'a_Initial_check','Subject_Space','func',[Subj_list(subji).name '_func.png'])) ;
+            init_check_anat_dir_oa = dir(fullfile(quality_control_path,'a_Initial_check','Subject_Space','anat',[Subj_list(subji).name '_anat.png'])) ;
+            if ~isempty(init_check_func_dir_of) && ~isempty(init_check_anat_dir_oa)
+                delete(fullfile(init_check_func_dir_of.folder,init_check_func_dir_of.name))
+                delete(fullfile(init_check_anat_dir_oa.folder,init_check_anat_dir_oa.name))
+
             end
-            tqc_dir = [];
+            init_check_func_dir_of = [];
+            init_check_anat_dir_oa = [];
+
         else
-            tqc_dir = dir(fullfile(quality_control_path,'Time_series_check',[Subj_list(subji).name '.png'])) ;
+            init_check_func_dir_of = dir(fullfile(quality_control_path,'a_Initial_check','Subject_Space','func',[Subj_list(subji).name '_func.png'])) ;
+            init_check_anat_dir_oa = dir(fullfile(quality_control_path,'a_Initial_check','Subject_Space','anat',[Subj_list(subji).name '_anat.png'])) ;
+
         end
 
-        if isempty(tqc_dir)
-            func_name_wo_ext = strsplit(Subj_list(subji).func_name,'.');
+        if isempty(init_check_func_dir_of) || isempty(init_check_anat_dir_oa)
+            % Initial anat file check
+            % Plot the anatomical image and check its intitial position with reference to the MNI template
 
-            now_txt_path = dir(fullfile(Subj_list(subji).func_folder,['rp_' Cut_pre func_name_wo_ext{1} '.txt'])) ;
-            now_func_path_pro = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+            imgs = char(fullfile(now_anat_path.folder,now_anat_path.name),...
+                fullfile(preproc_code_path,'Templates','MNI152_T1_2mm_brain.nii'));
+            [~,fg] = spm_check_registration_evalc(imgs);  % Plot the two images using Check Registration
 
-            if Reg_
-                whifun_ts_check(now_func_path,now_txt_path,now_func_path_pro,now_anat_path,Reg_,quality_control_path,Subj_list(subji).name,n_pca,max_fd,pca_for_temp_reg)
-            else
-                whifun_ts_check(now_func_path,now_txt_path,now_func_path_pro,now_anat_path,Reg_,quality_control_path,Subj_list(subji).name,n_pca,max_fd)
+            % Display the participant's ID
+            spm_orthviews('Caption', 1, Subj_list(subji).name);
+            spm_orthviews('Caption', 2, 'MNI 152 T1 FSL (MNI)');
+
+            % Display contour of 1st image onto 2nd
+            spm_orthviews('contour','display',1,2);
+            exportgraphics(fg,fullfile(quality_control_path,'a_Initial_check','Subject_Space','anat',[Subj_list(subji).name '_anat.png']))
+
+            % Initial func file check
+            % Plot the first functional image and check its intitial position with reference to the MNI template
+
+            imgs = char(fullfile(now_func_path.folder,[now_func_path.name ',1']),...
+                fullfile(preproc_code_path,'Templates','MNI152_T1_2mm_brain.nii'));
+            [~,fg] = spm_check_registration_evalc(imgs);  % Plot the two images using Check Registration
+
+            % Display the participant's ID
+            spm_orthviews('Caption', 1, Subj_list(subji).name);
+            spm_orthviews('Caption', 2,'MNI 152 T1 FSL (MNI)');
+
+            % Display contour of 1st image onto 2nd
+            spm_orthviews('contour','display',1,2);
+            exportgraphics(fg,fullfile(quality_control_path,'a_Initial_check','Subject_Space','func',[Subj_list(subji).name '_func.png']))
+        else
+            disp(['Anatomical and Functional initial alignment check already done for participant ' Subj_list(subji).name ' hence skipping this step'])
+        end
+
+        disp(['Anatomical and Functional initial alignment check done for' Subj_list(subji).name])
+
+        %% Head motion QC
+
+        now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+        cd(now_func_path(1).folder)
+
+
+        if over_write == 1
+            head_mot_qc_file = dir(fullfile(quality_control_path,'b_Head_motion',[Subj_list(subji).name '.png'])); % Check for a previous head motion qc file
+            if ~isempty(head_mot_qc_file)
+                delete(fullfile(head_mot_qc_file.folder,head_mot_qc_file.name))
+            end
+            head_mot_qc_file = [];
+        else
+            head_mot_qc_file = dir(fullfile(quality_control_path,'b_Head_motion',[Subj_list(subji).name '.png'])); % Check for a previous head motion qc file
+        end
+
+        if isempty(head_mot_qc_file)
+            func_image = niftiread(fullfile(now_func_path.folder,now_func_path.name)); % Read the func file
+            [x,y,z,nt] = size(func_image);                                             % get the size
+            func_image = reshape(func_image,x*y*z,nt);                                 % Reshape into voxel x timepoints
+
+            gm = mean(func_image,'all','omitnan');                                               % grand mean (4D)
+
+            % calculate pairwise variance
+            dt = zeros(1,nt-1);
+            for imagei = 1:nt-1
+                dt(imagei) = (mean((func_image(:,imagei) - func_image(:,imagei+1)).^2,'omitnan'))/gm;
             end
 
+            meany = mean(func_image,'omitnan')./gm;                                              % scaled global mean
+        end
+        func_name_wo_ext = strsplit(Subj_list(subji).func_name,'.');
+
+        now_func_path = dir(fullfile(Subj_list(subji).func_folder,['rp_' Cut_pre func_name_wo_ext{1} '.txt'])) ;
+        rp_rest = load(fullfile(now_func_path.folder,now_func_path.name));              % input the text file generated at the Realignment stage
+
+        rp_diff_trans = diff(rp_rest(:,1:3));                      % The first 3 parameters tell the displacement in x,y, and z direction in mm. Here the vector difference operator is used to get the derivative of vector. (framewise difference)
+        %                 rp_diff_rotat = diff(rp_rest(:,4:6)*180/pi);             % % The last  3 parameters tell the rotation values pitch, yaw and roll in radians (here we convert them to degrees)
+        rp_diff_rotat = diff(rp_rest(:,4:6)*50);                   % Converting angles to mm by asuming a 50mm radius circle
+
+
+        fd = sum(rp_diff_trans,2) + sum(rp_diff_rotat,2)  ;
+        %                 [fd_max,loc_fd_max_trans] = max(fd);                     % Get the maximum framewize displacement
+        %                 fd_mean = mean(fd);                                               % Get the mean framewize displacement
+        %                 fd_greater_than_02 = nnz(fd>great20_fd_thres)/length(fd)*100;
+        % plots
+        if isempty(head_mot_qc_file) || over_write == 1
+            f = figure('Position', get(0,'screensize'),'visible','off');
+
+            subplot(2,2,1)
+            plot(meany)
+            title('Global mean (raw)');xlabel('Image number')
+            box off
+
+            subplot(2,2,3)
+            plot(dt)
+            yline(mean(dt)+3*std(dt),'-','3 SD','color',[0 0.4470 0.7410]);
+            title('Pairwise variance (raw)');xlabel('Image pair')
+            box off
+
+            subplot(2,2,2)
+            plot([rp_rest(:,1:3) rp_rest(:,4:6)*180/pi])
+            title('Rigid body motion');xlabel('Image number')
+            legend('Trans: x','Trans: y','Trans: z','Rot: pitch','Rot: roll','Rot: yaw','location','best')
+            box off
+
+            subplot(2,2,4)
+            plot(fd)
+            title('Framewise displacement');xlabel('Image pair')
+            yline(max_fd,'r')
+            yline(str2double(greater_than_20),'k')
+            yline(str2double(mean_fd),'y')
+            legend('Framewise displacement','Max Threshold','Mean Threshold','Greater than 20% threshold','location','best','box','off')
+            exportgraphics(f,fullfile(quality_control_path,'b_Head_motion',[Subj_list(subji).name '.png']));
+        else
+            disp(['Head motion Quality check file found hence skipping this step for participant ' Subj_list(subji).name])
         end
 
-        disp(['Time-series Quality Check done for ' Subj_list(subji).name])
-        disp('##########################################################################################')
-        disp(' ')
-    catch exception
-        disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        disp(['Preprocessing has encountered errors in Time-series check for ' Subj_list(subji).name ', I have saved the variables in the participant folder :-) '])
-        disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+        if Subj_list(subji).motion_ex ~= 1
+            %% Segmentation QC
+            now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,Subj_list(subji).anat_name)) ;
+            whifun_segment_qc(quality_control_path,preproc_code_path,now_anat_path,Subj_list(subji).anat_name,Subj_list(subji).name,over_write,skull_pre,slover_slices_ss,slover_slices_mni,slover_contour_range_ss,slover_contour_range_mni,slover_view)
+            %                 disp('___________________________________________________________________________________________')
 
-        write_error(exception,quality_control_path, Subj_list(subji).name)                % write error to text file and display
-        Subj_list(subji).error = 1;
 
-        continue
+            %% Coregisteration QC
+            coreg_qc_file = dir(fullfile(quality_control_path,'d_Co_registeration','Subject_Space','Orthoslice_View',[Subj_list(subji).name '.png']));
+            slover_contour_range_mni_coreg = [1 200000];
+            try
+                if isempty(coreg_qc_file) || over_write == 1
+
+                    now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+                    now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,[skull_pre Subj_list(subji).anat_name])) ;
+                    % Quality Control
+                    % dsplay the anatomical and the Realigned func image after co-registeration
+
+                    whifun_coreg_qc(Subj_list(subji).name,now_anat_path,now_func_path,slover_slices_ss,slover_contour_range_ss,slover_view,1,quality_control_path);
+
+                    now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+                    now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,[Norm_pre skull_pre Subj_list(subji).anat_name])) ;
+                    whifun_coreg_qc(Subj_list(subji).name,now_anat_path,now_func_path,slover_slices_mni,slover_contour_range_mni_coreg,slover_view,0,quality_control_path);
+
+
+                end
+            catch exception                                                                       % If error is found
+
+                disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+                disp(['Preprocessing has encountered errors in Co-registeration QC for ' Subj_list(subji).name ', I have saved the error text in the error_info.txt :-) '])
+                disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+                Subj_list(subji).error = 1;                                                                                    % Remove participant from further preprocessing                             % Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).error = 1;
+                write_error(exception,quality_control_path, Subj_list(subji).name)                % write error to text file and display                % write error to text file, update csv and display
+                continue
+            end
+
+            disp(['Co-registeration done for ' Subj_list(subji).name])
+
+            %% CSF mask
+            if Reg_
+                %                 now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+                %                 now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,[skull_pre Subj_list(subji).anat_name])) ;
+                csf_qc_file = dir(fullfile(quality_control_path,'e_CSF_Masks_for_Regression','Subject_Space','Orthoslice_View',['CSF_' Subj_list(subji).name '.png']));
+                if isempty(csf_qc_file) || over_write == 1
+                    % Quality Control
+
+                    now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+                    csf_mask_dir = dir(fullfile(Subj_list(subji).anat_folder,['CSF_MASK' CSF_thres '.nii'])) ;
+
+                    % Display the csf mask and the func file
+                    [~,fg] = spm_check_registration_evalc(char(fullfile(csf_mask_dir.folder,csf_mask_dir.name),[fullfile(now_func_path.folder,now_func_path.name),',1']));
+                    % Display the participant's ID
+                    spm_orthviews('Caption', 1, [Subj_list(subji).name ' CSF Mask']);
+                    spm_orthviews('Caption', 2, [Subj_list(subji).name ' Rest image 1']);
+                    spm_orthviews('contour','display',1,2);
+                    exportgraphics(fg,(fullfile(quality_control_path,'e_CSF_Masks_for_Regression','Subject_Space','Orthoslice_View',['CSF_' Subj_list(subji).name '.png'])))
+
+                    fg = spm_figure('Create','Graphics','Visible','off');
+                    temp = spm('WinSize','Graphics');
+                    set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
+                    set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
+                    whifun_slover({fullfile(csf_mask_dir.folder,csf_mask_dir.name),[fullfile(now_func_path.folder,now_func_path.name),',1']},{'Contours','Structural'},{gray,gray},slover_slices_ss,slover_contour_range_ss,slover_view,[],fg);%
+                    exportgraphics(fg,(fullfile(quality_control_path,'e_CSF_Masks_for_Regression','Subject_Space',[slover_view '_Slice_View'],['CSF_' Subj_list(subji).name '.png'])))
+
+
+                end
+                %% Regression QC
+
+                reg_qc_file = dir(fullfile(quality_control_path,'f_Regression','Subject_Space',[Subj_list(subji).name '.png']));
+                if isempty(reg_qc_file) || over_write == 1
+
+                    now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+                    % Quality Control
+                    % Plot the mean time series before and after regression
+
+                    % Read the raw file
+
+                    y_image_REST = double(niftiread(fullfile(now_func_path.folder,now_func_path.name)));
+                    [x,y,z,nt] = size(y_image_REST);
+                    raw_file = reshape(y_image_REST,x*y*z,nt);
+                    global_ts = mean(raw_file,'omitnan');
+
+                    y_image_REST_regressed = double(niftiread(fullfile(now_func_path.folder,[Reg_pre, now_func_path.name])));
+                    [x,y,z,nt] = size(y_image_REST_regressed);
+                    raw_file = reshape(y_image_REST_regressed,x*y*z,nt);
+                    global_ts_r = mean(raw_file,"omitnan");
+                    func_name_wo_ext = strsplit(Subj_list(subji).func_name,'.');
+                    if motion_reg == 1
+                        % Loading the motion parameters
+                        fprintf('First loading the motion parameters for REST... \n')
+                        txt_file = dir(fullfile(now_func_path.folder,['rp_' Cut_pre func_name_wo_ext{1} '.txt']));
+                        rp=load(fullfile(txt_file.folder,txt_file.name));
+                        %                                 rp_temp = rp(1:nt,:);
+                        rp = zscore(rp);
+                        rp_previous = [0 0 0 0 0 0; rp(1:end-1,:)];
+                        rp_auto = [rp rp.^2 rp_previous rp_previous.^2];
+                    else
+                        rp_auto = [];
+                    end
+
+                    load(fullfile(now_func_path.folder,'covariance_csf_REST.mat')); 
+                    if exist("pca_CSF",'var')
+                        b_init = zscore([pca_CSF(:,1:n_pca) rp_auto]); 
+                    else
+                        b_init = zscore([MEAN_CSF_REST rp_auto]);
+                    end
+
+                    if pca_for_temp_reg == 1
+                        no_of_reg = n_pca;
+                        b_init = b_init(:,1:n_pca);   % Choose only the PCA CSF regressors
+                    else
+                        no_of_reg = 1;
+                        b_init = b_init(:,1);   % Choose only the Mean CSF regressors
+                    end
+                    leg = cell(1,no_of_reg);
+                    leg{1} = 'Before regression';
+                    leg{2} = 'After regression';
+                    if no_of_reg > 1 && exist("pca_CSF",'var')
+                        for ir = 1:no_of_reg
+                            leg{ir+2} = ['CSF PC no.' num2str(ir)];
+                        end
+                    else
+                        leg{3} = 'Mean CSF';
+                    end
+                    f = figure('visible','off'); plot(global_ts-mean(global_ts));
+                    hold on
+                    plot(global_ts_r -mean(global_ts_r))
+                    hold on
+                    plot(b_init)
+                    title(['Global Time Series (mean subtracted)' ' Subject ' Subj_list(subji).name])
+                    legend(leg)
+
+                    xlabel('time points')
+                    ylabel('Bold Signal (mean substracted)')
+                    exportgraphics(f,fullfile(quality_control_path,'f_Regression','Subject_Space','Global_Signal',[Subj_list(subji).name '.png']))
+
+
+                    %% Vox TS plots
+                    f = figure('visible','off');
+                    now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,Subj_list(subji).anat_name)) ;
+                    GM_mask_path = fullfile(now_anat_path.folder,['c1',now_anat_path.name]);
+                    WM_mask_path = fullfile(now_anat_path.folder,['c2',now_anat_path.name]);
+                    CSF_mask_path = fullfile(now_anat_path.folder,['c3',now_anat_path.name]);
+                    
+                    func_path = fullfile(now_func_path.folder,now_func_path.name);
+                    motion_txt_path = fullfile(now_func_path.folder,['rp_' Cut_pre func_name_wo_ext{1} '.txt']);
+                    pre_ = '';
+                    num_erosions = 4;
+                    Par_name = Subj_list(subji).name;
+                    whifun_ts_qc(GM_mask_path,WM_mask_path,CSF_mask_path,func_path,motion_txt_path,pre_,num_erosions,Par_name,over_write,f)
+                    exportgraphics(f,fullfile(quality_control_path,'f_Regression','Subject_Space','Before_Reg_vox_ts',[Subj_list(subji).name '.png']))
+
+                    func_path = fullfile(now_func_path.folder,[Reg_pre, now_func_path.name]);
+
+                    whifun_ts_qc(GM_mask_path,WM_mask_path,CSF_mask_path,func_path,motion_txt_path,pre_,num_erosions,Par_name,over_write,f)
+                    exportgraphics(f,fullfile(quality_control_path,'f_Regression','Subject_Space','After_Reg_vox_ts',[Subj_list(subji).name '.png']))
+                    clf(f)
+                    now_mask_path = dir(WM_mask_path);
+                    deep_WM_mask_path = fullfile(now_mask_path.folder,['deep_' 'num_er_' num2str(num_erosions) now_mask_path.name]);
+                    whifun_ts_mask_qc(fullfile(quality_control_path,'f_Regression','Subject_Space','Masks_For_Vox_ts'),GM_mask_path,WM_mask_path,deep_WM_mask_path,CSF_mask_path,func_path,Subj_list(subji).name,slover_slices_ss,slover_contour_range_ss,slover_view)
+
+                    %                                 close gcf
+                end
+            end
+            %% Filtering QC
+            if filter_check
+                fil_qc_file = dir(fullfile(quality_control_path,'g_Filtering','Subject_Space','Orthoslice_View',[Subj_list(subji).name '.png']));
+
+
+                if isempty(fil_qc_file) || over_write == 1
+
+                    now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+                    % Quality Control
+                    % Plot the mean time series before and after regression
+
+                    % Read the raw file
+
+                    func_image = double(niftiread(fullfile(now_func_path.folder,now_func_path.name)));
+                    [x,y,z,nt] = size(func_image);
+                    func_image = reshape(func_image,x*y*z,nt);
+
+                    global_ts = mean(func_image,'omitnan');
+
+                    f_func_image = double(niftiread(fullfile(now_func_path.folder,[f_pre now_func_path.name])));
+                    [x,y,z,nt] = size(f_func_image);
+                    f_file = reshape(f_func_image,x*y*z,nt);
+                    global_ts_f = mean(f_file,'omitnan');
+
+                    f = figure('visible','off'); plot(global_ts-mean(global_ts));
+                    hold on
+                    plot(global_ts_f -mean(global_ts_f))
+                    title(['Global Time Series (mean subtracted)' ' participant ' Subj_list(subji).name])
+                    legend('Before filtering','After filtering')
+
+                    xlabel('time points')
+                    ylabel('Bold Signal (mean substracted)')
+                    exportgraphics(f,fullfile(quality_control_path,'g_Filtering','Subject_Space','Global_timeseries_before_and_after_filtering',[Subj_list(subji).name '.png']))
+                    tr = Subj_list(subji).TR;
+                    fs = 1/tr;
+                    [b,a] = butter(2,[filter_lp,filter_hp]/(fs/2),'bandpass');
+                    gf = figure('visible','off'); whifun_plot_freqz(b,a,fs);          % Plot the frequency responce using 512 points
+                    exportgraphics(gf,fullfile(quality_control_path,'g_Filtering','Subject_Space','filter',[Subj_list(subji).name '_filter_freq_response.png']))
+                    %                                 close gcf
+                end
+            end
+            %% Smoothing QC
+
+            if Smooth_
+                smooth_qc_file = dir(fullfile(quality_control_path,'h_Smoothing','Subject_Space','Orthoslice_View',[Subj_list(subji).name '.png']));
+                if isempty(smooth_qc_file) || over_write == 1
+                    s_dir = dir(fullfile(Subj_list(subji).func_folder,[Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+                    [~,fg] = spm_check_registration_evalc(char(fullfile(s_dir.folder,[s_dir.name ',1'])));
+                    spm_orthviews('Caption', 1, [Subj_list(subji).name ' Smooth Image (MNI space)']);
+                    exportgraphics(fg,(fullfile(quality_control_path,'h_Smoothing','Subject_Space','Orthoslice_View',[Subj_list(subji).name '.png'])))
+
+                    fg = spm_figure('Create','Graphics','Visible','off');
+                    temp = spm('WinSize','Graphics');
+                    set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
+                    set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
+                    whifun_slover({fullfile(s_dir.folder,[s_dir.name ',1'])},{'Structural'},{gray},slover_slices_ss,slover_contour_range_ss,slover_view,[],fg);%
+                    exportgraphics(fg,(fullfile(quality_control_path,'h_Smoothing','Subject_Space',[slover_view '_Slice_View'],[Subj_list(subji).name '.png'])))
+
+                end
+            end
+            %% normalization QC
+
+            norm_qc_file = dir(fullfile(quality_control_path,'i_Normalization','MNI_Space','Orthoslice_View',[Subj_list(subji).name '_func_image' '.png']));
+
+            if isempty(norm_qc_file) || over_write == 1
+                % Quality Control
+
+                norm_dir = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+                [~,fg] = spm_check_registration_evalc(char(fullfile(norm_dir.folder,[norm_dir.name ',1']),fullfile(preproc_code_path,'Templates','MNI152_T1_2mm_brain.nii')));
+                spm_orthviews('contour','display',1,2);
+                spm_orthviews('Caption', 1, [Subj_list(subji).name ' Normalized Image (MNI space)']);
+                spm_orthviews('Caption', 2,  'MNI 152 T1 FSL (MNI)');
+
+                exportgraphics(fg,(fullfile(quality_control_path,'i_Normalization','MNI_Space','Orthoslice_View',[Subj_list(subji).name '_func_image' '.png'])))
+
+                fg = spm_figure('Create','Graphics','Visible','off');
+                temp = spm('WinSize','Graphics');
+                set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
+                set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
+                whifun_slover({fullfile(norm_dir.folder,[norm_dir.name ',1']),fullfile(preproc_code_path,'Templates','MNI152_T1_2mm_brain.nii')},{'Structural','Contours'},{gray,gray},slover_slices_mni,slover_contour_range_mni,slover_view,[],fg);%
+                exportgraphics(fg,(fullfile(quality_control_path,'i_Normalization','MNI_Space',[slover_view '_Slice_View'],[Subj_list(subji).name '_func_image' '.png'])))
+
+                f = figure('Visible','off');
+                now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,Subj_list(subji).anat_name)) ;
+                GM_mask_path = fullfile(now_anat_path.folder,['wc1',now_anat_path.name]);
+                WM_mask_path = fullfile(now_anat_path.folder,['wc2',now_anat_path.name]);
+                CSF_mask_path = fullfile(now_anat_path.folder,['wc3',now_anat_path.name]);
+
+                func_path = fullfile(fullfile(norm_dir.folder,norm_dir.name));
+                motion_txt_path = fullfile(now_func_path.folder,['rp_' Cut_pre func_name_wo_ext{1} '.txt']);
+                pre_ = 'w';
+                num_erosions = 4;
+                Par_name = Subj_list(subji).name;
+                whifun_ts_qc(GM_mask_path,WM_mask_path,CSF_mask_path,func_path,motion_txt_path,pre_,num_erosions,Par_name,over_write,f)
+                exportgraphics(f,fullfile(quality_control_path,'i_Normalization','MNI_Space','Vox_ts',[Subj_list(subji).name '.png']))
+                clf(f)
+                now_mask_path = dir(WM_mask_path);
+                deep_WM_mask_path = fullfile(now_mask_path.folder,['deep_' 'num_er_' num2str(num_erosions) now_mask_path.name]);
+
+                whifun_ts_mask_qc(fullfile(quality_control_path,'i_Normalization','MNI_Space','Vox_ts','Masks_For_Vox_ts'),GM_mask_path,WM_mask_path,deep_WM_mask_path,CSF_mask_path,func_path,Subj_list(subji).name,slover_slices_mni,slover_contour_range_mni,slover_view)
+            end
+
+            %% 16 Time series Quality Check
+
+            disp(['Time-series Quality Check for ' Subj_list(subji).name])
+
+
+            try
+
+                now_func_path = dir(fullfile(Subj_list(subji).func_folder,[Cut_pre Subj_list(subji).func_name])) ;
+                now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,[skull_pre Subj_list(subji).anat_name])) ;
+
+                if length(now_func_path)>1  % If more than one func files found choose the one that was created the first
+
+                    [~,idx] = sort([now_func_path.datenum]);
+                    now_func_path = now_func_path(idx);
+                    warning(['More than one functional files found. Choosing the file ' ,char(now_func_path(1).name), ' as it was created the first.']);
+                    now_func_path(2:end) = [];
+                end
+                if over_write == 1
+                    tqc_dir = dir(fullfile(quality_control_path,'j_Time_series_check',[Subj_list(subji).name '.png']));
+                    if ~isempty(tqc_dir)
+                        delete(fullfile(tqc_dir.folder,tqc_dir.name))
+                    end
+                    tqc_dir = [];
+                else
+                    tqc_dir = dir(fullfile(quality_control_path,'j_Time_series_check',[Subj_list(subji).name '.png'])) ;
+                end
+
+                if isempty(tqc_dir)
+                    func_name_wo_ext = strsplit(Subj_list(subji).func_name,'.');
+
+                    now_txt_path = dir(fullfile(Subj_list(subji).func_folder,['rp_' Cut_pre func_name_wo_ext{1} '.txt'])) ;
+                    now_func_path_pro = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+
+                    if Reg_
+                        whifun_ts_check(now_func_path,now_txt_path,now_func_path_pro,now_anat_path,Reg_,quality_control_path,Subj_list(subji).name,n_pca,max_fd,pca_for_temp_reg)
+                    else
+                        whifun_ts_check(now_func_path,now_txt_path,now_func_path_pro,now_anat_path,Reg_,quality_control_path,Subj_list(subji).name,n_pca,max_fd)
+                    end
+
+                end
+
+                disp(['Time-series Quality Check done for ' Subj_list(subji).name])
+                disp('##########################################################################################')
+                disp(' ')
+            catch exception
+                disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+                disp(['Preprocessing has encountered errors in Time-series check for ' Subj_list(subji).name ', I have saved the variables in the participant folder :-) '])
+                disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+
+                Subj_list(subji).error = 1;                                                                                    % Remove participant from further preprocessing                             % Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).error = 1;
+                write_error(exception,quality_control_path, Subj_list(subji).name)                % write error to text file and display                % write error to text file, update csv and display
+
+                continue
+            end
+
+
+            %% Seed Corr plots
+            norm_dir = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+            func_path = fullfile(fullfile(norm_dir.folder,norm_dir.name));
+            name = Subj_list(subji).name;
+            mask_ = fullfile(fullfile(norm_dir.folder,'wrest_mask.nii'));
+            seed_cor_output_path = '/home/biswal5090pc/Downloads/practice_NYU_abide-20250826T132121Z-1-001/practice_NYU_abide/0050955/seed_corr_map_wsREG_rc_rest.nii';
+            thresh = 0.1;
+            slover_view_array = {'sagittal','axial'};
+            rad = 6;
+
+            seed_corr_qc_output_path = fullfile(quality_control_path,"k_Seed_Based_Corr","Default_Mode_Seed_lh_pcc_5_-49_40");
+            for i = 1:length(slover_view_array)
+                mkdir(seed_corr_qc_output_path,[slover_view_array{i} '_Slice_View'])
+            end
+            seed = [5 -49 40];
+
+            whifun_seed_corr_qc_plot(seed_corr_qc_output_path,func_path,name,mask_,seed,rad,seed_cor_output_path,thresh,slover_slices_mni,slover_view_array)
+
+            seed_corr_qc_output_path = fullfile(quality_control_path,"k_Seed_Based_Corr","Visual_Seed_rh_cort_vis_-4_-91_-3");
+            for i = 1:length(slover_view_array)
+                mkdir(seed_corr_qc_output_path,[slover_view_array{i} '_Slice_View'])
+            end
+            seed = [-4 -91 -3];
+
+            whifun_seed_corr_qc_plot(seed_corr_qc_output_path,func_path,name,mask_,seed,rad,seed_cor_output_path,thresh,slover_slices_mni,slover_view_array)
+
+            seed_corr_qc_output_path = fullfile(quality_control_path,"k_Seed_Based_Corr","Auditory_Seed_lh_cort_aud_64_-12_2");
+            for i = 1:length(slover_view_array)
+                mkdir(seed_corr_qc_output_path,[slover_view_array{i} '_Slice_View'])
+            end
+            seed = [64 -12 2];
+
+            whifun_seed_corr_qc_plot(seed_corr_qc_output_path,func_path,name,mask_,seed,rad,seed_cor_output_path,thresh,slover_slices_mni,slover_view_array)
+
+        else
+            disp(['Participant ' Subj_list(subji).name ' got rejected due to excessive motion during preprocessing. See b_Head_motion folder for more details'])
+        end
+    else
+        if Subj_list(subji).error == 1
+            disp(['Participant ' Subj_list(subji).name ' got errors during preprocessing. See Error Info in Quality Control Folder'])
+        elseif Subj_list(subji).manual_ex == 1
+            disp(['Participant ' Subj_list(subji).name ' was manually rejected during preprocessing.'])
+        end
     end
 
 
-    Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).motion_ex = Subj_list(subji).motion_ex;
-    Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).error = Subj_list(subji).error;
-    Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).nt_dis = Subj_list(subji).nt_dis;
+    Subj_list_all = update_csv(Subj_list(subji),Subj_list_all,output_folder);
 
-    Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).time_preprocess_min = Subj_list(subji).time_preprocess_min;
+    clean_up_after_preprocessing(Subj_list(subji),log_fileID);
+    end
+
 end
 my_writetable(struct2table(Subj_list_all), fullfile(output_folder,"Subj_list.csv"))
 
@@ -1870,7 +2140,7 @@ function [Subj_list,rm] = load_subjects(folder,name,first)
 if nargin < 4
     first = 0;
 end
-try
+try%line 1878
     opts = detectImportOptions(fullfile(folder,name),'Delimiter',',');
     opts = setvartype(opts, 'char'); % or 'string', depending on your MATLAB version
     T1 = readtable(fullfile(folder,name),opts);
