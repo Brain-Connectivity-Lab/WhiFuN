@@ -1,4 +1,41 @@
-function whifun_ts_qc(GM_mask_path,WM_mask_path,CSF_mask_path,func_path,motion_txt_path,pre_,num_erosions,Par_name,over_write,f)
+function whifun_ts_qc(GM_mask_path,WM_mask_path,CSF_mask_path,func_path,motion_txt_path,num_erosions,Par_name,over_write,f)
+
+% WHIFUN_TS_QC Generates a quality control figure for time series and motion.
+%
+%   WHIFUN_TS_QC(GM_mask_path, WM_mask_path, CSF_mask_path, func_path, motion_txt_path, num_erosions, Par_name, over_write, f)
+%   creates a comprehensive figure for a single subject, visualizing the
+%   time series of key brain tissues alongside framewise displacement (FD).
+%
+%   The function first creates a "deep White Matter (WM)" mask by eroding
+%   the standard WM mask, which helps to isolate a signal that is less
+%   likely to contain a gray matter component. It then extracts the time
+%   series from the Gray Matter (GM), Superficial White Matter (WM), Deep
+%   White Matter, and Cerebrospinal Fluid (CSF) using a helper function.
+%
+%   The generated figure has two subplots:
+%   1.  **Framewise Displacement (FD)**: The top plot shows the FD over
+%       time, indicating the amount of head motion.
+%   2.  **Voxel Time Series**: The bottom plot is a heatmap of the time
+%       series of all voxels within the four tissue masks. The voxels are
+%       stacked vertically, with horizontal lines separating the different
+%       tissue types. This plot allows for a visual assessment of the
+%       signal quality and the presence of motion-related artifacts within
+%       each tissue compartment.
+%
+%   Input Arguments:
+%   GM_mask_path      - Path to the Gray Matter mask.
+%   WM_mask_path      - Path to the White Matter mask.
+%   CSF_mask_path     - Path to the CSF mask.
+%   func_path         - Path to the functional NIfTI file.
+%   motion_txt_path   - Path to the motion parameters text file.
+%   num_erosions      - The number of erosions for creating the deep WM mask.
+%   Par_name          - The subject's name, used for the plot title.
+%   over_write        - Logical flag to force mask recreation.
+%   f                 - (Optional) A handle to a pre-existing figure.
+%
+%   Author: Pratik Jain
+%   See also WHIFUN_ERODE, WHIFUN_TS_EXTRACT, WHIFUN_CALCULATE_FD, PLOT, IMAGESC.
+
 
 % For deep wm mask creation
 if ~exist("num_erosions",'var')
@@ -8,13 +45,15 @@ out_pre = 'deep_';
 
 now_mask_path = dir(WM_mask_path);
 
-if create_mask(over_write,WM_mask_path,[out_pre 'num_er_' num2str(num_erosions) now_mask_path.name])
-    whifun_erode(WM_mask_path,num_erosions,out_pre)
+if create_mask(over_write,WM_mask_path,[out_pre 'num_er-' num2str(num_erosions) '_' now_mask_path.name])
+    out_mask_path = whifun_erode(WM_mask_path,num_erosions,out_pre);
+else
+    out_mask_path = fullfile(now_mask_path.folder,[out_pre 'num_er-' num2str(num_erosions) '_' now_mask_path.name]);
 end
-deep_WM_mask_path = fullfile(now_mask_path.folder,[out_pre 'num_er_' num2str(num_erosions) now_mask_path.name]);
-[all_ts,n_gm,n_wm,n_deep_wm,n_csf] = whifun_ts_extract(GM_mask_path,WM_mask_path,deep_WM_mask_path,CSF_mask_path,func_path,pre_,over_write);
+deep_WM_mask_path = out_mask_path;
+[all_ts,n_gm,n_wm,n_deep_wm,n_csf] = whifun_ts_extract(GM_mask_path,WM_mask_path,deep_WM_mask_path,CSF_mask_path,func_path,over_write);
 
-fd = whifun_calculate_fd(func_path,motion_txt_path);
+fd = whifun_calculate_fd(motion_txt_path);
 
 %%
 if ~exist('f','var')

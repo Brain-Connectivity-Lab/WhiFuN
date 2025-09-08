@@ -28,19 +28,19 @@ end
 % app.func_data_name = 'S40vol' ;       % %   Functional data name
 % app.anat_data_name = 'S2vol';     % %   Anatomical data name
 
-% app.comm_subj_name = '';
-% app.comm_sess_name = 'session_1';
-% app.func_folder_name = 'rest_1';
-% app.anat_folder_name = 'anat_1';
-% app.func_data_name = 'rest' ;       % %   Functional data name
-% app.anat_data_name = 'mprage';     % %   Anatomical data name
-
 app.comm_subj_name = '';
-app.comm_sess_name = '';
-app.func_folder_name = '';
-app.anat_folder_name = '';
+app.comm_sess_name = 'session_1';
+app.func_folder_name = 'rest_1';
+app.anat_folder_name = 'anat_1';
 app.func_data_name = 'rest' ;       % %   Functional data name
 app.anat_data_name = 'mprage';     % %   Anatomical data name
+
+% app.comm_subj_name = '';
+% app.comm_sess_name = '';
+% app.func_folder_name = '';
+% app.anat_folder_name = '';
+% app.func_data_name = 'rest' ;       % %   Functional data name
+% app.anat_data_name = 'mprage';     % %   Anatomical data name
 %% Modify Parameters here
 % Preprocess Parameters
 n_vol_dis = 5;                  % Discard initial volumes/timepoints to achieve magnetization stability, put 0 if no volumes should be discarded
@@ -201,7 +201,7 @@ for subji=1:length(Subj_list_all)
     Subj_list_all(subji).error = 0;
 
     if ~isfield(Subj_list_all,'motion_ex')
-        Subj_list_all(subji).motion_ex = 0;
+        Subj_list_all(subji).motion_ex = [];
     elseif isempty(Subj_list_all(subji).motion_ex)
         Subj_list_all(subji).motion_ex = 0;
     end
@@ -2082,38 +2082,40 @@ for subji = 1:length(Subj_list)
             end
 
 
-            %% Seed Corr plots
+           %% Seed Corr plots
             norm_dir = dir(fullfile(Subj_list(subji).func_folder,[Norm_pre Smooth_pre f_pre Reg_pre Realign_pre Cut_pre Subj_list(subji).func_name])) ;
             func_path = fullfile(fullfile(norm_dir.folder,norm_dir.name));
             name = Subj_list(subji).name;
             mask_ = fullfile(fullfile(norm_dir.folder,'wrest_mask.nii'));
-            seed_cor_output_path = '/home/biswal5090pc/Downloads/practice_NYU_abide-20250826T132121Z-1-001/practice_NYU_abide/0050955/seed_corr_map_wsREG_rc_rest.nii';
             thresh = 0.1;
             slover_view_array = {'sagittal','axial'};
             rad = 6;
-
+            % Default mode
             seed_corr_qc_output_path = fullfile(quality_control_path,"k_Seed_Based_Corr","Default_Mode_Seed_lh_pcc_5_-49_40");
             for i = 1:length(slover_view_array)
                 mkdir(seed_corr_qc_output_path,[slover_view_array{i} '_Slice_View'])
             end
+            
+            seed_cor_output_path = fullfile(norm_dir.folder,['seed_corr_map_Seed_lh_pcc_5_-49_40_' norm_dir.name]);
             seed = [5 -49 40];
-
             whifun_seed_corr_qc_plot(seed_corr_qc_output_path,func_path,name,mask_,seed,rad,seed_cor_output_path,thresh,slover_slices_mni,slover_view_array)
-
+            
+            % Visual
             seed_corr_qc_output_path = fullfile(quality_control_path,"k_Seed_Based_Corr","Visual_Seed_rh_cort_vis_-4_-91_-3");
             for i = 1:length(slover_view_array)
                 mkdir(seed_corr_qc_output_path,[slover_view_array{i} '_Slice_View'])
             end
+            seed_cor_output_path = fullfile(norm_dir.folder,['seed_corr_map_Seed_rh_cort_vis_-4_-91_-3' norm_dir.name]);
             seed = [-4 -91 -3];
-
             whifun_seed_corr_qc_plot(seed_corr_qc_output_path,func_path,name,mask_,seed,rad,seed_cor_output_path,thresh,slover_slices_mni,slover_view_array)
-
+            
+            % Auditory
             seed_corr_qc_output_path = fullfile(quality_control_path,"k_Seed_Based_Corr","Auditory_Seed_lh_cort_aud_64_-12_2");
             for i = 1:length(slover_view_array)
                 mkdir(seed_corr_qc_output_path,[slover_view_array{i} '_Slice_View'])
             end
+            seed_cor_output_path = fullfile(norm_dir.folder,['seed_corr_map_Seed_lh_cort_aud_64_-12_2' norm_dir.name]);
             seed = [64 -12 2];
-
             whifun_seed_corr_qc_plot(seed_corr_qc_output_path,func_path,name,mask_,seed,rad,seed_cor_output_path,thresh,slover_slices_mni,slover_view_array)
 
         else
@@ -2135,67 +2137,3 @@ for subji = 1:length(Subj_list)
 
 end
 my_writetable(struct2table(Subj_list_all), fullfile(output_folder,"Subj_list.csv"))
-
-function [Subj_list,rm] = load_subjects(folder,name,first)
-if nargin < 4
-    first = 0;
-end
-try%line 1878
-    opts = detectImportOptions(fullfile(folder,name),'Delimiter',',');
-    opts = setvartype(opts, 'char'); % or 'string', depending on your MATLAB version
-    T1 = readtable(fullfile(folder,name),opts);
-
-    T = readtable(fullfile(folder,name),'Delimiter',',');
-
-    T.name = T1.name;
-
-    if first
-        T.error = zeros(height(T),1);
-        T.motion_ex = zeros(height(T),1);
-        rm = logical(T.manual_ex);
-        Subj_list = table2struct(T(~rm,:));
-    else
-        rm = (logical(T.error) | logical(T.motion_ex) | logical(T.manual_ex));
-        Subj_list = table2struct(T(~rm,:));
-    end
-catch
-    Subj_list = [] ;
-end
-
-end
-
-function Subj_list_all = load_subjects_all(folder,name,new_run,overwrite)
-if nargin < 4
-    new_run = 0;
-end
-
-opts = detectImportOptions(fullfile(folder,name),'Delimiter',',');
-opts = setvartype(opts, 'char'); % or 'string', depending on your MATLAB version
-T1 = readtable(fullfile(folder,name),opts);
-
-T = readtable(fullfile(folder,name),'Delimiter',',');
-
-T.name = T1.name;
-
-try
-    if new_run
-        T.error = zeros(height(T),1);
-        if ~ismember('motion_ex', T.Properties.VariableNames)
-            T.motion_ex = zeros(height(T),1);
-        end
-
-        if overwrite
-            T.motion_ex = zeros(height(T),1);
-        end
-        Subj_list_all = table2struct(T);
-
-    else
-
-        Subj_list_all = table2struct(T);
-    end
-catch
-    Subj_list_all = [] ;
-end
-
-end
-

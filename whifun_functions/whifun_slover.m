@@ -1,9 +1,11 @@
-function obj = whifun_slover(imgs,itype,cmap,slices,cnt_range,img_view,wt,fg)
-
+function obj = whifun_slover(imgs,itype,cmap,slices,cnt_range,img_view,wt,fg,cbar_)
+if ~exist("cbar_","var")
+    cbar_ = 0;
+end
 if ~exist("fg","var")
     spm_figure('Create','Graphics');
 end
-
+spm_orthviews('addcolorbar')
 obj = slover;
 
 n_imgs = length(imgs);
@@ -83,7 +85,9 @@ obj = fill_defaults(obj);
 dist   = mean(diff(slices));
 prec   = ceil(-min(log10(dist), 0));
 obj.slices = slices;
-
+if cbar_
+    obj.cbar = 1:length(imgs);
+end
 % and do the display
 obj = whifun_paint(obj);
 

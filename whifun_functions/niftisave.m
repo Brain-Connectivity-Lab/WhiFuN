@@ -1,4 +1,6 @@
-function niftisave(niftiimage,filename,info)
+function niftisave(niftiimage,filename,info,add_offset,multi_scale)
+
+
 
 % input -->
 % niftiimage --> file to be saved
@@ -15,6 +17,13 @@ if length(info.ImageSize) == 4 && length(size(niftiimage)) == 3
     info.PixelDimensions = info.PixelDimensions(1:3);
 end
 info.ImageSize = size(niftiimage);
+if exist("add_offset",'var')
+    info.AdditiveOffset = add_offset;
+end
+
+if exist("multi_scale",'var')
+    info.MultiplicativeScaling = multi_scale;
+end
 %
 info.Filesize = [];
 niftiwrite(niftiimage,filename,info)

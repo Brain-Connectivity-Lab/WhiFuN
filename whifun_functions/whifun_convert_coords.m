@@ -1,24 +1,36 @@
 function coord_out = whifun_convert_coords(M, coord_in, mode,mat_py)
-% whifun_convert_coords  Convert between MNI/world and voxel coordinates
+% WHIFUN_CONVERT_COORDS Converts coordinates between MNI and voxel space.
 %
-%   coord_out = convert_coords(M, coord_in, mode)
+%   coord_out = WHIFUN_CONVERT_COORDS(M, coord_in, mode, mat_py) converts
+%   a set of 3D coordinates from one coordinate system to another using a
+%   4x4 affine transformation matrix.
 %
-% Inputs:
-%   M        - 4x4 affine transformation matrix (e.g. from NIfTI header)
-%   coord_in - 1x3 or Nx3 matrix of coordinates
-%              (MNI/world if mode='mni2vox', voxel if mode='vox2mni')
-%   mode     - 'mni2vox' or 'vox2mni'
-%   mat_py   - 1 or 0
-%              If 1 it knows th voxel co-ordinates come from matlab
+%   This function is a fundamental utility for neuroimaging analysis, as it
+%   allows for precise mapping of locations between the standard MNI space
+%   and a subject voxel space. It can handle both `mni2vox` and
+%   `vox2mni` conversions. The function also includes a parameter to handle
+%   the difference between 0-based indexing (Python) and 1-based indexing
+%   (MATLAB), ensuring correct conversion.
 %
+%   Input Arguments:
+%   M        - A 4x4 affine transformation matrix (e.g., from a NIfTI header).
+%   coord_in - A matrix of input coordinates (Nx3), where N is the number of
+%              points and the columns are x, y, and z.
+%   mode     - A string specifying the direction of conversion:
+%              - `'mni2vox'` converts from MNI coordinates to voxel coordinates.
+%              - `'vox2mni'` converts from voxel coordinates to MNI coordinates.
+%   mat_py   - (Optional) A logical value (0 or 1). If 1, it assumes the
+%              input and output are based on MATLAB's 1-based indexing
+%              for voxel coordinates. If 0, it assumes 0-based indexing.
+%              Defaults to 1.
 %
-% Output:
-%   coord_out - transformed coordinates
+%   Output Arguments:
+%   coord_out - A matrix of the converted coordinates (Nx3). For `mni2vox`,
+%               the output is rounded to the nearest integer.
 %
-% Notes:
-%   - Voxel indices returned are 0-based (like in FSL). For MATLAB array
-%     indexing (1-based), add +1 to each component.
-%   - Works for multiple points at once (Nx3 input).
+%   Author: Pratik Jain
+%   See also ROUND.
+
 if ~exist("mat_py",'var')
     mat_py = 1;
 end
@@ -35,7 +47,7 @@ coord_in_h = [coord_in, ones(size(coord_in,1),1)];
 switch lower(mode)
     case 'mni2vox'
         % Voxel = inv(M) * MNI
-        vox_h = (inv(M) * coord_in_h')';
+        vox_h = (M \ coord_in_h')';
         coord_out = round(vox_h(:,1:3));
 
         if mat_py
