@@ -17,12 +17,12 @@ reg_qc_file = whifun_create_file(over_write,out_image_path);
 if isempty(reg_qc_file)
     % Read the raw file
 
-    y_image_REST = double(niftiread(Subj_list_1.coregistered_func_native));
+    y_image_REST = whifun_niftiread(Subj_list_1.coregistered_func_native);
     [x,y,z,nt] = size(y_image_REST);
     raw_file = reshape(y_image_REST,x*y*z,nt);
     global_ts = mean(raw_file,'omitnan');
 
-    y_image_REST_regressed = double(niftiread(Subj_list_1.nuisance_regressed_func_native));
+    y_image_REST_regressed = whifun_niftiread(Subj_list_1.nuisance_regressed_func_native);
     [x,y,z,nt] = size(y_image_REST_regressed);
     raw_file = reshape(y_image_REST_regressed,x*y*z,nt);
     global_ts_r = mean(raw_file,"omitnan");

@@ -46,8 +46,6 @@ try
     now_func_path = dir(in_func_path) ;
     
     out_func_path = fullfile(now_func_path.folder,[Norm_pre,now_func_path.name]);
-    [fol,name,ext] = fileparts(out_func_path);
-    out_func_mni_mask_path = fullfile(fol,['wfunc_mask_' name ext]);
     norm_path = whifun_create_file(over_write,out_func_path);
 
     if isempty(norm_path)
@@ -56,12 +54,26 @@ try
         fprintf(log_fileID,'#####################################################################################################################\n \n');
         fprintf(log_fileID, 'Normalization to MNI space\n');
         fprintf(log_fileID,'%s',  norm_op);
-        % Create func mask
-        reslice_data(in_wanat_mask_MNI_path,out_func_path,1,1,out_func_mni_mask_path);
+        
+        % reslice_data(in_wanat_mask_MNI_path,out_func_path,1,1,out_func_mni_mask_path);
     else
         disp(['Normalization file found, hence skipping this step for ' Subj_list_1.name]);
     end
     Subj_list_1.func_MNI = out_func_path;
+
+    % Create func mask
+    now_func_path = dir(in_func_path) ;
+    
+    out_func_path = fullfile(now_func_path.folder,[Norm_pre,now_func_path.name]);
+    [fol,name,ext] = fileparts(out_func_path);
+    out_func_mni_mask_path = fullfile(fol,['wfunc_mask_' name ext]);
+    norm_path = whifun_create_file(over_write,out_func_mni_mask_path);
+
+    if isempty(norm_path)
+        reslice_data(in_wanat_mask_MNI_path,out_func_path,1,1,out_func_mni_mask_path);
+    end
+
+
     Subj_list_1.func_mask_MNI = out_func_mni_mask_path;
 catch exception
     disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')

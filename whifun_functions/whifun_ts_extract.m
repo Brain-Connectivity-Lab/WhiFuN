@@ -76,7 +76,7 @@ end
 % output = [output_gm,output_wm,output_deep_wm,output_csf];
 
 %% Extract TS
-func_image = niftiread(func_path);
+func_image = whifun_niftiread(func_path);
 
 [~,~,~,T] = size(func_image);
 
@@ -146,7 +146,7 @@ end
 
 function [ts,n] = extract_ts(func_image,mask_path)
 
-mask_image = niftiread(mask_path);
+mask_image = whifun_niftiread(mask_path);
 mask_image = reshape(mask_image, [], 1);
 ts = func_image(mask_image > 0, :);
 n = size(ts,1);

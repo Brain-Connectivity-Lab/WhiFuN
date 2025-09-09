@@ -53,8 +53,7 @@ REST_MASK(REST_MASK1>0.5) = 1;
 
 % Loading Time Series realigned rest file
 
-y_image_func = double(niftiread(fullfile(now_func_path.folder,now_func_path.name)));
-
+y_image_func = whifun_niftiread(fullfile(now_func_path.folder,now_func_path.name));
 if motion_reg == 1
     % Loading the motion parameters
     disp(['Obtained the motion parameters from : ' in_motion_txt_path])
@@ -102,6 +101,6 @@ for vi = 1:image_dim_REST(1)
 
     end
 end
-y_image_func_regressed = cast(y_image_func_regressed,func_info.Datatype);
+y_image_func_regressed = cast((y_image_func_regressed-func_info.AdditiveOffset)./func_info.MultiplicativeScaling,func_info.Datatype);
 
 niftisave((y_image_func_regressed),out_func_path,func_info);

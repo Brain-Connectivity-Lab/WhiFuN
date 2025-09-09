@@ -29,7 +29,7 @@ addParameter(p, 'slover_view', 'axial', @ischar);
 addParameter(p, 'max_fd', 5, @isnumeric);
 addParameter(p, 'mean_fd', 0.2, @isnumeric);
 addParameter(p, 'greater_than_20', 0.2, @isnumeric);
-addParameter(p, 'Reg_', 0, @islogical);
+addParameter(p, 'Reg_', 0);
 addParameter(p, 'n_pca', 5, @isnumeric);
 addParameter(p, 'motion_reg', 0, @islogical);
 addParameter(p, 'pca_for_temp_reg', 0, @islogical);
@@ -171,12 +171,12 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
             whifun_qc_seed_corr(out_folder,Subj_list_1.final_func_MNI,Subj_list_1.name,thresh,rad,slover_slices_mni,slover_view,over_write,Subj_list_1.func_mask_MNI)
         end
     else
-        disp(['Participant ' Subj_list(subji).name ' got rejected due to excessive motion during preprocessing. See b_Head_motion folder for more details'])
+        disp(['Participant ' Subj_list_1.name ' got rejected due to excessive motion during preprocessing. See b_Head_motion folder for more details'])
     end
 else
-    if Subj_list(subji).error == 1
-        disp(['Participant ' Subj_list(subji).name ' got errors during preprocessing. See Error Info in Quality Control Folder'])
-    elseif Subj_list(subji).manual_ex == 1
-        disp(['Participant ' Subj_list(subji).name ' was manually rejected during preprocessing.'])
+    if Subj_list_1.error == 1
+        disp(['Participant ' Subj_list_1.name ' got errors during preprocessing. See Error Info in Quality Control Folder'])
+    elseif Subj_list_1.manual_ex == 1
+        disp(['Participant ' Subj_list_1.name ' was manually rejected during preprocessing.'])
     end
 end

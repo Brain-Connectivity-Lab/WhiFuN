@@ -1,9 +1,8 @@
 function [out_map,matlab_cor] = whifun_seed_corr(func_image_path,seed,radius,output_path,thresh,mask)
 
-func_image = double(niftiread(func_image_path));
+[func_image,func_image_info] = whifun_niftiread(func_image_path);
 [x,y,z,nt] = size(func_image);
 func_image = zscore(func_image,0,4);
-func_image_info = niftiinfo(func_image_path);
 
 matlab_cor = whifun_convert_coords(func_image_info.Transform.T, [seed(1) seed(2) seed(3)], 'mni2vox');
 vox_size = func_image_info.PixelDimensions(1:3);
@@ -17,14 +16,14 @@ out_map = reshape(dot_prod,x,y,z)/nt;
 if exist("mask",'var')
     if ~isnan(mask)
         if~isnumeric(mask)
-            mask = double(niftiread(mask));
+            mask = whifun_niftiread(mask);
         end
         out_map = out_map .* mask;  % Apply the mask to the output map
     end
 end
 
 if exist("output_path",'var')
-    niftisave(out_map,output_path,func_image_info,0,1);
+    niftisave(out_map,output_path,func_image_info,0,1); % here force setting the add offset and multiplicative scalin as we are not saving in the datatype of the header provided
 end
 
 if exist("thresh",'var')
@@ -33,11 +32,11 @@ if exist("thresh",'var')
     [~,file_nii,ext2] = fileparts(file);
     out_map_thresh = out_map;
     out_map_thresh(out_map<thresh(2)) = 0;
-    niftisave(out_map_thresh,fullfile(fold,[file_nii '_thresh-' num2str(thresh(2)) ext2 ext]),func_image_info,0,1);
+    niftisave(out_map_thresh,fullfile(fold,[file_nii '_thresh-' num2str(thresh(2)) ext2 ext]),func_image_info,0,1); % here force setting the add offset and multiplicative scalin as we are not saving in the datatype of the header provided
 
     out_map_thresh = out_map;
     out_map_thresh(out_map>thresh(1)) = 0;
-    niftisave(out_map_thresh,fullfile(fold,[file_nii '_thresh-' num2str(thresh(1)) ext2 ext]),func_image_info,0,1);
+    niftisave(out_map_thresh,fullfile(fold,[file_nii '_thresh-' num2str(thresh(1)) ext2 ext]),func_image_info,0,1); % here force setting the add offset and multiplicative scalin as we are not saving in the datatype of the header provided
 
 
 end

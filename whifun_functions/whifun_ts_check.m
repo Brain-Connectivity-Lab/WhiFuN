@@ -44,7 +44,7 @@ if ~Reg_
 end
 f = figure('position',[10 50 1500 400],'Visible','off');
 
-a = niftiread(func_path_raw);
+a = whifun_niftiread(func_path_raw);
 
 [x,y,z,nt] = size(a);
 a = reshape(a,x*y*z,nt);
@@ -74,8 +74,8 @@ end
 clear ar_mask dtr
 
 
-rest_img = niftiread(func_path_pro);
-rest_mask1 = niftiread(in_func_mni_mask_path);
+rest_img = whifun_niftiread(func_path_pro);
+rest_mask1 = whifun_niftiread(in_func_mni_mask_path);
 
 [x,y,z,nt] = size(rest_img);
 rest_mask1 = reshape(rest_mask1,x*y*z,1);
@@ -83,14 +83,14 @@ rest_mask = zeros(x*y*z,1);
 rest_mask(rest_mask1>0.5) = 1;
 rest_img = reshape(rest_img,x*y*z,nt);
 ar_mask = rest_img(rest_mask==1,:);
-
+gmr = mean(mean(rest_img)); % grand mean (4D)
 % calculate pairwise variance from the residual images (preprocessed images)
 dtr = zeros(1,nt-1);
 for imagei = 1:nt-1
-    dtr(imagei) = (mean((ar_mask(:,imagei) - ar_mask(:,imagei+1)).^2,'omitnan'));
+    dtr(imagei) = (mean((ar_mask(:,imagei) - ar_mask(:,imagei+1)).^2,'omitnan'))/gmr;
 end
 
-meanyr = mean(ar_mask,'omitnan'); % scaled global mean from the residual images (preprocessed images)
+meanyr = mean(ar_mask,'omitnan')./gmr; % scaled global mean from the residual images (preprocessed images)
 
 % plots
 subplot(2,5,1)
