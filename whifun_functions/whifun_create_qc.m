@@ -1,8 +1,4 @@
-function Subj_list = whifun_create_qc(only_check_data)
-
-if ~exist("only_check_data","var")
-    only_check_data = 0;
-end
+function Subj_list = whifun_create_qc
 
 [Subj_list,output_folder] = whifun_create_Subj_list();
 quality_control_path = fullfile(output_folder,'Quality_control');
@@ -32,15 +28,15 @@ end
 disp(report)
 whifun_plot_data_check_figures(quality_control_path,n_image,tr,voxel_func,voxel_anat,mis_data)
 
-if ~only_check_data
-    
-    %%
-    for subji = 1:length(Subj_list)
-        disp('..')
-        disp(['Currently Processing ' Subj_list(subji).name])
-
-        Subj_list_1 = Subj_list(subji);
-        motion_txt = load(complete_filepath(['C:\Users\jainp\Box\practice_NYU_abide\' Subj_list_1.name '\session_1\rest_1\rp_*.txt']));
-        whifun_qc(quality_control_path,Subj_list_1,'motion_txt',motion_txt);
-    end
-end
+% if ~only_check_data
+% 
+%     %%
+%     for subji = 1:length(Subj_list)
+%         disp('..')
+%         disp(['Currently Processing ' Subj_list(subji).name])
+% 
+%         Subj_list_1 = Subj_list(subji);
+%         motion_txt = load(complete_filepath(['C:\Users\jainp\Box\practice_NYU_abide\' Subj_list_1.name '\session_1\rest_1\rp_*.txt']));
+%         whifun_qc(quality_control_path,Subj_list_1,'motion_txt',motion_txt);
+%     end
+% end
