@@ -83,7 +83,7 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
         whifun_qc_initial_align_check(out_folder,template_path,Subj_list_1,slover_slices_native,slover_contour_range_native,slover_view,over_write)
     end
     %% Head motion QC
-    if exist("motion_txt",'var') || ~whifun_isnan_or_empty(Subj_list_1,'motion_txt')
+    if ~isempty(motion_txt) || ~whifun_isnan_or_empty(Subj_list_1,'motion_txt')
         out_folder = fullfile(quality_control_path,'b_Head_motion');
         name = Subj_list_1.name; % Extract the subject name for further processing
 
@@ -160,7 +160,10 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
                 whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,0,over_write)
             end
         end
-
+        
+        % disp('####################################################################')
+        % disp('no seed corr')
+        % disp('####################################################################')
         %% Seed corr plots
         out_folder = fullfile(quality_control_path,"k_Seed_Based_Corr");
         thresh = [-0.1,0.1];
