@@ -1,4 +1,4 @@
-function [out_map,matlab_cor] = whifun_seed_corr(func_image_path,seed,radius,output_path,thresh,mask)
+function [out_map,matlab_cor,thresh] = whifun_seed_corr(func_image_path,seed,radius,output_path,thresh,mask)
 
 [func_image,func_image_info] = whifun_niftiread(func_image_path);
 [x,y,z,nt] = size(func_image);
@@ -32,10 +32,28 @@ if exist("thresh",'var')
     [~,file_nii,ext2] = fileparts(file);
     out_map_thresh = out_map;
     out_map_thresh(out_map<thresh(2)) = 0;
+    nan_vox = isnan(out_map_thresh);
+    out_map_thresh(nan_vox) = 0;
+    if nnz(out_map_thresh) == 0
+        warning([func_image_path ' has no correlations above ' num2str(thresh(2)) ', changing the threshold to 0'])
+        thresh(2) = 0;
+        out_map_thresh = out_map;
+        out_map_thresh(out_map<thresh(2)) = 0;
+    end
+    out_map_thresh(nan_vox) = nan;
     niftisave(out_map_thresh,fullfile(fold,[file_nii '_thresh-' num2str(thresh(2)) ext2 ext]),func_image_info,0,1); % here force setting the add offset and multiplicative scalin as we are not saving in the datatype of the header provided
 
     out_map_thresh = out_map;
     out_map_thresh(out_map>thresh(1)) = 0;
+    nan_vox = isnan(out_map_thresh);
+    out_map_thresh(nan_vox) = 0;
+     if nnz(out_map_thresh) == 0
+        warning([func_image_path ' has no correlations below ' num2str(thresh(1)) ', changing the threshold to 0'])
+        thresh(1) = 0;
+        out_map_thresh = out_map;
+        out_map_thresh(out_map>thresh(2)) = 0;
+     end
+    out_map_thresh(nan_vox) = nan;
     niftisave(out_map_thresh,fullfile(fold,[file_nii '_thresh-' num2str(thresh(1)) ext2 ext]),func_image_info,0,1); % here force setting the add offset and multiplicative scalin as we are not saving in the datatype of the header provided
 
 

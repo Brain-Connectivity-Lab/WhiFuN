@@ -3,13 +3,13 @@ function whifun_seed_corr_qc_plot(output_path,func_path,seed,rad,seed_cor_output
 %% Seed Corr QC Plots 
 if exist("mask","var")
     if ~isempty(mask)
-        whifun_seed_corr(func_path,seed,rad,seed_cor_output_path,thresh,mask);
+        [~,~,thresh] = whifun_seed_corr(func_path,seed,rad,seed_cor_output_path,thresh,mask);
     else
-        whifun_seed_corr(func_path,seed,rad,seed_cor_output_path,thresh);
+        [~,~,thresh] = whifun_seed_corr(func_path,seed,rad,seed_cor_output_path,thresh);
     end
 
 else
-    whifun_seed_corr(func_path,seed,rad,seed_cor_output_path,thresh);
+    [~,~,thresh] = whifun_seed_corr(func_path,seed,rad,seed_cor_output_path,thresh);
 end
 % Axial View
 fg = spm_figure('Create','Graphics','Visible','off');
