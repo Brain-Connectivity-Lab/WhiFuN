@@ -28,6 +28,16 @@ catch ex
                 case 'close msgbox'
                     
             end
+        otherwise
+            
+            fprintf([ '<strong>' ex.identifier '</strong> \n'])
+            fprintf(['Error Message :' '<strong>' ex.message '</strong> \n'])
+            fprintf(['Code ran on ' char(datetime) '\n \n']);
+            for err_i = 1:length(ex.stack)
+                fprintf(['Error using ' '<strong>' ex.stack(err_i).name '</strong>' ' (line ' num2str(ex.stack(err_i).line) ')\n' ])
+
+            end
+            error('See above');
     end
 
 end
