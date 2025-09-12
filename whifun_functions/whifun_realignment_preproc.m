@@ -82,7 +82,8 @@ catch exception                                                                 
     disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
     Subj_list_1.error = 1;                                                                                    % Remove participant from further preprocessing                             % Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).error = 1;
     write_error(exception,quality_control_path, Subj_list_1.name)                % write error to text file and display                % write error to text file, update csv and display
-
+    out_func_path = [];
+    out_motion_txt_path = [];
     return
 end
 disp(['Realignment over for ' Subj_list_1.name])

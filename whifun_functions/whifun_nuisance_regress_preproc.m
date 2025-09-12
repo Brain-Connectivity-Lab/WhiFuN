@@ -68,6 +68,6 @@ catch exception
 
     Subj_list_1.error = 1;                                                                                    % Remove participant from further preprocessing                             % Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list_1.name)).error = 1;
     write_error(exception,quality_control_path, Subj_list_1.name)                % write error to text file and display                % write error to text file, update csv and display
-
+    out_func_mask_path = [];
 end
 disp(['Nuisance REGRESSION is done for ' Subj_list_1.name])

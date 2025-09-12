@@ -71,10 +71,10 @@ if n_vol_dis ~= 0
     catch exception                                                                       % If error is found
 
         disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
-        disp(['Preprocessing has encountered errors in Discarding Initial Volumes for ' Subj_list(subji).name ', I have saved the variables in the participant folder :-) '])
+        disp(['Preprocessing has encountered errors in Discarding Initial Volumes for ' Subj_list_1.name ', I have saved the variables in the participant folder :-) '])
         disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
 
-        Subj_list_1.error = 1;                                                                                    % Remove participant from further preprocessing                             % Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list(subji).name)).error = 1;
+        Subj_list_1.error = 1;                                                                                    % Remove participant from further preprocessing                             % Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list_1.name)).error = 1;
         write_error(exception,quality_control_path, Subj_list_1.name)                % write error to text file and display                % write error to text file, update csv and display
         return
     end
