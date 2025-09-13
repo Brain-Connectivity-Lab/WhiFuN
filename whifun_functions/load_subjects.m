@@ -33,7 +33,7 @@ function [Subj_list,rm] = load_subjects(folder,name,first)
 %
 %   See also READTABLE, TABLE2STRUCT, DETECTIMPORTOPTIONS.
 
-if nargin < 4
+if nargin < 3
     first = 0;
 end
 try
