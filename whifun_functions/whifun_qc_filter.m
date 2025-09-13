@@ -87,3 +87,8 @@ if isempty(fil_qc_file)
         exportgraphics(gf,out_filter_path)
     end
 end
+
+disp(' ')
+disp(['Global timeseries after Filtering QC Plot generated for Participant : ' Subj_list_1.name])
+disp(['See : ' fullfile(out_folder,'Native_Space')])
+disp(' ')

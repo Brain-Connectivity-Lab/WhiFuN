@@ -46,12 +46,13 @@ f = gcf;%
 clf(f);
 set(f,'position',[10 50 1500 400]);
 set(f,'PaperPosition',[10 50 1500 400]);
+
 a = whifun_niftiread(func_path_raw);
 
 [x,y,z,nt] = size(a);
 a = reshape(a,x*y*z,nt);
 
-gm = mean(mean(a)); % grand mean (4D)
+gm = mean(mean(a,'omitnan')); % grand mean (4D)
 
 % calculate pairwise variance
 dt = zeros(1,nt-1);
@@ -85,7 +86,7 @@ rest_mask = zeros(x*y*z,1);
 rest_mask(rest_mask1>0.5) = 1;
 rest_img = reshape(rest_img,x*y*z,nt);
 ar_mask = rest_img(rest_mask==1,:);
-gmr = mean(mean(rest_img)); % grand mean (4D)
+gmr = mean(mean(rest_img,'omitnan')); % grand mean (4D)
 % calculate pairwise variance from the residual images (preprocessed images)
 dtr = zeros(1,nt-1);
 for imagei = 1:nt-1
@@ -246,6 +247,8 @@ end
 [x,y] = find((pval_dt<0.05).*mat_mask);
 hold on; scatter(x,y,[],'r','filled')
 
+set(f,'position',[10 50 1500 400]);
+set(f,'PaperPosition',[10 50 1500 400]);
 exportgraphics(f,out_image_path);
 
 end

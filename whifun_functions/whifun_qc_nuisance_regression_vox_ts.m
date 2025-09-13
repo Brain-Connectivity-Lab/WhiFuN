@@ -36,14 +36,18 @@ function whifun_qc_nuisance_regression_vox_ts(out_folder1,Subj_list_1,slover_sli
 %
 %   Author: Pratik Jain
 %   See also WHIFUN_CREATE_FILE, WHIFUN_TS_QC, WHIFUN_TS_MASK_QC, MKDIR.
-out_image_path_bef = fullfile(out_folder1,'Native_Space','Vox_ts','Before_Nuisance_regression_vox_ts',[Subj_list_1.name '.png']);
+
+[~,befo_reg_file,~] = fileparts(Subj_list_1.realigned_func_native);
+
+out_image_path_bef = fullfile(out_folder1,'Native_Space','Vox_ts','Before_Nuisance_regression_vox_ts',[Subj_list_1.name '_file-' befo_reg_file '.png']);
 [out_folder,~,~] = fileparts(out_image_path_bef);
 if ~exist(out_folder, 'dir')
     mkdir(out_folder);
 end
 reg_qc_file_bef = whifun_create_file(over_write,out_image_path_bef);
+[~,after_reg_file,~] = fileparts(Subj_list_1.nuisance_regressed_func_native);
 
-out_image_path_aft = fullfile(out_folder1,'Native_Space','Vox_ts','After_Nuisance_regression_vox_ts',[Subj_list_1.name '.png']);
+out_image_path_aft = fullfile(out_folder1,'Native_Space','Vox_ts','After_Nuisance_regression_vox_ts',[Subj_list_1.name '_file-' after_reg_file '.png']);
 [out_folder,~,~] = fileparts(out_image_path_aft);
 if ~exist(out_folder, 'dir')
     mkdir(out_folder);
@@ -57,6 +61,7 @@ out_mask_path = fullfile(out_folder1,'Native_Space','Vox_ts','Masks_for_Vox_ts')
 if isempty(reg_qc_file_bef) || isempty(reg_qc_file_aft)
     %% Vox TS plots
     f = gcf;
+    clf(f);
     GM_mask_path = Subj_list_1.GM_native;
     WM_mask_path = Subj_list_1.WM_native;
     CSF_mask_path = Subj_list_1.CSF_native;
@@ -73,5 +78,7 @@ if isempty(reg_qc_file_bef) || isempty(reg_qc_file_aft)
     deep_WM_mask_path = fullfile(now_mask_path.folder,['deep_' 'num_er-' num2str(num_erosions) '_' now_mask_path.name]);
     whifun_ts_mask_qc(out_mask_path,GM_mask_path,WM_mask_path,deep_WM_mask_path,CSF_mask_path,Subj_list_1.realigned_func_native,Subj_list_1.name,slover_slices_ss,slover_contour_range_ss,slover_view)
 end
-
-disp(['Nuisance Regression qc done for ' Subj_list_1.name])
+disp(' ')
+disp(['Nuisance Regression Voxel Timeseries QC Plot Generated ' Subj_list_1.name])
+disp(['See : ' fullfile(out_folder1,'Native_Space','Vox_ts')])
+disp(' ')

@@ -34,9 +34,9 @@ function whifun_qc_smooth(out_folder,func_image,name,slover_slices_ss,slover_con
 %   Author: Pratik Jain
 %   See also WHIFUN_CREATE_FILE, WHIFUN_ORTHO_SLOVER_SINGLE_IMAGE_SAVE.
 
-
-out_ortho_image_path = fullfile(out_folder,'Orthoslice_View',[name '.png']);
-out_slover_image_path = fullfile(out_folder,[slover_view '_View'],[name '.png']);
+[~,func_image_name,~] = fileparts(func_image);
+out_ortho_image_path = fullfile(out_folder,'Orthoslice_View',[name '_file-' func_image_name '.png']);
+out_slover_image_path = fullfile(out_folder,[slover_view '_View'],[name '_file-' func_image_name '.png']);
 
 out_ortho_image_1_path = whifun_create_file(over_write,out_ortho_image_path);
 out_slover_image_1_path = whifun_create_file(over_write,out_slover_image_path);
@@ -55,4 +55,8 @@ end
 
 whifun_ortho_slover_single_image_save(func_image,out_ortho_image_1_path,out_slover_image_1_path,slover_slices_ss,slover_contour_range_ss,slover_view)
 
+disp(' ')
+disp(['Smoothed Image QC plot generated for Participant : ' name ])
+disp(['See : ', out_folder])
+disp(' ')
 end

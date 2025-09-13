@@ -33,9 +33,12 @@ function whifun_ts_mask_qc(output_path,GM_mask_path,WM_mask_path,deep_WM_mask_pa
 %
 %   Author: Pratik Jain
 %   See also MKDIR, SPM_FIGURE, SPM_CHECK_REGISTRATION, SPM_ORTHVIEWS, SPM_VOL, EXPORTGRAPHICS.
-
-mkdir(fullfile(output_path),'Orthoslice_View')
-mkdir(fullfile(output_path),[slover_view '_Slice_View'])
+if ~exist(fullfile(output_path,'Orthoslice_View'),"dir")
+    mkdir(fullfile(output_path,'Orthoslice_View'))
+end
+if ~exist(fullfile(output_path,[slover_view '_Slice_View']),'dir')
+    mkdir(fullfile(output_path,[slover_view '_Slice_View']))
+end
 now_func_path = dir(func_path);
 ref = [now_func_path(1).folder,filesep,now_func_path(1).name];
 ref_cap = now_func_path.name;

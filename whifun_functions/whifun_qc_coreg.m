@@ -49,4 +49,7 @@ out_coreg_slover_path = whifun_create_file(over_write,out_image_path);
 if isempty(out_coreg_slover_path)
     whifun_qc_coreg_slover(anat_image_path,[func_image_path ',1'],out_image_path,slover_slices_ss,slover_contour_range_ss,slover_view);
 end
-disp(['Co-registeration qc done for ' name])
+disp(' ')
+disp(['Co-registeration QC plot generated for ' name])
+disp(['See : ' fullfile(out_folder,'Native_Space')])
+disp(' ')

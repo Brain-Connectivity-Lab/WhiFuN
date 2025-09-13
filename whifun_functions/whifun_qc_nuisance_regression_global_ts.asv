@@ -73,7 +73,7 @@ if isempty(reg_qc_file)
     if REG_CSF || motion_reg
         if motion_reg
             % Loading the motion parameters
-            % disp(['Obtained the motion parameters from : ' in_motion_txt_path])
+            disp(['Obtained the motion parameters from : ' in_motion_txt_path])
             rp=load(Subj_list_1.motion_txt);
             rp_temp = rp(1:nt,:);
             rp = zscore(rp_temp);
@@ -84,7 +84,7 @@ if isempty(reg_qc_file)
         end
 
         if REG_CSF
-            % disp(['Obtained csf timeseries from : ' in_csf_mat_path])
+            disp(['Obtained csf timeseries from : ' in_csf_mat_path])
             load(Subj_list_1.nuisance_regression_csf_covariates); 
             if exist("pca_CSF",'var')
                 csf_reg = zscore(pca_CSF(:,1:n_pca)); %#ok<USENS>
@@ -110,37 +110,31 @@ if isempty(reg_qc_file)
     clf(f)
     subplot(n_plots,1,1)
     plot(global_ts-mean(global_ts));
-    title(['Global Time Series (mean subtracted), before Nuisance regression' ' Subject ' Subj_list_1.name])
-    ylabel('Bold Signal (mean substracted)')
+
+    subplot(n_plots,1,n_plots)
+    plot(global_ts_r -mean(global_ts_r))
 
     if motion_reg && REG_CSF
         subplot(n_plots,1,2)
         plot(rp_auto)
-        title('Motion regressors')
+
         subplot(n_plots,1,3)
         plot(csf_reg)
-        title('CSF regressors')
     else
         if motion_reg
             subplot(n_plots,1,2)
             plot(rp_auto)
-            title('Motion regressors')
-
         elseif REG_CSF
             subplot(n_plots,1,2)
             plot(csf_reg)
-            title('CSF regressors')
-
         end
     end
 
-    subplot(n_plots,1,n_plots)
-    plot(global_ts_r -mean(global_ts_r))
-    title(['Global Time Series (mean subtracted), After Nuisance regression' ' Subject ' Subj_list_1.name])
-    ylabel('Bold Signal (mean substracted)')
+    title(['Global Time Series (mean subtracted)' ' Subject ' Subj_list_1.name])
+    legend(leg,"Location","best");
 
     xlabel('time points')
-    
+    ylabel('Bold Signal (mean substracted)')
     exportgraphics(f,out_image_path)
 end
 disp(' ')

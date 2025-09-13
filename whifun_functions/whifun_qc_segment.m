@@ -74,4 +74,8 @@ if isempty(seg_qc_file)
     exportgraphics(fg,out_seg_qc_slover_path)
 end
 
+disp(' ')
+disp(['Segmentation QC Plots genereated for Participant : ' name])
+disp(['See : ' fullfile(out_folder,[space_name '_Space'])])
+disp(' ')
 end

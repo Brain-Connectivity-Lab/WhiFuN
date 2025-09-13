@@ -39,19 +39,18 @@ if ~exist('over_write','var')
     over_write = 0; % Default value for over_write if not provided
 end
 
-disp(['Anatomical and Functional initial alignment check for ' Subj_list_1.name])
-
 % Initial anat file check
 % Plot the anatomical image and check its intitial position with reference to the MNI template
 
 now_anat_path = dir(Subj_list_1.nii_anat_native) ;
 now_anat_path = whifun_multiple_file_found(now_anat_path,'anatomical');
 image_2_path = template_path;
-
+[~,anat_name,~] = fileparts(now_anat_path.name);
+[~,template_name,~] = fileparts(template_path);
 
 image_1_path = fullfile(now_anat_path.folder,now_anat_path.name);
 out_ortho_path = fullfile(out_folder,'Native_Space','anat','Orthoslice_View',[Subj_list_1.name '_anat.png']);
-out_slover_path = fullfile(out_folder,'Native_Space','anat',[slover_view '_View'],[Subj_list_1.name '_anat.png']);
+out_slover_path = fullfile(out_folder,'Native_Space','anat',[slover_view '_View'],[Subj_list_1.name '_underlay-' anat_name '_overlay_contour-' template_name '.png']);
 
 store_ortho_slover_images(image_1_path,image_2_path,out_ortho_path,out_slover_path,slover_slices,slover_contour_range,slover_view,over_write)
 
@@ -60,14 +59,18 @@ store_ortho_slover_images(image_1_path,image_2_path,out_ortho_path,out_slover_pa
 % Plot the first functional image and check its intitial position with reference to the MNI template
 now_func_path = dir(Subj_list_1.nii_func_native) ;
 now_func_path = whifun_multiple_file_found(now_func_path,'functional');
+[~,func_name,~] = fileparts(now_func_path.name);
 
 image_1_path = fullfile(now_func_path.folder,[now_func_path.name ',1']);
 out_ortho_path = fullfile(out_folder,'Native_Space','func','Orthoslice_View',[Subj_list_1.name '_func.png']);
-out_slover_path = fullfile(out_folder,'Native_Space','func',[slover_view '_View'],[Subj_list_1.name '_func.png']);
+out_slover_path = fullfile(out_folder,'Native_Space','func',[slover_view '_View'],[Subj_list_1.name '_underlay-' func_name '_overlay_contour-' template_name '.png']);
 
 store_ortho_slover_images(image_1_path,image_2_path,out_ortho_path,out_slover_path,slover_slices,slover_contour_range,slover_view,over_write)
 
-disp(['Anatomical and Functional initial alignment check done for' Subj_list_1.name])
+disp(' ')
+disp(['Anatomical and Functional initial alignment images stored for ' Subj_list_1.name])
+disp(['See : ' fullfile(out_folder,'Native_Space')])
+disp(' ')
 
 
 function store_ortho_slover_images(image_1_path,image_2_path,out_ortho_path,out_slover_path,slover_slices,slover_contour_range,slover_view,over_write)

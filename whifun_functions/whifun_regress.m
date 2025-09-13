@@ -1,4 +1,4 @@
-function func_mask_path = whifun_regress(in_func_path,in_anat_mask_subj_space_path,in_csf_mat_path,in_motion_txt_path,out_func_path,motion_reg,n_pca)
+function func_mask_path = whifun_regress(in_func_path,in_anat_mask_subj_space_path,in_csf_mat_path,in_motion_txt_path,out_func_path,n_pca)
 % WHIFUN_REGRESS Performs nuisance regression on functional data.
 %
 %   func_mask_path = WHIFUN_REGRESS(in_func_path, ..., n_pca) performs
@@ -54,36 +54,41 @@ REST_MASK(REST_MASK1>0.5) = 1;
 % Loading Time Series realigned rest file
 
 y_image_func = whifun_niftiread(fullfile(now_func_path.folder,now_func_path.name));
-if motion_reg == 1
-    % Loading the motion parameters
-    disp(['Obtained the motion parameters from : ' in_motion_txt_path])
-    rp=load(in_motion_txt_path);
-    rp_temp = rp(1:nt,:);
-    rp = zscore(rp_temp);
-    rp_previous = [0 0 0 0 0 0; rp(1:end-1,:)];
-    rp_auto = [rp rp.^2 rp_previous rp_previous.^2];
-else
-    rp_auto = [];
-end
-
-disp(['Obtained csf timeseries from : ' in_csf_mat_path])
-load(in_csf_mat_path); %#ok<LOAD>
-
-
 mean_image_REST = mean(y_image_func,4);   % calculate mean across time for all voxels | can be added back after regression to improve ICA performance
 
-if exist("pca_CSF",'var')
-    b_init = zscore([pca_CSF(:,1:n_pca) rp_auto]); %#ok<USENS> 
+if ~isempty(in_motion_txt_path) || ~isempty(in_csf_mat_path)
+    if ~isempty(in_motion_txt_path)
+        % Loading the motion parameters
+        disp(['Obtained the motion parameters from : ' in_motion_txt_path])
+        rp=load(in_motion_txt_path);
+        rp_temp = rp(1:nt,:);
+        rp = zscore(rp_temp);
+        rp_previous = [0 0 0 0 0 0; rp(1:end-1,:)];
+        rp_auto = [rp rp.^2 rp_previous rp_previous.^2];
+    else
+        rp_auto = [];
+    end
+
+    if ~isempty(in_csf_mat_path)
+        disp(['Obtained csf timeseries from : ' in_csf_mat_path])
+        load(in_csf_mat_path); %#ok<LOAD>
+        if exist("pca_CSF",'var')
+            b_init = zscore([pca_CSF(:,1:n_pca) rp_auto]); %#ok<USENS>
+        else
+            b_init = zscore([MEAN_CSF_REST rp_auto]);
+        end
+    else
+        b_init = zscore(rp_auto);
+    end
 else
-    b_init = zscore([MEAN_CSF_REST rp_auto]); 
+    warning('No Motion or CSF regressors specified. Skipping Nuisance Regression')
+    return
 end
 
 y_image_func_regressed = zeros(size(y_image_func));
 X = image_dim_REST(2);
 Y = image_dim_REST(3);
 for vi = 1:image_dim_REST(1)
-%     fprintf('%d ',vi)
-
     for vj = 1:X
         for vk = 1:Y
             if REST_MASK(vi,vj,vk)==0
@@ -92,7 +97,7 @@ for vi = 1:image_dim_REST(1)
 
             else
 
-                % CSF, WM and MOTION Regressors and Regressors from OTHER SESSIONs for the same subject
+                % CSF, MOTION Regressors
 
                 [~,~,y_image_func_regressed(vi,vj,vk,:)] = regress(shiftdim(y_image_func(vi,vj,vk,:),3),[b_init ones(nt,1)]);
                 y_image_func_regressed(vi,vj,vk,:) = y_image_func_regressed(vi,vj,vk,:) + mean_image_REST(vi,vj,vk);  
