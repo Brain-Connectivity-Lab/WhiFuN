@@ -80,7 +80,7 @@ addParameter(p, 'greater_than_20', 0.2, @isnumeric);
 addParameter(p, 'skull_pre', 'b', @(x) ischar(x) || isstring(x));
 
 % CSF mask / PCA
-addParameter(p, 'Reg_', 0, @(x) islogical(x) || isnumeric(x));
+addParameter(p, 'Reg_CSF', 0, @(x) islogical(x) || isnumeric(x));
 addParameter(p, 'CSF_thres','0.95', @(x) ischar(x) || isstring(x));
 addParameter(p, 'pca_for_temp_reg', 0, @(x) islogical(x) || isnumeric(x));
 addParameter(p, 'n_pca', 5, @(x) isnumeric(x) && isscalar(x) && x>=0);
@@ -128,7 +128,7 @@ greater_than_20 = params.greater_than_20;
 
 skull_pre = char(params.skull_pre);
 
-Reg_ = logical(params.Reg_);
+Reg_CSF = logical(params.Reg_CSF);
 CSF_thres = params.CSF_thres;
 pca_for_temp_reg = logical(params.pca_for_temp_reg);
 n_pca = params.n_pca;
@@ -259,9 +259,9 @@ if Subj_list_1.error
 end
 
 %%     9     Making CSF_MASK for REST And 10 Extracting CSF time-series
-if Reg_ == 1
+if Reg_CSF == 1
     in_csf_tpm_path = CSF_native_space_path;
-    in_func_path = out_func_path;
+    
     [Subj_list_1,out_csf_mask_func_path] = whifun_csf_mask_extraction_preproc(quality_control_path,Subj_list_1,in_func_path,in_csf_tpm_path,CSF_thres,log_fileID,over_write);
     if Subj_list_1.error
         return
@@ -270,22 +270,34 @@ else
     disp('Since No Regression is Specified, CSF Mask will not be created')
 end
 
-if Reg_ == 1
+if Reg_CSF == 1
     in_csf_mask_func_path = out_csf_mask_func_path;
     [Subj_list_1,out_csf_mat_path] = whifun_extract_csf_ts_preproc(quality_control_path,Subj_list_1,in_func_path,in_csf_mask_func_path,pca_for_temp_reg,n_pca,log_fileID,over_write);
     if Subj_list_1.error
         return
     end
+end
+
+if motion_reg == 1 || Reg_CSF == 1
+    if Reg_CSF == 1
+        in_csf_mat_path = out_csf_mat_path;
+    else
+        in_csf_mat_path = [];
+    end
     %%               Nuisance REGRESSION
     in_anat_mask_native_space_path = out_anat_mask_native_space_path;
-    in_csf_mat_path = out_csf_mat_path;
-    in_motion_txt_path = out_motion_txt_path;
-    [Subj_list_1,out_func_path,out_func_mask_path] = whifun_nuisance_regress_preproc(quality_control_path,Subj_list_1,in_func_path,in_anat_mask_native_space_path,motion_reg,Reg_pre,n_pca,in_csf_mat_path,in_motion_txt_path,log_fileID,over_write);
+    in_func_path = out_func_path;
+    if motion_reg == 1
+        in_motion_txt_path = out_motion_txt_path;
+    else
+        in_motion_txt_path = [];
+    end
+    
+    [Subj_list_1,out_func_path,out_func_mask_path] = whifun_nuisance_regress_preproc(quality_control_path,Subj_list_1,in_func_path,in_anat_mask_native_space_path,Reg_pre,n_pca,in_csf_mat_path,in_motion_txt_path,log_fileID,over_write);
 
     if Subj_list_1.error
         return
     end
-
 else
     disp('Nuisance Regression Skipped')
     if filter_check
