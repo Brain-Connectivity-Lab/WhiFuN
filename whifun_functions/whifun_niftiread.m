@@ -26,5 +26,7 @@ function [volume,info] = whifun_niftiread(image_path)
 % Read the NIfTI image file
 volume = double(niftiread(image_path));
 info = niftiinfo(image_path);
-volume = info.AdditiveOffset + volume.*info.MultiplicativeScaling;
+if info.MultiplicativeScaling
+    volume = info.AdditiveOffset + volume.*info.MultiplicativeScaling;
+end
 end
