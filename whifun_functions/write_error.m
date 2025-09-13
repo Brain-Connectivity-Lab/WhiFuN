@@ -19,7 +19,7 @@ function write_error(exception,quality_control_path,name)
         fprintf(err_fileID,['Error Message :'  exception.message '\n']);
         
         for err_i = 1:length(exception.stack)
-            fprintf(err_fileID,['Error using ' exception.stack(err_i).name ' (line ' num2str(exception.stack(err_i).line) ')\n' ]);
+            fprintf(err_fileID,'%s',['Error using ' exception.stack(err_i).name ' (line ' num2str(exception.stack(err_i).line) ')\n' ]);
         end
         fprintf(err_fileID,'\n');
         fclose(err_fileID);
