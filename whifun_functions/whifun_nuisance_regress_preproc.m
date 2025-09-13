@@ -1,4 +1,4 @@
-function [Subj_list_1,out_func_path,out_func_mask_path] = whifun_nuisance_regress_preproc(quality_control_path,Subj_list_1,in_func_path,in_anat_mask_subj_space_path,motion_reg,Reg_pre,n_pca,in_csf_mat_path,in_motion_txt_path,log_fileID,over_write) %#ok<INUSD>
+function [Subj_list_1,out_func_path,out_func_mask_path] = whifun_nuisance_regress_preproc(quality_control_path,Subj_list_1,in_func_path,in_anat_mask_subj_space_path,Reg_pre,n_pca,in_csf_mat_path,in_motion_txt_path,log_fileID,over_write) %#ok<INUSD>
 % WHIFUN_NUISANCE_REGRESS_PREPROC Orchestrates nuisance regression.
 %
 %   [Subj_list_1, out_func_path] = WHIFUN_NUISANCE_REGRESS_PREPROC(...)
@@ -22,8 +22,7 @@ function [Subj_list_1,out_func_path,out_func_mask_path] = whifun_nuisance_regres
 %   Subj_list_1             - A single subject structure to be updated.
 %   in_func_path            - Path to the input functional file.
 %   in_anat_mask_subj_space_path - Path to the anatomical mask file.
-%   motion_reg              - A logical value (0 or 1) to include motion
-%                             regressors.
+
 %   Reg_pre                 - The prefix for the output regressed file.
 %   n_pca                   - Number of PCA components for CSF regression.
 %   in_csf_mat_path         - Path to the CSF time series `.mat` file.
@@ -51,7 +50,7 @@ try
     Reg_dir = whifun_create_file(over_write,out_func_path);
     
     if isempty(Reg_dir)
-        reg_op = evalc('out_func_mask_path = whifun_regress(in_func_path,in_anat_mask_subj_space_path,in_csf_mat_path,in_motion_txt_path,out_func_path,motion_reg,n_pca)');
+        reg_op = evalc('out_func_mask_path = whifun_regress(in_func_path,in_anat_mask_subj_space_path,in_csf_mat_path,in_motion_txt_path,out_func_path,n_pca)');
         fprintf(log_fileID,'#####################################################################################################################\n \n');
         fprintf(log_fileID, 'Nuisance Regression\n');
         fprintf(log_fileID,'%s',  reg_op);
