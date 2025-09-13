@@ -19,7 +19,7 @@ addParameter(p, 'slover_view', 'axial', @ischar);
 addParameter(p, 'max_fd', 5, @isnumeric);
 addParameter(p, 'mean_fd', 0.2, @isnumeric);
 addParameter(p, 'greater_than_20', 0.2, @isnumeric);
-addParameter(p, 'Reg_', 0);
+addParameter(p, 'Reg_CSF', 0);
 addParameter(p, 'n_pca', 5, @isnumeric);
 addParameter(p, 'motion_reg', 0, @islogical);
 addParameter(p, 'pca_for_temp_reg', 0, @islogical);
@@ -47,7 +47,7 @@ slover_view          = params.slover_view;
 max_fd               = params.max_fd;
 mean_fd              = params.mean_fd;
 greater_than_20      = params.greater_than_20;
-Reg_                 = params.Reg_;
+Reg_CSF              = params.Reg_CSF;
 n_pca                = params.n_pca;
 motion_reg           = params.motion_reg;
 pca_for_temp_reg     = params.pca_for_temp_reg;
@@ -59,6 +59,7 @@ motion_txt           = params.motion_txt;
 if any(isnan(template_path)) || isempty(template_path)
     whifun_path = fileparts(which('whifun'));
     template_path = fullfile(whifun_path,'Templates','MNI152_T1_2mm_brain.nii');
+    warning('Choosing the Default WhifuN MNI template: MNI152_T1_2mm_brain.nii, as template was not specified')
 end
 % ---- Your function logic here ---- %
 % disp('Running QC with these params:');
@@ -88,6 +89,7 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
         end
         % whifun_qc_head_motion(out_folder,Subj_list_1,max_fd,mean_fd,greater_than_20,over_write,motion_txt)
         whifun_qc_head_motion(out_folder,func_path,name,max_fd,mean_fd,greater_than_20,over_write,motion_txt)
+      
     end
 
     if Subj_list_1.motion_ex ~= 1
@@ -109,16 +111,18 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
 
 
         %% CSF mask
-        if Reg_
+        if Reg_CSF
             out_folder = fullfile(quality_control_path,'e_CSF_Masks_for_Regression');
             if ~whifun_isnan_or_empty(Subj_list_1,'coregistered_func_native') && ~whifun_isnan_or_empty(Subj_list_1,'CSF_mask_func_native')
                 whifun_qc_csf_mask_alignment(out_folder,Subj_list_1.coregistered_func_native,Subj_list_1.CSF_mask_func_native,Subj_list_1.name,slover_slices_native,slover_contour_range_native,slover_view,over_write)
             end
+        end
 
-            %% Regression QC
+        %% Regression QC
+        if Reg_CSF || motion_reg
             out_folder = fullfile(quality_control_path,'f_Nuisance_Regression');
             if ~whifun_isnan_or_empty(Subj_list_1,'coregistered_func_native') && ~whifun_isnan_or_empty(Subj_list_1,'nuisance_regressed_func_native') && ~whifun_isnan_or_empty(Subj_list_1,'motion_txt') && ~whifun_isnan_or_empty(Subj_list_1,'nuisance_regression_csf_covariates')
-                whifun_qc_nuisance_regression_global_ts(out_folder,Subj_list_1,motion_reg,pca_for_temp_reg,over_write,n_pca)
+                whifun_qc_nuisance_regression_global_ts(out_folder,Subj_list_1,Reg_CSF,motion_reg,pca_for_temp_reg,over_write,n_pca)
 
                 if ~whifun_isnan_or_empty(Subj_list_1,'GM_native') && ~whifun_isnan_or_empty(Subj_list_1,'WM_native') && ~whifun_isnan_or_empty(Subj_list_1,'CSF_native')
                     whifun_qc_nuisance_regression_vox_ts(out_folder,Subj_list_1,slover_slices_native,slover_contour_range_native,slover_view,over_write)
@@ -158,8 +162,7 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
         out_folder = fullfile(quality_control_path,'j_Time_series_check');
         if ~whifun_isnan_or_empty(Subj_list_1,'initial_func_native')
             if ~whifun_isnan_or_empty(Subj_list_1,'nuisance_regression_csf_covariates')
-                whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,Reg_,over_write,Subj_list_1.nuisance_regression_csf_covariates,n_pca,pca_for_temp_reg)
-                % whifun_qc_global_ts(out_folder,Subj_list_1,Reg_,over_write,n_pca,pca_for_temp_reg)
+                whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,Reg_CSF,over_write,Subj_list_1.nuisance_regression_csf_covariates,n_pca,pca_for_temp_reg)
             else
                 whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,0,over_write)
             end
