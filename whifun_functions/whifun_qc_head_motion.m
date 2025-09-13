@@ -48,8 +48,9 @@ fd = sum(rp_diff_trans,2) + sum(rp_diff_rotat,2)  ;
 
 % plots
 if isempty(head_mot_qc_file) || over_write == 1
-    f = figure('Position', get(0,'screensize'),'visible','off');
-
+    % f = figure('Position', get(0,'screensize'),'visible','off');
+    f = gcf;
+    clf(f)
     subplot(2,2,1)
     plot(meany)
     title('Global mean (raw)');xlabel('Image number')

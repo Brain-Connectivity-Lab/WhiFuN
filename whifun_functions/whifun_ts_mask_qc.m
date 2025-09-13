@@ -44,7 +44,7 @@ ref_cap = now_func_path.name;
 imgs = char(GM_mask_path,...  % Display the Gray matter segmentation
     [ref ',1']);                    %#ok<NASGU> % Display the reference func image
 
-fg = spm_figure('Create','Graphics','Visible','off');
+fg = spm_figure('GetWin','Graphics');
 
 [~] = evalc('spm_check_registration(imgs)');
 
@@ -89,10 +89,10 @@ spm_orthviews('Xhairs','off')
 exportgraphics(fg,fullfile(output_path,'Orthoslice_View',[name '.png']))
 
 % Axial View
-fg = spm_figure('Create','Graphics','Visible','off');
-temp = spm('WinSize','Graphics');
-set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
-set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
+fg = spm_figure('GetWin','Graphics');
+% temp = spm('WinSize','Graphics');
+% set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
+% set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
 mapp = ones(64,3);
 mapp(1:32,:) = 0;
 rmap = mapp.*[1,0,0];

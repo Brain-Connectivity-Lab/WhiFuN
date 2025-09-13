@@ -42,8 +42,10 @@ if ~Reg_
     n_pca = [];
     pca_for_temp_reg = [];
 end
-f = figure('position',[10 50 1500 400],'Visible','off');
-
+f = gcf;%
+clf(f);
+set(f,'position',[10 50 1500 400]);
+set(f,'PaperPosition',[10 50 1500 400]);
 a = whifun_niftiread(func_path_raw);
 
 [x,y,z,nt] = size(a);
@@ -150,6 +152,7 @@ else
 end
 subplot(2,5,5)
 imagesc(corr_raw)
+colormap("jet")
 clim([-1 1]);
 if Reg_
     if pca_for_temp_reg == 0
@@ -198,6 +201,8 @@ hold on; scatter(x,y,[],'r','filled')
 
 subplot(2,5,10)
 imagesc(corr_dt)
+colormap("jet")
+
 clim([-1 1]);
 if Reg_
     if pca_for_temp_reg == 0

@@ -56,7 +56,7 @@ out_mask_path = fullfile(out_folder1,'Native_Space','Vox_ts','Masks_for_Vox_ts')
 
 if isempty(reg_qc_file_bef) || isempty(reg_qc_file_aft)
     %% Vox TS plots
-    f = figure('visible','off');
+    f = gcf;
     GM_mask_path = Subj_list_1.GM_native;
     WM_mask_path = Subj_list_1.WM_native;
     CSF_mask_path = Subj_list_1.CSF_native;

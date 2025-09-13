@@ -62,13 +62,15 @@ if isempty(reg_qc_file)
     else
         leg{3} = 'Mean CSF';
     end
-    f = figure('visible','off'); plot(global_ts-mean(global_ts));
+    f = gcf;
+    clf(f)
+    plot(global_ts-mean(global_ts));
     hold on
     plot(global_ts_r -mean(global_ts_r))
     hold on
     plot(b_init)
     title(['Global Time Series (mean subtracted)' ' Subject ' Subj_list_1.name])
-    legend(leg)
+    legend(leg,"Location","best");
 
     xlabel('time points')
     ylabel('Bold Signal (mean substracted)')

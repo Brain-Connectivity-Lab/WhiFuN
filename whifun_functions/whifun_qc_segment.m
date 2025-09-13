@@ -48,7 +48,7 @@ end
 if isempty(seg_qc_file)
     % Quality Control
 
-    fg = spm_figure('Create','Graphics','Visible','off');
+    fg = spm_figure('GetWin','Graphics');
     whifun_create_seg_overlaps(GM_path,WM_path,CSF_path,ref,'Red-GM, Green-WM, Blue-CSF',ref_cap)
     exportgraphics(fg,out_seg_qc_ortho_path)
 end
@@ -60,10 +60,10 @@ if ~exist(fileparts(out_seg_qc_slover_path),'dir')
 end
 if isempty(seg_qc_file)
     % Axial View
-    fg = spm_figure('Create','Graphics','Visible','off');
-    temp = spm('WinSize','Graphics');
-    set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
-    set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
+    fg = spm_figure('GetWin','Graphics');
+    % temp = spm('WinSize','Graphics');
+    % set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
+    % set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
     mapp = ones(64,3);
     mapp(1:32,:) = 0;
     rmap = mapp.*[1,0,0];

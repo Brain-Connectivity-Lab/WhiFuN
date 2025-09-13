@@ -30,7 +30,8 @@ if ~isempty(motion_txt)
         % Quality Control
         % Plot the mean time series after Normalization
 
-        f = figure('visible','off');
+        f = gcf;
+        clf(f);
         GM_mask_path = GM_MNI;
         WM_mask_path = WM_MNI;
         CSF_mask_path = CSF_MNI;

@@ -44,7 +44,7 @@ disp(['Anatomical and Functional initial alignment check for ' Subj_list_1.name]
 % Initial anat file check
 % Plot the anatomical image and check its intitial position with reference to the MNI template
 
-now_anat_path = dir(Subj_list_1.nii_anat) ;
+now_anat_path = dir(Subj_list_1.nii_anat_native) ;
 now_anat_path = whifun_multiple_file_found(now_anat_path,'anatomical');
 image_2_path = template_path;
 
@@ -58,7 +58,7 @@ store_ortho_slover_images(image_1_path,image_2_path,out_ortho_path,out_slover_pa
 
 % Initial func file check
 % Plot the first functional image and check its intitial position with reference to the MNI template
-now_func_path = dir(Subj_list_1.nii_func) ;
+now_func_path = dir(Subj_list_1.nii_func_native) ;
 now_func_path = whifun_multiple_file_found(now_func_path,'functional');
 
 image_1_path = fullfile(now_func_path.folder,[now_func_path.name ',1']);

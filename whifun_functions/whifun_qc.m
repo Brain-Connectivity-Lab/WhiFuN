@@ -1,13 +1,3 @@
-% function Subj_list_1 = whifun_qc(quality_control_path,Subj_list_1,over_write,...
-%                         template_path,...
-%                         slover_slices_native,slover_contour_range_native,...
-%                         slover_slices_mni,slover_contour_range_mni,...
-%                         slover_view,...
-%                         max_fd,mean_fd,greater_than_20,...
-%                         Reg_,n_pca,motion_reg,pca_for_temp_reg,...
-%                         filter_check,filter_lp,filter_hp,...
-%                         Smooth_)
-
 function whifun_qc(quality_control_path, Subj_list_1, varargin)
 
 % Create input parser
@@ -73,12 +63,16 @@ end
 % ---- Your function logic here ---- %
 % disp('Running QC with these params:');
 % disp(params);
+fg = spm_figure('Create','Graphics','Visible','off');
+temp = spm('WinSize','Graphics');
+set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
+set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
 
 if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
 
     %% Anatomical and Functional initial alignment check
 
-    if ~whifun_isnan_or_empty(Subj_list_1,'nii_func') && ~whifun_isnan_or_empty(Subj_list_1,'nii_anat')
+    if ~whifun_isnan_or_empty(Subj_list_1,'nii_func_native') && ~whifun_isnan_or_empty(Subj_list_1,'nii_anat_native')
         out_folder = fullfile(quality_control_path,'a_Initial_check');
         whifun_qc_initial_align_check(out_folder,template_path,Subj_list_1,slover_slices_native,slover_contour_range_native,slover_view,over_write)
     end
@@ -150,20 +144,6 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
             whifun_qc_final_func_MNI(out_folder,Subj_list_1.final_func_MNI,Subj_list_1.GM_MNI,Subj_list_1.WM_MNI,Subj_list_1.CSF_MNI,template_path,motion_txt,Subj_list_1.name,slover_slices_mni,slover_contour_range_final_mni,slover_view,over_write)
         end
 
-        %% 16 Time series Quality Check
-        out_folder = fullfile(quality_control_path,'j_Time_series_check');
-        if ~whifun_isnan_or_empty(Subj_list_1,'initial_func_native')
-            if ~whifun_isnan_or_empty(Subj_list_1,'nuisance_regression_csf_covariates')
-                whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,Reg_,over_write,Subj_list_1.nuisance_regression_csf_covariates,n_pca,pca_for_temp_reg)
-                % whifun_qc_global_ts(out_folder,Subj_list_1,Reg_,over_write,n_pca,pca_for_temp_reg)
-            else
-                whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,0,over_write)
-            end
-        end
-        
-        % disp('####################################################################')
-        % disp('no seed corr')
-        % disp('####################################################################')
         %% Seed corr plots
         out_folder = fullfile(quality_control_path,"k_Seed_Based_Corr");
         thresh = [-0.1,0.1];
@@ -172,6 +152,17 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
 
         if ~whifun_isnan_or_empty(Subj_list_1,'final_func_MNI')
             whifun_qc_seed_corr(out_folder,Subj_list_1.final_func_MNI,Subj_list_1.name,thresh,rad,slover_slices_mni,slover_view,over_write,Subj_list_1.func_mask_MNI)
+        end
+
+        %% Time series Quality Check
+        out_folder = fullfile(quality_control_path,'j_Time_series_check');
+        if ~whifun_isnan_or_empty(Subj_list_1,'initial_func_native')
+            if ~whifun_isnan_or_empty(Subj_list_1,'nuisance_regression_csf_covariates')
+                whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,Reg_,over_write,Subj_list_1.nuisance_regression_csf_covariates,n_pca,pca_for_temp_reg)
+                % whifun_qc_global_ts(out_folder,Subj_list_1,Reg_,over_write,n_pca,pca_for_temp_reg)
+            else
+                whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,0,over_write)
+            end
         end
     else
         disp(['Participant ' Subj_list_1.name ' got rejected due to excessive motion during preprocessing. See b_Head_motion folder for more details'])

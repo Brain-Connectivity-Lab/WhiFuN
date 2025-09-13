@@ -69,7 +69,7 @@ if isempty(fil_qc_file)
     f_file = reshape(f_func_image,x*y*z,nt);
     global_ts_f = mean(f_file,'omitnan');
 
-    f = figure('visible','off'); plot(global_ts-mean(global_ts));
+    f = gcf; plot(global_ts-mean(global_ts));
     hold on
     plot(global_ts_f -mean(global_ts_f))
     title(['Global Time Series (mean subtracted)' ' participant ' Subj_list_1.name])
@@ -83,7 +83,7 @@ if isempty(fil_qc_file)
         tr = Subj_list_1.TR;
         fs = 1/tr;
         [b,a] = butter(2,[filter_lp,filter_hp]/(fs/2),'bandpass');
-        gf = figure('visible','off'); whifun_plot_freqz(b,a,fs);          % Plot the frequency responce using 512 points
+        gf = gcf; whifun_plot_freqz(b,a,fs);          % Plot the frequency responce using 512 points
         exportgraphics(gf,out_filter_path)
     end
 end

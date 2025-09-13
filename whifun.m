@@ -163,10 +163,10 @@ function whifun(varargin)
 %
 %
 % References
-%
-% Wang P, Meng C, Yuan R, Wang J, Yang H, Zhang T, Zaborszky L, Alvarez TL, Liao W, Luo C, Chen H, Biswal BB. The Organization of the Human Corpus
-% Callosum Estimated by Intrinsic Functional Connectivity with White-Matter Functional Networks. Cereb Cortex. 2020 May 14;30(5):3313-3324.
-% doi: 10.1093/cercor/bhz311. PMID: 32080708.
+% Pratik Jain, Andrew M. Michael, Pan Wang, Xin Di, Bharat Biswal; WhiFuN:
+% A toolbox to map the white matter functional networks of the human brain.
+% Imaging Neuroscience 2025; doi: https://doi.org/10.1162/IMAG.a.3 
+
 
 %%
 
@@ -210,6 +210,6 @@ switch Action
         run(fullfile(preproc_code_path,'main_csv_parfor_QC_different_one_mat_for_all_subs.mlapp'))
 
     case 'ver'
-        disp('Version : WhiFuN v2')
+        disp('Version : WhiFuN v3')
 
 end

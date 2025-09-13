@@ -12,10 +12,10 @@ else
     [~,~,thresh] = whifun_seed_corr(func_path,seed,rad,seed_cor_output_path,thresh);
 end
 % Axial View
-fg = spm_figure('Create','Graphics','Visible','off');
-temp = spm('WinSize','Graphics');
-set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
-set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
+fg = spm_figure('GetWin','Graphics');
+% temp = spm('WinSize','Graphics');
+% set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
+% set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
 pause(0.1)
 [fold,file,ext] = fileparts(seed_cor_output_path);
 [~,file_nii,ext2] = fileparts(file);

@@ -34,10 +34,10 @@ if ~isempty(out_image_ortho_path)
 end
 
 if ~isempty(out_image_slover_path)
-    fg = spm_figure('Create','Graphics','Visible','off');
-    temp = spm('WinSize','Graphics');
-    set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
-    set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
+    fg = spm_figure('GetWin','Graphics');
+    % temp = spm('WinSize','Graphics');
+    % set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
+    % set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
     whifun_slover({image_path},{'Structural'},{gray},slover_slices,slover_contour_range,slover_view,[],fg);
     exportgraphics(fg,out_image_slover_path)
 end
