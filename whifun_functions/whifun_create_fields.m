@@ -37,6 +37,7 @@ function Subj_list_all = whifun_create_fields(Subj_list_all)
 Subj_list_all = create_field(Subj_list_all,'error');
 Subj_list_all = create_field(Subj_list_all,'motion_ex');
 Subj_list_all = create_field(Subj_list_all,'manual_ex');
+
 Subj_list_all = create_field(Subj_list_all,'x_func');
 Subj_list_all = create_field(Subj_list_all,'y_func');
 Subj_list_all = create_field(Subj_list_all,'z_func');
@@ -48,8 +49,10 @@ Subj_list_all = create_field(Subj_list_all,'z_Anat');
 Subj_list_all = create_field(Subj_list_all,'time_preprocess_min');
 end
 
+
+
 function Subj_list_all = create_field(Subj_list_all,field_)
     if ~isfield(Subj_list_all, field_)
-        Subj_list_all(1).(field_) = [];
+        Subj_list_all(1).(field_) = '';
     end
 end
