@@ -177,3 +177,4 @@ else
         disp(['Participant ' Subj_list_1.name ' was manually rejected during preprocessing.'])
     end
 end
+close(fg)
