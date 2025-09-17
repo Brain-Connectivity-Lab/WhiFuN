@@ -1,10 +1,9 @@
-function [Subj_list_1,out_ss_path,out_anat_mask_subj_space_path,out_wanat_mask_MNI_path] = whifun_skull_strip_and_anat_mask_preproc(quality_control_path,Subj_list_1,in_anat_path,skull_pre,log_fileID,over_write)
+function [Subj_list_1,out_ss_path,out_anat_mask_native_path] = whifun_skull_strip_and_anat_mask_preproc(quality_control_path,Subj_list_1,in_anat_path,skull_pre,GM_native,WM_native,CSF_native,log_fileID,over_write)
 % WHIFUN_SKULL_STRIP_AND_ANAT_MASK_PREPROC Performs skull stripping and anatomical mask creation.
 %
 %   [Subj_list_1, out_ss_path, out_anat_mask_subj_space_path, out_wanat_mask_MNI_path] = whifun_skull_strip_and_anat_mask_preproc(...)
 %   is a high-level function that manages three key preprocessing steps for
-%   anatomical data: skull stripping, creating a brain mask in native space,
-%   and creating a brain mask in MNI space.
+%   anatomical data: skull stripping and creating a brain mask in native space,
 %
 %   The function first checks for the input anatomical file and resolves
 %   ambiguities. It then performs the following steps, each with an
@@ -14,8 +13,6 @@ function [Subj_list_1,out_ss_path,out_anat_mask_subj_space_path,out_wanat_mask_M
 %   2.  **Anatomical Mask (Native Space)**: Calls `whifun_anat_mask` to
 %       create a brain mask from the segmented tissue images (GM, WM, CSF)
 %       in the subject's native space.
-%   3.  **Anatomical Mask (MNI Space)**: Calls `whifun_anat_mask` again to
-%       create a brain mask from the segmented tissue images in MNI space.
 %
 %   The function updates the subject structure with the paths to all the
 %   generated files and logs the output of each step to a file. In case of
@@ -34,7 +31,6 @@ function [Subj_list_1,out_ss_path,out_anat_mask_subj_space_path,out_wanat_mask_M
 %   Subj_list_1                   - The updated subject structure.
 %   out_ss_path                   - Full path to the skull-stripped file.
 %   out_anat_mask_subj_space_path - Full path to the brain mask in native space.
-%   out_wanat_mask_MNI_path       - Full path to the brain mask in MNI space.
 %
 %   Author: Pratik Jain
 %   See also WHIFUN_MULTIPLE_FILE_FOUND, WHIFUN_CREATE_FILE, WHIFUN_SKULLSTRIP, WHIFUN_ANAT_MASK.
@@ -76,35 +72,21 @@ try
     Subj_list_1.skull_stripped_anat_native = out_ss_path;
 
     % Making mask for regression
-    disp(['Making Mask for regression for ' Subj_list_1.name])
 
-    out_anat_mask_subj_space_path = fullfile(now_anat_path.folder,['anat_mask_' now_anat_path.name]);
-    anat_mask_path = whifun_create_file(over_write,out_anat_mask_subj_space_path);
+    disp(['Making Mask for regression for ' Subj_list_1.name])
+    now_anat_path = dir(out_ss_path);
+    out_anat_mask_native_path = fullfile(now_anat_path.folder,['anat_mask_' now_anat_path.name]);
+    anat_mask_path = whifun_create_file(over_write,out_anat_mask_native_path);
     
     if isempty(anat_mask_path)
 
-        anat_mask_op = whifun_anat_mask(m_file,now_anat_path,0);
+        anat_mask_op = whifun_anat_mask(out_anat_mask_native_path,in_anat_path,GM_native,WM_native,CSF_native);
 
         fprintf(log_fileID,'#####################################################################################################################\n \n');
         fprintf(log_fileID, 'Anat Mask\n');
         fprintf(log_fileID,'%s', anat_mask_op);
     end
-    Subj_list_1.anat_mask_native = out_anat_mask_subj_space_path;
-
-    % Making anat mask in MNI Space
-    disp(['Making Anat mask in MNI Space for ' Subj_list_1.name])
-
-    out_wanat_mask_MNI_path = fullfile(now_anat_path.folder,['wanat_mask_' now_anat_path.name]);
-    wanat_mask_path = whifun_create_file(over_write, out_wanat_mask_MNI_path);
-    
-    if isempty(wanat_mask_path)
-
-        anat_mask_mni_op = whifun_anat_mask(m_file,now_anat_path,1);
-        fprintf(log_fileID,'#####################################################################################################################\n \n');
-        fprintf(log_fileID, 'Anat Mask MNI\n');
-        fprintf(log_fileID,'%s',  anat_mask_mni_op);
-    end
-    Subj_list_1.anat_mask_MNI = out_wanat_mask_MNI_path;
+    Subj_list_1.anat_mask_native = out_anat_mask_native_path;
 catch exception
     disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
     disp(['Preprocessing has encountered errors in Skull strip for ' Subj_list_1.name ', I have saved the variables in the participant folder :-) '])

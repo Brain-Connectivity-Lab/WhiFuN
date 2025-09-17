@@ -1,4 +1,4 @@
-function [Subj_list_1,out_def_path,GM_native,WM_native,CSF_native] = whifun_segment_preproc(quality_control_path,Subj_list_1,in_anat_path,log_fileID,over_write)
+function [Subj_list_1,out_def_path,GM_native,WM_native,CSF_native,GM_MNI,WM_MNI,CSF_MNI] = whifun_segment_preproc(quality_control_path,Subj_list_1,in_anat_path,log_fileID,over_write)
 % WHIFUN_SEGMENT_PREPROC Orchestrates SPM-based anatomical segmentation.
 %
 %   [Subj_list_1, out_def_path] = WHIFUN_SEGMENT_PREPROC(quality_control_path, ..., over_write)
@@ -69,9 +69,12 @@ try
     Subj_list_1.WM_native = WM_native;
     CSF_native = fullfile(now_anat_path.folder,['c3' now_anat_path.name]);
     Subj_list_1.CSF_native = CSF_native;
-    Subj_list_1.GM_MNI = fullfile(now_anat_path.folder,['wc1' now_anat_path.name]);
-    Subj_list_1.WM_MNI = fullfile(now_anat_path.folder,['wc2' now_anat_path.name]);
-    Subj_list_1.CSF_MNI = fullfile(now_anat_path.folder,['wc3' now_anat_path.name]);
+    GM_MNI = fullfile(now_anat_path.folder,['wc1' now_anat_path.name]);
+    Subj_list_1.GM_MNI = GM_MNI;
+    WM_MNI = fullfile(now_anat_path.folder,['wc2' now_anat_path.name]);
+    Subj_list_1.WM_MNI = WM_MNI;
+    CSF_MNI = fullfile(now_anat_path.folder,['wc3' now_anat_path.name]);
+    Subj_list_1.CSF_MNI = CSF_MNI;
     Subj_list_1.deformation_field = out_def_path;
 
 catch exception

@@ -249,6 +249,8 @@ hold on; scatter(x,y,[],'r','filled')
 
 set(f,'position',[10 50 1500 400]);
 set(f,'PaperPosition',[10 50 1500 400]);
+% pause(0.1)
+exportgraphics(f,out_image_path);
 exportgraphics(f,out_image_path);
 
 end
