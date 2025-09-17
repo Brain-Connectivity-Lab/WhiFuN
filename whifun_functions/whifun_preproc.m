@@ -235,14 +235,14 @@ end
 %%     6     Segmentation
 in_anat_path = out_anat_path;
 
-[Subj_list_1,out_def_path,GM_native_space_path,WM_native_space_path,CSF_native_space_path] = whifun_segment_preproc(quality_control_path,Subj_list_1,in_anat_path,log_fileID,over_write);
+[Subj_list_1,out_def_path,GM_native_space_path,WM_native_space_path,CSF_native_space_path,GM_MNI_path,WM_MNI_path,CSF_MNI_path] = whifun_segment_preproc(quality_control_path,Subj_list_1,in_anat_path,log_fileID,over_write);
 if Subj_list_1.error
     return
 end
 
 %%     7     Skull Stripping
 
-[Subj_list_1,out_anat_path,out_anat_mask_native_space_path,out_wanat_mask_MNI_path] = whifun_skull_strip_and_anat_mask_preproc(quality_control_path,Subj_list_1,in_anat_path,skull_pre,log_fileID,over_write);
+[Subj_list_1,out_anat_path,out_anat_mask_native_space_path] = whifun_skull_strip_and_anat_mask_preproc(quality_control_path,Subj_list_1,in_anat_path,skull_pre,GM_native_space_path,WM_native_space_path,CSF_native_space_path,log_fileID,over_write);
 if Subj_list_1.error
     return
 end
@@ -260,6 +260,7 @@ end
 
 %%     9     Making CSF_MASK for REST And 10 Extracting CSF time-series
 if Reg_CSF == 1
+    in_func_path = out_func_path;
     in_csf_tpm_path = CSF_native_space_path;
     
     [Subj_list_1,out_csf_mask_func_path] = whifun_csf_mask_extraction_preproc(quality_control_path,Subj_list_1,in_func_path,in_csf_tpm_path,CSF_thres,log_fileID,over_write);
@@ -338,8 +339,7 @@ if ~dartel_
     %%    14     Normalization
     in_func_path = out_func_path;
     in_def_path = out_def_path;
-    in_wanat_mask_MNI_path = out_wanat_mask_MNI_path;
-    [Subj_list_1,out_func_path] = whifun_normalise_preproc(quality_control_path,Subj_list_1,in_func_path,in_anat_path,in_def_path,vox,Norm_pre,in_wanat_mask_MNI_path,log_fileID,over_write);
+    [Subj_list_1,out_func_path] = whifun_normalise_preproc(quality_control_path,Subj_list_1,in_func_path,in_anat_path,in_def_path,vox,Norm_pre,GM_MNI_path,WM_MNI_path,CSF_MNI_path,log_fileID,over_write);
     if Subj_list_1.error
         return
     end
