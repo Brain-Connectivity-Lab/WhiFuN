@@ -1,5 +1,5 @@
-function output = whifun_anat_mask(m_file,now_anat_path,norm)
-% WHIFUN_ANAT_MASK Creates a brain mask from segmented anatomical images using SPM.
+function output = whifun_anat_mask(out_mask_path,anat_path,GM_path,WM_path,CSF_path)
+% WHIFUN_WANAT_MASK Creates a brain mask from segmented anatomical images in MNI space using SPM.
 %
 %   output = WHIFUN_ANAT_MASK(m_file, now_anat_path, norm) creates a binary
 %   brain mask by combining the segmented Gray Matter (GM), White Matter
@@ -16,13 +16,8 @@ function output = whifun_anat_mask(m_file,now_anat_path,norm)
 %   preprocessing, such as skull stripping or calculating average signal.
 %
 %   Input Arguments:
-%   m_file        - A `dir` structure pointing to the bias-corrected anatomical file.
 %   now_anat_path - A `dir` structure pointing to the original anatomical file,
 %                   used for path and name information.
-%   norm          - A logical value (0 or 1). If 1, the function uses the
-%                   normalized (`w` prefixed) segmented images to create a
-%                   mask in MNI space. If 0, it uses the native-space
-%                   segmented images.
 %
 %   Output Arguments:
 %   output - A string containing the log output from the SPM jobman.
@@ -30,20 +25,14 @@ function output = whifun_anat_mask(m_file,now_anat_path,norm)
 %   Author: Pratik Jain
 %   See also SPM_JOBMAN, FULLFILE, EVALC.
 
-if norm == 1
-    norm_pre = 'w';
-else
-    norm_pre = '';
-end
-
 matlabbatch{1}.spm.util.imcalc.input = {
-    [fullfile(m_file.folder, m_file.name) '']
-    [complete_filepath(fullfile(now_anat_path.folder, [norm_pre 'c1' now_anat_path.name])) '']
-    [complete_filepath(fullfile(now_anat_path.folder, [norm_pre 'c2' now_anat_path.name])) '']
-    [complete_filepath(fullfile(now_anat_path.folder, [norm_pre 'c3' now_anat_path.name])) '']};
-
-matlabbatch{1}.spm.util.imcalc.output = [norm_pre 'anat_mask_' now_anat_path.name];
-matlabbatch{1}.spm.util.imcalc.outdir = {now_anat_path.folder};
+    anat_path
+    GM_path
+    WM_path
+    CSF_path};
+[fold,name,ext] = fileparts(out_mask_path);
+matlabbatch{1}.spm.util.imcalc.output = [name,ext];
+matlabbatch{1}.spm.util.imcalc.outdir = {fold};
 matlabbatch{1}.spm.util.imcalc.expression = '((i2+i3+i4)>0.5)';
 matlabbatch{1}.spm.util.imcalc.var = struct('name', {}, 'value', {});
 matlabbatch{1}.spm.util.imcalc.options.dmtx = 0;
