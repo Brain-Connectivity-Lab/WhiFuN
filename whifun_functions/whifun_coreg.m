@@ -33,14 +33,24 @@ function output = whifun_coreg(now_anat_path,now_func_path,mean_func,nt)
 %
 %   Author: Pratik Jain
 %   See also SPM_JOBMAN, EVALC, FULLFILE.
+start = 1;
+if isempty(mean_func)
+    mean_func = now_func_path;
+    start = 2;
+end
+
 
 matlabbatch{1}.spm.spatial.coreg.estimate.ref = {[fullfile(now_anat_path.folder,now_anat_path.name),',1']};   % Reference image (this does not change) (Here its the anatomical image)
 
 
 matlabbatch{1}.spm.spatial.coreg.estimate.source = {[fullfile(mean_func.folder,mean_func.name),',1']};        % Source image (This will change) (here its the functional image)
 pathlist = cell(nt,1);
-for ii= 1:nt    % Number of timepoints
+for ii= start:nt    % Number of timepoints
     pathlist{ii,1} = strcat([fullfile(now_func_path.folder,now_func_path.name),',',num2str(ii)]);
+end
+
+if start==2
+    pathlist(1) = [];
 end
 
 matlabbatch{1}.spm.spatial.coreg.estimate.other = (pathlist);         % These are any images that need to remain in alignment with the moved image
