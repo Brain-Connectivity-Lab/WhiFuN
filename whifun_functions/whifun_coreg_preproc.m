@@ -1,4 +1,4 @@
-function Subj_list_1  = whifun_coreg_preproc(quality_control_path,Subj_list_1,in_func_path_bef,in_func_path_after,in_anat_path,log_fileID,over_write)
+function Subj_list_1  = whifun_coreg_preproc(quality_control_path,Subj_list_1,in_func_path_bef,in_func_path_after,in_anat_path,log_fileID,over_write,no_mean_func)
 % WHIFUN_COREG_PREPROC Orchestrates SPM-based anatomical-functional coregistration.
 %
 %   Subj_list_1 = WHIFUN_COREG_PREPROC(quality_control_path, ..., over_write)
@@ -32,6 +32,10 @@ function Subj_list_1  = whifun_coreg_preproc(quality_control_path,Subj_list_1,in
 %   Author: Pratik Jain
 %   See also WHIFUN_COREG, NIFTIINFO, TRY, CATCH.
 
+if ~exist("no_mean_func","var")
+    no_mean_func = 0;
+end
+
 disp(['Coregisteration has started for ' Subj_list_1.name])
 
 try
@@ -51,13 +55,18 @@ try
             coreg_dir = 1;
         end
     end
+    
     if isempty(coreg_dir)
 
-        
 
-        mean_func = dir(fullfile(now_func_path_bef.folder,['mean' now_func_path_bef.name])) ;
+        if no_mean_func
+            mean_func = [];
+        else
+            mean_func = dir(fullfile(now_func_path_bef.folder,['mean' now_func_path_bef.name])) ;
+        end
 
-        nt = Subj_list_1.nt_dis;
+        func_info = niftiinfo(in_func_path_after);
+        nt = func_info.ImageSize(4);
         coreg_op = whifun_coreg(now_anat_path,now_func_path,mean_func,nt);
 
         fprintf(log_fileID,'#####################################################################################################################\n \n');
