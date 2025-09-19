@@ -188,6 +188,11 @@ if ~dartel_
 else
     fprintf('DARTEL pipeline requested (skip standard normalization)\n');
 end
+
+if ~exist(fullfile(quality_control_path,'logs'),'dir')
+    mkdir(fullfile(quality_control_path,'logs'))
+end
+
 [log_fileID,errmsg] = fopen(fullfile(quality_control_path,'logs',[Subj_list_1.name '_log_info.txt']),'a');
 
 if log_fileID == -1
