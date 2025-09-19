@@ -28,5 +28,7 @@ volume = double(niftiread(image_path));
 info = niftiinfo(image_path);
 if info.MultiplicativeScaling
     volume = info.AdditiveOffset + volume.*info.MultiplicativeScaling;
+else
+    info.MultiplicativeScaling = 1;
 end
 end
