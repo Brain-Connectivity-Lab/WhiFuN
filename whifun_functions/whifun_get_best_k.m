@@ -1,12 +1,4 @@
 function K = whifun_get_best_k(out_path,avg_vox_level_FC,K_range_l,K_range_h,CV_folds,num_replicates,size_chunk,d_flag,d,steps_,tot_steps)
-if ~exist('d_flag','var')
-    % Only used for WhiFuN GUI
-    d_flag = 0;
-    d = 0;
-    steps_ = 0;
-    tot_steps = 0;
-end
-
 %% Selecting the best K on the group-level data, by measuring stability of clustering solutions
 
 % Here we separate the correlation matrix columns into 4 groups
@@ -19,7 +11,13 @@ end
 %
 % For a MxN connectivity matrix, we'll get four Mx(N/4) matrices, and check
 % the correspondence of their clustering solutions to one another.
-
+if ~exist('d_flag','var')
+    % Only used for WhiFuN GUI
+    d_flag = 0;
+    d = 0;
+    steps_ = 0;
+    tot_steps = 0;
+end
 
 if K_range_l ~= K_range_h           % If the lower and upper values of Grid search for K are the same, that means the grid search is not necessary skip it and directly calculate the networks
     disp('Doing a grid search to find optimal K-value ')
