@@ -1,4 +1,4 @@
-function whifun_get_FN_kmeans(out_path,K,header_file,WMmask_path,d_flag,d,steps_,tot_steps)
+function whifun_get_FN_kmeans(out_path,K,avg_vox_level_FC,WMmask_path,d_flag,d,steps_,tot_steps)
 if ~exist('d_flag','var')
     % Only used for WhiFuN GUI
     d_flag = 0;
@@ -8,7 +8,8 @@ if ~exist('d_flag','var')
 end
 
 WMmask = niftiread(WMmask_path);
-
+ WM_voxels = WMmask>0.5;
+header_file = niftiinfo(WMmask_path);
 for k=K
     disp(['Creating WM networks using ' 'K = ' num2str(k)]);
 
@@ -22,9 +23,8 @@ for k=K
             return
         end
     end
-    IDX_allsubjs = kmeans(data_for_clustering_allsubjs, k,'distance','correlation','replicates',10);            % K-means clustering
+    IDX_allsubjs = kmeans(avg_vox_level_FC, k,'distance','correlation','replicates',10);            % K-means clustering
     clustering_results_allsubjs = zeros(size(WMmask)); clustering_results_allsubjs(WM_voxels) = IDX_allsubjs;   % putting the clustering results in an image
-    niftisave(clustering_results_allsubjs,out_path,niftiinfo(header_file),0,1)
-    save_mat_to_nifti(func_img1_filename,clustering_results_allsubjs,fullfile(output_folder,'Analysis','WM_FN',['WM_clustering_K' num2str(k) '.nii']));    % saving the results to file %% set output path
+    niftisave(clustering_results_allsubjs,out_path,header_file,0,1)
     clear clustering_results_allsubjs;
 end
