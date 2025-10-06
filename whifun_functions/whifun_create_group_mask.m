@@ -1,52 +1,4 @@
-function [group_mask_path,d] = whifun_create_group_mask(out_analysis_path,Subj_list,grp_mask_name,indi_thres,grp_thres,over_write,d_flag,d,steps_,tot_steps)
-% WHIFUN_CREATE_GROUP_MASK Creates a group-level White Matter (WM) mask.
-%
-%   [group_mask_path, d] = WHIFUN_CREATE_GROUP_MASK(out_analysis_path, Subj_list, ...)
-%   generates a group-level WM mask by combining the individual WM masks
-%   from all subjects. This process ensures that the final mask is robust
-%   and represents the most consistently identified WM regions across the
-%   group.
-%
-%   The function performs the following steps:
-%   1.  **Individual Mask Thresholding**: For each subject, it identifies
-%       voxels that have a WM probability greater than `indi_thres`
-%       (individual threshold). It counts how many subjects meet this
-%       criterion for each voxel.
-%   2.  **Subcortical Structures Removal**: It removes voxels corresponding
-%       to subcortical structures (e.g., putamen) from the WM mask, as they
-%       are often misclassified in SPM segmentation. This is done by referencing
-%       a standard atlas (e.g., Harvard-Oxford).
-%   3.  **Group-Level Thresholding**: It applies a group-level threshold
-%       (`grp_thres`) to the voxel count. A voxel is included in the final
-%       group mask only if it was identified as WM in a `grp_thres` percentage
-%       of subjects.
-%   4.  **Functional Data Check**: It removes any voxels from the mask that
-%       do not contain valid functional data (i.e., are zero or NaN) in
-%       80% percentage of subjects. This prevents the
-%       inclusion of voxels that have no data.
-%   5.  **Save Mask**: The final group mask is saved as a NIfTI file.
-%
-%   This function is a critical step for preparing data for group-level
-%   analyses, such as functional network connectivity or group-level seed-based
-%   correlations, by creating a common mask for all subjects.
-%
-%   Input Arguments:
-%   out_analysis_path - The directory to save the final group mask.
-%   Subj_list         - A structure array of all subjects.
-%   grp_mask_name     - The name of the output group mask file.
-%   indi_thres        - The individual-level probability threshold for WM.
-%   grp_thres         - The group-level percentage threshold for WM.
-%   over_write        - A logical flag to force overwriting of an existing mask.
-%   d_flag            - (Optional) A flag for GUI progress updates.
-%   d, wm_steps, tot_wm_steps - (Optional) Parameters for GUI progress bar.
-%
-%   Output Arguments:
-%   group_mask_path - The full path to the created group mask file.
-%   d               - The updated GUI progress bar handle.
-%
-%   Author: Pratik Jain
-%   See also RESLICE_DATA, NIFTIINFO, NIFTIREAD, FIND, MKDIR, WARNING.
-
+function [group_mask_WM_path,group_mask_GM_path,d] = whifun_create_group_mask(out_analysis_path,Subj_list,grp_WM_mask_name,indi_thres_wm,grp_thres_wm,grp_GM_mask_name,indi_thres_gm,grp_thres_gm,over_write,d_flag,d,steps_,tot_steps)
 
 if ~exist('d_flag','var')
     % Only used for WhiFuN GUI
@@ -65,9 +17,10 @@ if ~exist(output_folder,"dir")
     mkdir(output_folder);
 end
 
-%% 1 Create Group WM Mask
+%% 1 Create Group Masks
 
-grp_thres = grp_thres/100; % Convert to a number between 0 and 1;
+grp_thres_wm = grp_thres_wm/100; % Convert to a number between 0 and 1;
+grp_thres_gm = grp_thres_gm/100; % Convert to a number between 0 and 1;
 
 disp('##########################################################################################')
 disp('Creating the group WM masks ')
@@ -78,17 +31,22 @@ HO_atlas_filename = fullfile(preproc_code_path,'Atlases','HarvardOxford-sub-maxp
 
 addpath(fullfile(preproc_code_path,'whifun_functions'))
 
-group_mask_path = fullfile(output_folder,grp_mask_name);
-grp_mask_dir = whifun_create_file(over_write,group_mask_path);
+group_mask_WM_path = fullfile(output_folder,grp_WM_mask_name);
+group_mask_GM_path = fullfile(output_folder,grp_GM_mask_name);
+
+grp_wm_mask_dir = whifun_create_file(over_write,group_mask_WM_path);
+grp_gm_mask_dir = whifun_create_file(over_write,group_mask_GM_path);
 
 
-if isempty(grp_mask_dir)
+if isempty(grp_wm_mask_dir) || isempty(grp_gm_mask_dir)
 
     func_img1_filename = Subj_list(1).final_func_MNI; % get one func file for the nifti header
     func_img1_filename_info = niftiinfo(func_img1_filename);
     size_image = func_img1_filename_info.ImageSize;
     WMmask_full = zeros(size_image(1:3));                         % Initializing the WM Mask
-    disp(['Collecting all the voxels that have WM probability greater than ' num2str(indi_thres) ' for every participant'])
+    GMmask_full = zeros(size_image(1:3));                           % Initializing the GM Mask
+    disp(['Collecting all the voxels that have WM probability greater than ' num2str(indi_thres_wm) ' for every participant'])
+    disp(['Collecting all the voxels that have GM Probability greater than ' num2str(indi_thres_gm) ' for every participant'])
     for subji = 1:length(Subj_list)      % For loop on number of participants
         if d_flag
             disp(['Currently Processing ' Subj_list(subji).name])
@@ -98,11 +56,13 @@ if isempty(grp_mask_dir)
         % getting the current participant's segmentation directory
 
         current_WM_mask = reslice_data(Subj_list(subji).WM_MNI, func_img1_filename, 0);      % resize to func space
-        WMmask_full(current_WM_mask>=indi_thres) = WMmask_full(current_WM_mask>=indi_thres) + 1; % Count of every voxel with prob greater than indi_thresh across all participants
+        current_GM_mask = reslice_data(Subj_list(subji).GM_MNI, func_img1_filename, 0);
+        WMmask_full(current_WM_mask>=indi_thres_wm) = WMmask_full(current_WM_mask>=indi_thres_wm) + 1; % Count of every voxel with prob greater than indi_thresh across all participants
+        GMmask_full(current_GM_mask>=indi_thres_gm) = GMmask_full(current_GM_mask>=indi_thres_gm) + 1;
         if d_flag
             steps_ = steps_ + 1;
             d.Value = steps_/tot_steps;
-            d.Message = ['Collecting all the voxels that have WM probability greater than ' num2str(indi_thres) ' for participant: ' Subj_list(subji).name];
+            d.Message = ['Collecting all the voxels that have WM probability greater than ' num2str(indi_thres_wm) ' and that have GM probability greater than ' num2str(indi_thres_gm) ' for participant: ' Subj_list(subji).name];
 
             if d.CancelRequested
                 disp('Creation of WM-FN terminated by User')
@@ -110,7 +70,7 @@ if isempty(grp_mask_dir)
             end
         end
     end
-
+    GMmask_full = GMmask_full./length(Subj_list);
     WMmask_full = WMmask_full./length(Subj_list);                        % Probability of every voxel having WM prob greater than indi_thres across participants
     %% Optional stage - remove subcortical structures from the white-matter mask
     % these structures (putamen, globus pallidus) are erroneously identified in SPM as
@@ -126,10 +86,13 @@ if isempty(grp_mask_dir)
 
     % Remove these voxels from the white-matter mask and add them to the grey-matter mask
     WMmask_full(indices_subcortical)=0;
+    GMmask_full(indices_subcortical)=1;
 
     %% Thresholding to find voxels defined as WM or GM in a big enough percent of the participants
-    WMmask = WMmask_full >= grp_thres;               % threshold for WM mask - >60% probability of identification as white-matter
+    WMmask = WMmask_full >= grp_thres_wm;               % threshold for WM mask - >60% probability of identification as white-matter
     WM_voxels = find(WMmask>0);
+    GMmask = GMmask_full > grp_thres_gm & ~WMmask;     % threshold for GM mask is more relaxed (20% probability of being GM, and not recognized as WM), for regions with very thin GM such as the top of the brain (otherwise we'll have holes in the mask)
+    GM_voxels = find(GMmask>0);
 
     %% 2 Removal of parts of the mask for which functional data exists only in <80% of participants, such as the spinal cord
     threshold_notnan = 0.8;     % 80% of voxels need to be not NaN for each voxel to be included in the mask
@@ -140,6 +103,8 @@ if isempty(grp_mask_dir)
     % reading these files and counting how many participants have data in each voxel
     disp('Removal of parts of the mask for which functional data exists only in <80% of participants')
     num_subjs_notnan_WM = zeros(length(WM_voxels),1);
+    num_subjs_notnan_GM = zeros(length(GM_voxels),1);
+
     for subji = 1:length(Subj_list)      % For loop on number of participants
         if d_flag
             disp(['Currently Processing ' Subj_list(subji).name])
@@ -160,9 +125,13 @@ if isempty(grp_mask_dir)
 
         % current participant - finding voxels which are not zero or NaN
         WM_voxels_with_data = find(curr_mean_func(WM_voxels)~=0 & ~isnan(curr_mean_func(WM_voxels)));
-
+        % current participant - finding voxels which are not zero or NaN
+        GM_voxels_with_data = find(curr_mean_func(GM_voxels)~=0 & ~isnan(curr_mean_func(GM_voxels)));
         % counting, for each voxel, in how many participants it is "good"
+
         num_subjs_notnan_WM(WM_voxels_with_data) = num_subjs_notnan_WM(WM_voxels_with_data) + 1;
+        num_subjs_notnan_GM(GM_voxels_with_data) = num_subjs_notnan_GM(GM_voxels_with_data) + 1;
+
         clear curr_mean_func;
         if d_flag
             steps_ = steps_ + 1;
@@ -179,10 +148,12 @@ if isempty(grp_mask_dir)
     % Removing voxels with <80% participants in which they are not NaN
     WM_voxels(num_subjs_notnan_WM < threshold_notnan*length(Subj_list)) = [];
     WMmask = zeros(size(WMmask)); WMmask(WM_voxels) = 1;
+    GM_voxels(num_subjs_notnan_GM < threshold_notnan*length(Subj_list)) = [];
+    GMmask = zeros(size(GMmask)); GMmask(GM_voxels) = 1;
 
     %% Saving the resulting masks
-    niftisave(WMmask,fullfile(output_folder,grp_mask_name),func_img1_filename_info);
-    % save_mat_to_nifti(func_img1_filename, WMmask, fullfile(output_folder,'Analysis','Group_Masks','WMmask_allsubjs.nii'));
+    niftisave(WMmask,fullfile(output_folder,grp_WM_mask_name),func_img1_filename_info);
+    niftisave(GMmask,fullfile(output_folder,grp_GM_mask_name),func_img1_filename_info);
 else
     if d_flag
         steps_ = steps_ + length(Subj_list)*2;

@@ -18,7 +18,7 @@ if ~exist('d_flag','var')
     steps_ = 0;
     tot_steps = 0;
 end
-
+[out_fold,out_name,~] = fileparts(out_path);
 if K_range_l ~= K_range_h           % If the lower and upper values of Grid search for K are the same, that means the grid search is not necessary skip it and directly calculate the networks
     disp('Doing a grid search to find optimal K-value ')
     disp([num2str(CV_folds) ' Fold Cross validation in process to find out the optimal value of K'])
@@ -105,18 +105,10 @@ if K_range_l ~= K_range_h           % If the lower and upper values of Grid sear
         Dice_coefficient_folds_all(K) = mean(Dice_coefficient(~eye(num_CV_folds)));    % Dice's coef is 1 for perfect match, 0 for no commonalities
     end
 
-    % plotting the stability results for all K values, to identify peaks
-    %                     yyaxis left
-    figure; plot(Dice_coefficient_folds_all,'Marker','*'), xlim([K_range_l K_range_h])
-    xlabel('K-values')
-    ylabel('Dice Coefficients')
-
-    yyaxis right
-    plot(elb,'Marker','+')
-    ylabel('Distortion')
+    whifun_plot_dice_coef_and_elb(Dice_coefficient_folds_all,elb,K_range_l,K_range_h)
     exportgraphics(gcf,out_path)
     K = str2double(cell2mat(inputdlg('Choose the K-value','K-Value')));
-
+    save(fullfile(out_fold,[out_name , '.mat']),"Dice_coefficient_folds_all","elb","K_range_l","K_range_h")
     if ~isnumeric(K)
         if K < 1
             error('Invalid Value of K')

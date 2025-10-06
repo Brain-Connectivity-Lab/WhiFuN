@@ -8,10 +8,10 @@ if nargin < 6
     nn = 0;
 end
 
-[RefData, RefHead]   = y_Read(TargetSpace);
+[~, RefHead]   = y_Read(TargetSpace);
 mat=RefHead.mat;
 dim=RefHead.dim;
-[SourceData,SourceHead]=y_Read(InputFile);
+[~,SourceHead]=y_Read(InputFile);
 
 %Handle .nii.gz. Referenced from y_Read.m. YAN Chao-Gan, 151117
 [pathstr, name, ext] = fileparts(InputFile);
