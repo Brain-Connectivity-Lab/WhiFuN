@@ -64,7 +64,7 @@ end
 % ---- Your function logic here ---- %
 % disp('Running QC with these params:');
 % disp(params);
-fg = spm_figure('Create','Graphics','Visible','off');
+fg = spm_figure('GetWin','Graphics');
 temp = spm('WinSize','Graphics');
 set(fg,'Position',[temp(1),temp(2),temp(4),temp(3)])
 set(fg,'PaperPosition',[temp(1),temp(2),temp(4),temp(3)])
@@ -177,4 +177,4 @@ else
         disp(['Participant ' Subj_list_1.name ' was manually rejected during preprocessing.'])
     end
 end
-close(fg)
+% close(fg)
