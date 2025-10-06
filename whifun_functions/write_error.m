@@ -10,7 +10,11 @@ function write_error(exception,quality_control_path,name)
         end
         
         % write to file
-        err_fileID = fopen(fullfile(quality_control_path,'Error_Info',[name '_error_info.txt']),'a');
+        out_path = fullfile(quality_control_path,'Error_Info');
+        if ~exist(out_path,"dir")
+            mkdir(out_path)
+        end
+        err_fileID = fopen(fullfile(out_path,[name '_error_info.txt']),'a');
                 
         fprintf(err_fileID,'#####################################################################################################################\n \n');
         fprintf(err_fileID, ['Subject Name: ' name '\n \n']);
