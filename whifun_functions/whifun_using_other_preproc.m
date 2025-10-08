@@ -37,7 +37,12 @@ function whifun_using_other_preproc(output_folder,only_data_check)
 
 
 if nargin == 1
-    Subj_list = whifun_create_Subj_list(output_folder);
+
+    if ~exist(fullfile(output_folder,'Subj_list.csv'),'file')
+        Subj_list = whifun_create_Subj_list(output_folder);
+    else
+        Subj_list = load_subjects(output_folder,'Subj_list.csv',1);
+    end
     only_data_check = 1;
 elseif nargin == 0
     [Subj_list,output_folder] = whifun_create_Subj_list;
