@@ -17,16 +17,22 @@
 % [dice_hc,IOU_hc] = dice_iou(kmeans_net_1_path_h_abide,kmeans_net_1_path_h,'h_abide','h_cud','Healthy controls ABIDE','Healthy controls CUD dataset');
 % [dice_hc,IOU_hc] = dice_iou(net1_filepath,net2_filepath);
 
-function [dice,IOU] = dice_iou(kmeans_net_1_path,kmeans_net_2_path,align_net,fig_dice)
+function [dice,IOU,vox_num_1,vox_num_2] = dice_iou(kmeans_net_1_path,kmeans_net_2_path,align_net,fig_dice)%,no_vox_1
 
 if nargin == 2
     align_net = 0;
     fig_dice = 0;
+%     no_vox_1 = 0;
 end
 
 if nargin == 3
     fig_dice = 0;
+%     no_vox_1 = 0;
 end
+
+% if nargin == 4
+%     fig_dice = 0;
+% end
 
 if ~isnumeric(kmeans_net_1_path)
     net_1 = niftiread(kmeans_net_1_path);
@@ -46,25 +52,37 @@ level_net_2(level_net_2 == 0) = [];
 
 num_net_1 = length(level_net_1);
 num_net_2 = length(level_net_2);
+
+vox_num_1 = length(level_net_1);
+vox_num_2 = length(level_net_2);
+
 dice = zeros(num_net_1,num_net_2);
 IOU = zeros(num_net_1,num_net_2);
 for i = level_net_1'
-    for j = level_net_2'
-        net_1_roi = find(net_1 == i);
-        net_2_roi = find(net_2 == j);
+    net_1_roi = find(net_1 == i);
+    vox_num_1(i) = length(net_1_roi);
 
+    for j = level_net_2'
+
+        net_2_roi = find(net_2 == j);
+        vox_num_2(j) = length(net_2_roi);
         net_1_inter_net_2 = intersect(net_1_roi,net_2_roi);
         net_1_union_net_2 = union(net_1_roi,net_2_roi);
 
         dice(i,j) = 2*length(net_1_inter_net_2) ./ (length(net_1_roi) + length(net_2_roi));
 
+
         IOU(i,j) = length(net_1_inter_net_2) ./ length(net_1_union_net_2);
-
     end
+
 end
+% dice2 = dice;
+% zero_cols = sum(dice2,1) == 0;
+% zero_rows = sum(dice2,2) == 0;
+% dice2(:,zero_cols) = [];
+% dice2(zero_rows,:) = [];
 
-
-net_2_aligned = net_2;
+net_2_aligned = zeros(size(net_2));
 if align_net == 1
     disp('Aligning the 2nd Network based on the first network')
 
@@ -83,6 +101,7 @@ if align_net == 1
     end
     [folder,file,ext] = fileparts(kmeans_net_2_path);
     niftisave(net_2_aligned,fullfile(folder,[file '_aligned' ext]),info)
+    convert3d_4d_atlas(fullfile(folder,[file '_aligned' ext]));
     disp(['Network at ' kmeans_net_2_path ' aligned to network at ' kmeans_net_1_path])
     disp(['Average Dice coeficient between the two networks is ' num2str(mean(max_dice))])
 
