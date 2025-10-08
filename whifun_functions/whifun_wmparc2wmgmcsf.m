@@ -12,24 +12,23 @@ wmparc = niftiread('M:\HCP_Dev\fmriresults01\HCD0001305_V1_MR\MNINonLinear\wmpar
 % --- Define the FreeSurfer labels for each tissue type ---
 % White Matter (WM) labels
 % This list includes cerebral white matter, cerebellum white matter, and the corpus callosum.
-wm_labels = [2, 7, 16, 41, 46, 77, 78, 79, 251, 252, 253, 254, 255, ...
-             3000, 3001, 3002, 3003, 3004, 3005, 3006, 3007, 3008, 3009, 3010, 3011, ...
-             3012, 3013, 3014, 3015, 3016, 3017, 3018, 3019, 3020, 3021, 3022, 3023, ...
-             3024, 3025, 3026, 3027, 3028, 3029, 3030, 3031, 3032, 3033, 3034, 3035, ...
-             4000, 4001, 4002, 4003, 4004, 4005, 4006, 4007, 4008, 4009, 4010, 4011, ...
-             4012, 4013, 4014, 4015, 4016, 4017, 4018, 4019, 4020, 4021, 4022, 4023, ...
-             4024, 4025, 4026, 4027, 4028, 4029, 4030, 4031, 4032, 4033, 4034, 4035];
+wm_labels = [2, 7, 16, 28, 41, 46, 60, 77, 78, 79, 85, 251, 252, 253, 254, 255, ...
+             3000:5002];
 
 % Gray Matter (GM) labels
 % This list includes both cortical and subcortical gray matter regions.
 % Cortical labels are in the 1000-2000 range for the left hemisphere and
 % 2000-3000 range for the right, and a few others are specified explicitly.
-gm_labels = ['3', 8, 10, 11, 12, 13, 17, 18, 26, 42, 47, 49, 50, 51, 52, 53, 54, 58, ...
-             1002:1035, 2002:2035]; % Range for left/right cortical regions
+gm_labels = [8, 10, 11, 12, 13, 17, 18, 26, 30, 42, 47, 49, 50, 51, 52, 53, 54, 58, 62 ...
+             1000:1035, 2000:2035]; % Range for left/right cortical regions
 
 % Cerebrospinal Fluid (CSF) labels
 % This list includes ventricles and other CSF spaces.
 csf_labels = [4, 5, 14, 15, 24, 31, 43, 44, 63];
+
+% removed due to ambiguity
+% 31: LEFT-CHOROID-PLEXUS
+
 
 % --- Initialize the output matrices with zeros ---
 % These matrices will have the same dimensions as the input wmparc matrix.
