@@ -94,18 +94,11 @@ end
 
 %% Step 3: Define Field Patterns
 fieldNames = {
-    'GM_native'
-    'WM_native'
-    'CSF_native'
+    'motion_txt'
     'GM_MNI'
     'WM_MNI'
     'CSF_MNI'
-    'skull_stripped_anat_native'
-    'anat_mask_native'
     'anat_mask_MNI'
-    'coregistered_func_native'
-    'func_mask_native_space'
-    'smoothed_func'
     'func_MNI'
     'anat_MNI'
     'func_mask_MNI'
