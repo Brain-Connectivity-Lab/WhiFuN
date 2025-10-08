@@ -48,8 +48,13 @@ try
     if first
         T.error = zeros(height(T),1);
         T.motion_ex = zeros(height(T),1);
-        rm = logical(T.manual_ex);
-        Subj_list = table2struct(T(~rm,:));
+
+        if ~nnz(isnan(T.manual_ex))
+            rm = logical(T.manual_ex);
+            Subj_list = table2struct(T(~rm,:));
+        else
+            Subj_list = table2struct(T);
+        end
     else
         rm = (logical(T.error) | logical(T.motion_ex) | logical(T.manual_ex));
         Subj_list = table2struct(T(~rm,:));
