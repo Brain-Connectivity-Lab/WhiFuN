@@ -1,4 +1,4 @@
-function barplot_with_errorbars(data,names,s,nanflag)
+function mean_ = barplot_with_errorbars(data,names,s,nanflag,jit)
 
 %% inputs
 % data --> data matrix with size n x m , n--> number of observations,
@@ -19,6 +19,9 @@ if nargin <4
     nanflag = 1;
 end
 
+if ~exist('jit','var')
+    jit = 1;
+end
 
 if isnumeric(data)
     [mean_,std_] = get_mean_std(data,nanflag,s);
@@ -59,11 +62,16 @@ if size(size(data)) <= 2
     if iscell(data)
         for i = 1:size(data,1)
             for j = 1:size(data,2)
-                scatter(x(j,i),data{i,j}','black','filled','jitter','on','JitterAmount',0.1)
+                if jit
+                    scatter(x(j,i),data{i,j}','black','filled','jitter','on','JitterAmount',0.1)
+     
+                end
             end
         end
     elseif isnumeric(data)
+        if jit
         scatter(1:size(data,2),data,'black','filled','jitter','on','JitterAmount',0.2)
+        end
     end
     if exist("names","var")
         set(gca,'xtick',1:length(mean_),'xticklabel',names)
