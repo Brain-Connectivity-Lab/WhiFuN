@@ -50,8 +50,9 @@ WM_image = reslice_data(WM_file_path, in_func_path, 1);
 
 % loading all of the functional data
 now_func_path = dir(in_func_path);
-func_info = niftiinfo(in_func_path);
-func_mat = double(niftiread(in_func_path));
+% func_info = niftiinfo(in_func_path);
+[func_mat,func_info] = whifun_niftiread(in_func_path);
+
 func_mat = reshape(func_mat,[],func_info.ImageSize(4));
 
 out_GM_file_path = fullfile(now_func_path.folder,'GM_func_data.nii');
@@ -60,7 +61,7 @@ if isempty(GM_file_path)
     GM_func_mat = func_mat;
     GM_func_mat(GM_image<GM_WM_threshold,:) = 0;         % voxel is above threshold for being grey-matter
     GM_func_mat(WM_image>=GM_WM_threshold,:) = 0;        % voxel is also below threshold for being White matter
-    niftisave(reshape(GM_func_mat,func_info.ImageSize),fullfile(now_func_path.folder,'GM_func_data.nii'),func_info);
+    niftisave((reshape(GM_func_mat,func_info.ImageSize)-func_info.AdditiveOffset)/func_info.MultiplicativeScaling,fullfile(now_func_path.folder,'GM_func_data.nii'),func_info);
     clear GM_func_mat
 end
 
@@ -71,7 +72,7 @@ if isempty(WM_file_path)
     WM_func_mat = func_mat;
     WM_func_mat(WM_image<GM_WM_threshold,:) = 0;         % voxel is above threshold for being white-matter
     WM_func_mat(GM_image>=GM_WM_threshold,:) = 0;        % voxel is also below threshold for being gray-matter
-    niftisave(reshape(WM_func_mat,func_info.ImageSize),fullfile(now_func_path.folder,'WM_func_data.nii'),func_info);
+    niftisave((reshape(WM_func_mat,func_info.ImageSize)-func_info.AdditiveOffset)/func_info.MultiplicativeScaling,fullfile(now_func_path.folder,'WM_func_data.nii'),func_info);
     clear WM_func_mat
 end
 
@@ -138,8 +139,9 @@ if isempty(wm_smooth)
 end
 
 % loading thoe new smoothed images, combining them and saving
-smoothed_GM_data = niftiread(fullfile(now_func_path.folder,'sGM_func_data.nii'));
-smoothed_WM_data = niftiread(fullfile(now_func_path.folder,'sWM_func_data.nii'));
+smoothed_GM_data = whifun_niftiread(fullfile(now_func_path.folder,'sGM_func_data.nii'));
+smoothed_WM_data = whifun_niftiread(fullfile(now_func_path.folder,'sWM_func_data.nii'));
+% func_mat = reshape(func_mat,func_info.ImageSize);
 for i=1:func_info.ImageSize(4)    % go over all timepoints (volumes)
     curr_volume_data = smoothed_GM_data(:,:,:,i);
     curr_volume_data(GM_image<GM_WM_threshold)=0;
@@ -151,7 +153,7 @@ for i=1:func_info.ImageSize(4)    % go over all timepoints (volumes)
 end
 clear func_ma curr_volume_data WM_image;
 final_func_matrix = smoothed_GM_data + smoothed_WM_data;    % combining the GM and WM images
-niftisave(final_func_matrix,fullfile(now_func_path.folder,[smooth_pre now_func_path.name]),func_info);
+niftisave((final_func_matrix-func_info.AdditiveOffset)/func_info.MultiplicativeScaling,fullfile(now_func_path.folder,[smooth_pre now_func_path.name]),func_info);
 
 % deleting the old WM/GM-only functional files
 delete(fullfile(now_func_path.folder,'GM_func_data.nii')); delete(fullfile(now_func_path.folder,'WM_func_data.nii'));
