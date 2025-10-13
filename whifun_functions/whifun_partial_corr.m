@@ -27,7 +27,7 @@ for subji = 1:length(Subj_list)      % For loop on number of participants
 
     if isempty(par_corr_mat_file)
         load(fullfile(mask_subj_ts_folder,[Subj_list(subji).name '_' fr_mask_name '_ts' '.mat']),'vox_ts_from_mask')
-        load(fullfile(avg_ts_path, [Subj_list(subji).name '_' WM_or_GM '_FN_K' num2str(K) '.mat']),'avg_ts');
+        load(fullfile(avg_ts_path, [Subj_list(subji).name '_' WM_or_GM '_FN_K' num2str(K) '_avg_ts.mat']),'avg_ts');
         
         if d_flag
             steps = steps + 1;
