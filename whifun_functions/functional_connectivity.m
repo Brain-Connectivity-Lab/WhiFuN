@@ -36,8 +36,8 @@ if win == T
 else
     msg = ['Creating Dynamic map ',msg1];
 end
-x = 0;
-f = waitbar(x,msg);
+% x = 0;
+% f = waitbar(x,msg);
 
 if nl == 0
 for s = 1:sub
@@ -56,8 +56,8 @@ for s = 1:sub
     vec(:,p,s) = corrvec(cor(:,:,s));
     p=p+1;
    end
-    x = s/size(reg_ts,3);
-    waitbar(x,f) 
+    % x = s/size(reg_ts,3);
+    % waitbar(x,f) 
 end
 else
     parfor s = 1:sub
@@ -71,6 +71,6 @@ else
     end
     vec = corrvec(cor);
 end
-close(f)
+% close(f)
 vec = squeeze(vec);
 end
