@@ -86,7 +86,6 @@ end
 FN_folder = fullfile(out_analysis_path,[WM_or_GM '_FN']);
 [build_net,K] = whifun_build_net(FN_folder,[WM_or_GM '_FN_K*' filesep WM_or_GM '_FN_K*' '.nii'],over_write);
 
-
 if build_net == 1
     %% K-means clustering of mean connectivity matrix
     disp('##########################################################################################')
@@ -99,8 +98,8 @@ if build_net == 1
     out_folder = fullfile(FN_folder,['K_grid_search_dice_corficient_elbow_' WM_or_GM '.png']);
     K = whifun_get_best_k(out_folder,avg_vox_level_FC,K_range_l,K_range_h,CV_folds,num_replicates,size_chunk,d_flag,d,steps_,tot_steps);
     
-    FN_folder = fullfile(FN_folder,[WM_or_GM '_FN_K' num2str(K)]);
-    out_path = fullfile(FN_folder,[ WM_or_GM '_FN_K' num2str(K) '.nii']);
+    
+    out_path = fullfile(FN_folder,[ WM_or_GM '_FN_K' num2str(K)],[ WM_or_GM '_FN_K' num2str(K) '.nii']);
     whifun_get_FN_kmeans(out_path,K,avg_vox_level_FC,group_mask_voxels,niftiinfo(group_mask_path),over_write,d_flag,d,steps_,tot_steps);
 
 else
@@ -116,13 +115,15 @@ else
 end
 
 %% ---------------- Create BrainNet Images ----------------
+FN_folder = fullfile(out_analysis_path,[WM_or_GM '_FN'],[WM_or_GM '_FN_K' num2str(K)]);
 ROI_path = fullfile(FN_folder,[WM_or_GM '_FN_K' num2str(K) '.nii']);
 out_path = fullfile(FN_folder,[WM_or_GM '_FN_K',num2str(K),'_BrainNet_images']);
 whifun_create_brainnet_images(out_path,ROI_path,over_write)
 
 %% ---------------- Average Time Series Extraction ----------------
 out_path = FN_folder;
-avg_ts_path = whifun_get_avg_ts(out_path,ROI_path,Subj_list,over_write,d_flag,d,steps_,tot_steps);
+QC_plots = 0;
+avg_ts_path = whifun_get_avg_ts_atlas_freq(out_path,ROI_path,Subj_list,'final_func_MNI',[],QC_plots,over_write,d_flag,d,steps_,tot_steps);
 
 
 % Focus region
@@ -146,6 +147,7 @@ if focus_check
 
     %% Obtaining averaged time series of focus region FN 
     out_path = ROI_folder;
-    whifun_get_avg_ts(out_path,ROI_path,Subj_list,over_write,d_flag,d,steps_,tot_steps);
+    QC_plots = 0;
+    whifun_get_avg_ts_atlas_freq(out_path,ROI_path,Subj_list,'final_func_MNI',[],QC_plots,over_write,d_flag,d,steps_,tot_steps);
 end
 end
