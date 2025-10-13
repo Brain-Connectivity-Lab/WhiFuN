@@ -1,6 +1,10 @@
 function whifun_create_brainnet_images(out_path,ROI_path,over_write)
+if ~exist(out_path,'dir')
+    mkdir(out_path)
+end
 temp = mfilename("fullpath");
 preproc_code_path = fileparts(fileparts(temp));
+addpath(fullfile(preproc_code_path,'BrainNetViewer_20191031'))
 [~,ROI_name,~] = fileparts(ROI_path);
 [~,ROI_name,~] = fileparts(ROI_name);
 
@@ -9,9 +13,7 @@ ROI = whifun_niftiread(ROI_path);
 levels = unique(ROI);
 levels(levels==0) = [];
 WM_brainnet_image = whifun_create_file(over_write,out_file);
-if ~exist(out_path,'dir')
-    mkdir(out_path)
-end
+
 %% Create brain net viwer images
 
 if isempty(WM_brainnet_image)
