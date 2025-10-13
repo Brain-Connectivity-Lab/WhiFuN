@@ -47,10 +47,12 @@ for subji = 1:length(Subj_list)      % For loop on number of participants
                 return
             end
         end
-        now_func_path = Subj_list(subji).final_func_MNI;
+        func_path = Subj_list(subji).final_func_MNI;
 
-        [data,~]=whifun_niftiread(now_func_path);
-        roi1=isnan(data);data(roi1)=0;[x,y,z,t]=size(data);
+        [data,~]=whifun_niftiread(func_path);
+        roi1=isnan(data);
+        data(roi1)=0;
+        [x,y,z,t]=size(data);
         new_data=reshape(data,x*y*z,t);
         Subj = Subj_list(subji);
         for k=1:length(index)
