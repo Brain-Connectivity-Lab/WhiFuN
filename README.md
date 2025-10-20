@@ -2,14 +2,15 @@
 
 We are open to feedback and comments. Please reach out if you get any issues, email: (jainpratik412[at]gmail[dot]com).
 
-This GUI-based toolbox offers researchers a user-friendly suite of automated tools for investigating brain functional connectivity in WM and GM. One of the key advantages of WhiFuN is that it fully automates the preprocessing steps to derive data that can be used to analyze the WM and GM BOLD signals.
+This GUI-based toolbox offers researchers a user-friendly suite of automated tools for investigating brain functional connectivity in WM and GM. One of the key advantages of WhiFuN is that it fully automates the preprocessing steps to derive data that can be used to analyze the White Matter (WM) and Gray Matter (GM) BOLD signals.
 
 What's new in version 3?
 
 1) Made scripting very much easier. All preprocessing can be done with a single whifun_preproc function, the WM/GM networks can be created using single whifun_create_FN_kmeans function.
 2) All functions in the WhiFuN toolbox are self-documented. To get a detailed explanation of what a function does, its input    arguments, output arguments, and dependencies, open a MATLAB session and use the help command followed by the function name. eg.
    >> help whifun_get_FN_kmeans
-4) New Quality control plots to better identify Participants that have bad data. Included the seed based correlation plots in QC for the default mode network (MNI seed
+3) New Quality control plots to better identify Participants that have bad data. Included the seed based correlation plots in QC for the default mode network (MNI seed (5,-49,40)), auditory network ((MNI seed (64,-12,2)) and Visual Network (MNI seed (-4,-91,-3)) in the GM.
+4) Data preprocessed using anyother toolbox/pipeline can now be used to extract the WM and GM FN by using the whifun_using_other_preproc function. 
 
 
 ## New to WhiFuN? 
