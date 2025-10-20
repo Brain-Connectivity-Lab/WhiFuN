@@ -1,14 +1,15 @@
-# WhiFuN Version 2
+# WhiFuN Version 3
 
 We are open to feedback and comments. Please reach out if you get any issues, email: (jainpratik412[at]gmail[dot]com).
 
 This GUI-based toolbox offers researchers a user-friendly suite of automated tools for investigating brain functional connectivity in WM and GM. One of the key advantages of WhiFuN is that it fully automates the preprocessing steps to derive data that can be used to analyze the WM and GM BOLD signals.
 
-What's new in version 2?
+What's new in version 3?
 
-1) Added new columns in the Subj_list.csv file for the functional and anatomical file paths. Now, users can directly paste the paths of the functional and anatomical files in the Subj_list.csv file, and WhiFuN will directly use that. So now WhiFuN is capable of processing any data format/structure.
-2) Parallel functionality added. If the user has the Parallel Computing toolbox installed in MATLAB, they will be able to preprocess the subjects in parallel using multiple cores of the computer for faster preprocessing.
-3) Compatibility with MATLAB R2025a
+1) Made scripting very much easier. All preprocessing can be done with a single whifun_preproc function, the WM/GM networks can be created using single whifun_create_FN_kmeans function.
+2) All functions in the WhiFuN toolbox are self-documented. To get a detailed explanation of what a function does, its input    arguments, output arguments, and dependencies, open a MATLAB session and use the help command followed by the function name. eg.
+   >> help whifun_get_FN_kmeans
+4) New Quality control plots to better identify Participants that have bad data. Included the seed based correlation plots in QC for the default mode network (MNI seed
 
 
 ## New to WhiFuN? 
