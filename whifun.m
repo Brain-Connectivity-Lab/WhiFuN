@@ -1,7 +1,59 @@
 function whifun(varargin)
+%WHIFUN White matter Functional Networks (WhiFuN) Toolbox Main Function.
+%
+%   WHIFUN is the primary entry point for the GUI-based WhiFuN Toolbox,
+%   a comprehensive suite of tools for investigating brain functional
+%   connectivity in White Matter (WM) and Gray Matter (GM). It fully
+%   automates preprocessing steps to derive BOLD signals for WM and GM
+%   analysis.
+%
+%   To start the GUI:
+%       >> whifun
+%
+%   Requires:
+%       - MATLAB R2022a or later (recommended).
+%       - Image Processing Toolbox
+%       - Signal Processing Toolbox
+%       - Statistics and Machine Learning Toolbox
+%       - Bioinformatics Toolbox
+%       - SPM12 toolbox (must be downloaded and added to MATLAB path).
+%
+%   The function initializes the environment, displays a welcome message,
+%   provides links to documentation and the associated publication, and
+%   launches the main MATLAB App (GUI).
+%
+%   Pre-requisites:
+%   1. Download and unzip WhiFuN.
+%   2. Add the WhiFuN folder and the SPM12 folder to the MATLAB path.
+%   3. Install the required MATLAB toolboxes via Add-Ons.
+%
+%   Data Structure:
+%   WhiFuN supports both BIDS and custom data structures. For custom data
+%   structures, the user must specify the folder/file names for anatomical
+%   and functional images (T1, fMRI).
+%
+%   Key Steps after Launching GUI:
+%   1. Select **Outputs folder** and **Subject Data Folder**.
+%   2. Configure data structure (BIDS or custom path/file names).
+%   3. Run **Data check** to verify image integrity and parameters.
+%   4. Review **Preprocessing** parameters (e.g., motion thresholds).
+%   5. Run **Preprocessing** (saves quality control plots/reports).
+%   6. Use quality control reports (e.g., Head motion, Segmentation) to manually
+%      exclude subjects if necessary.
+%   7. **Create WM-FN** (Functional Networks) by running cross-validation for
+%      K-values and selecting the optimal K.
+%   8. **Create GM-FN** (Functional Networks) similarly.
+%   9. **Display FN** using SPM or BrainNet Viewer.
+%
+%   Author: Pratik Jain
+%   Contact: pj44@njit.edu
+%
+%   Reference:
+%   Pratik Jain, Andrew M. Michael, Pan Wang, Xin Di, Bharat Biswal; WhiFuN:
+%   A toolbox to map the white matter functional networks of the human brain.
+%   Imaging Neuroscience 2025; doi: https://doi.org/10.1162/IMAG.a.3
+
 %% White matter Functional Networks Toolbox
-% Written by Pratik Jain
-% email:pj44@njit.edu
 %% This code and Readme file was written by Pratik Jain.
 %% This code was written with the help of different preprocessing scripts given by
 %% Dr. Xin Di, Dr. Rakibul Hafeez, Donna Chen and Wohnbum Sohn.
@@ -207,7 +259,7 @@ switch Action
         preproc_code_path = fileparts(temp_path);
 
         addpath(preproc_code_path)
-        run(fullfile(preproc_code_path,'main_csv_parfor_QC_different_one_mat_for_all_subs.mlapp'))
+        run(fullfile(preproc_code_path,'main.mlapp'))
 
     case 'ver'
         disp('Version : WhiFuN v3')
