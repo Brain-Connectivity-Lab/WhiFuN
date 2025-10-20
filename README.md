@@ -10,7 +10,8 @@ What's new in version 3?
 2) All functions in the WhiFuN toolbox are self-documented. To get a detailed explanation of what a function does, its input    arguments, output arguments, and dependencies, open a MATLAB session and use the help command followed by the function name. eg.
    >> help whifun_get_FN_kmeans
 3) New Quality control plots to better identify Participants that have bad data. Included the seed based correlation plots in QC for the default mode network (MNI seed (5,-49,40)), auditory network ((MNI seed (64,-12,2)) and Visual Network (MNI seed (-4,-91,-3)) in the GM.
-4) Data preprocessed using anyother toolbox/pipeline can now be used to extract the WM and GM FN by using the whifun_using_other_preproc function. 
+4) Data preprocessed using anyother toolbox/pipeline can now be used to extract the WM and GM FN by using the whifun_using_other_preproc function.
+5) Added Dartel based MNI registeration in whifun preprocessing.
 
 
 ## New to WhiFuN? 
