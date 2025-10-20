@@ -43,8 +43,6 @@ function [Subj_list_all,output_folder] = whifun_create_Subj_list(output_folder)
 %   Author: Pratik Jain
 %   See also UIGETDIR, UITALBE, INPUTDLG, DIR, FULLFILE.
 
-
-% Multi-subject setup with interactive pattern fixing (files + folders)
 %% Step 1: Select Data Folder
 
 if ~exist('output_folder',"var")
@@ -62,7 +60,7 @@ if isempty(output_folder_dir)
     end
     mkdir(output_folder);
 end
-%% Step 1: Select Data Folder
+
 dataFolder = uigetdir(pwd, 'Select main data folder containing subject folders');
 if isequal(dataFolder,0)
     error('No folder selected');
@@ -229,5 +227,5 @@ for i = 1:size(finalData,1)
 end
 Subj_list_all = whifun_create_fields(Subj_list_all);
 my_writetable(struct2table(Subj_list_all), fullfile(output_folder,"Subj_list.csv"))
-disp('✅ Multi-subject setup complete.');
+disp(['Subj_list.csv created, See : ' output_folder]);
 end

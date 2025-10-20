@@ -37,7 +37,7 @@ function whifun_calc(output_path, expression, varargin)
                 error('All input images must have the same dimensions.');
             end
         end
-        assignin('caller', sprintf('i%d', k), Y); %#ok<NASGU>
+        assignin('caller', sprintf('i%d', k), Y); 
     end
 
     % --- Prepare workspace for evaluation ---

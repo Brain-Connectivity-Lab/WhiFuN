@@ -7,7 +7,7 @@ function [idiff_score,A,Iself,Iothers] = idiff(vec1,vec2,fig_op,pca_op)
 % fig_op -> 0 -> does not plot the matrix
 % pca_op -> 1 -> do pca
 % pca _op -> 0 -> no pca
- [d,s] = size(vec1);
+ [~,s] = size(vec1);
 if ~exist("fig_op",'var')
     fig_op = 0;
 end

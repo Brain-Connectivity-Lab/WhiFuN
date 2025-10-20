@@ -11,7 +11,47 @@ function whifun_save_parameters(save_folder,save_name,...
                                 filter_check,filter_lp,filter_hp,...
                                 smooth_drop,smooth_fwhm,...
                                 vox)
-
+%WHIFUN_SAVE_PARAMETERS Saves all configuration and pipeline parameters
+%   from the WhiFuN processing pipeline into a MATLAB .mat file.
+%
+%   WHIFUN_SAVE_PARAMETERS(SAVE_FOLDER, SAVE_NAME, DATA_PATH, ...)
+%
+%   This function serves as a centralized mechanism to log the settings used
+%   for a specific run of the neuroimaging preprocessing/analysis pipeline,
+%   ensuring reproducibility.
+%
+%   Input Arguments:
+%   SAVE_FOLDER         - The directory where the .mat file will be saved.
+%   SAVE_NAME           - The filename for the saved parameters (e.g., 'WhiFuN_Params.mat').
+%   DATA_PATH           - Root path to the raw data.
+%   OUTPUT_FOLDER       - Root path for all analysis outputs.
+%   BIDS_CHECK          - Flag indicating whether BIDS standard was checked/used.
+%   COMM_SESS_NAME      - Common session name pattern.
+%   COMM_SUBJ_NAME      - Common subject name pattern.
+%   FUNC_FOLDER_NAME    - Name pattern for functional data folders.
+%   ANAT_FOLDER_NAME    - Name pattern for anatomical data folders.
+%   FUNC_DATA_NAME      - Name pattern for functional image files.
+%   ANAT_DATA_NAME      - Name pattern for anatomical image files.
+%   N_VOL_DIS           - Number of initial volumes discarded.
+%   MAX_FD              - Maximum Framewise Displacement threshold for exclusion.
+%   MEAN_FD             - Mean Framewise Displacement threshold for exclusion.
+%   GREATER_THAN_20     - Threshold for percentage of frames exceeding a certain FD (e.g., 0.2mm).
+%   SEG_DARTEL_DROP     - Flag for dropping (or skipping) segmentation and DARTEL.
+%   CSF_THRES           - CSF threshold for generating the CSF regression mask.
+%   REG_DROP            - Flag for dropping (or skipping) nuisance regression.
+%   N_PCA               - Number of PCA components to regress out (e.g., from WM/CSF).
+%   MOTION_REG          - Flag for including motion parameters and their derivatives in regression.
+%   FILTER_CHECK        - Flag indicating whether temporal filtering is enabled.
+%   FILTER_LP           - Low-pass frequency for temporal filtering.
+%   FILTER_HP           - High-pass frequency for temporal filtering.
+%   SMOOTH_DROP         - Flag for dropping (or skipping) spatial smoothing.
+%   SMOOTH_FWHM         - FWHM (Full Width at Half Maximum) for spatial smoothing kernel.
+%   VOX                 - Target voxel size for resampling during normalization.
+%
+%   Output:
+%   Saves a .mat file containing all the input variables to the specified location.
+%
+%   Author: Pratik Jain
 save(fullfile(save_folder,save_name),"data_path","output_folder",'bids_check',...
                                     'comm_sess_name','comm_subj_name',...
                                     'func_folder_name','anat_folder_name',...

@@ -123,7 +123,7 @@ whifun_create_brainnet_images(out_path,ROI_path,over_write)
 %% ---------------- Average Time Series Extraction ----------------
 out_path = FN_folder;
 QC_plots = 0;
-avg_ts_path = whifun_get_avg_ts_atlas_freq(out_path,ROI_path,Subj_list,'final_func_MNI',[],QC_plots,over_write,d_flag,d,steps_,tot_steps);
+avg_ts_path = whifun_create_avg_ts(out_path,ROI_path,Subj_list,'final_func_MNI',[],QC_plots,over_write,d_flag,d,steps_,tot_steps);
 
 
 % Focus region
@@ -148,6 +148,6 @@ if focus_check
     %% Obtaining averaged time series of focus region FN 
     out_path = ROI_folder;
     QC_plots = 0;
-    whifun_get_avg_ts_atlas_freq(out_path,ROI_path,Subj_list,'final_func_MNI',[],QC_plots,over_write,d_flag,d,steps_,tot_steps);
+    whifun_create_avg_ts(out_path,ROI_path,Subj_list,'final_func_MNI',[],QC_plots,over_write,d_flag,d,steps_,tot_steps);
 end
 end

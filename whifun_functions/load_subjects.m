@@ -1,5 +1,4 @@
 function [Subj_list,rm] = load_subjects(folder,name,first)
-% Written by Pratik Jain 
 % LOAD_SUBJECTS Loads a list of subjects from a CSV file.
 %
 %   [Subj_list, rm] = LOAD_SUBJECTS(folder, name) loads a CSV file
@@ -31,6 +30,7 @@ function [Subj_list,rm] = load_subjects(folder,name,first)
 %      % Load subjects from 'subject_data.csv' in the current folder
 %      [subjects, removed] = load_subjects(pwd, 'subject_data.csv');
 %
+%   Author: Pratik Jain
 %   See also READTABLE, TABLE2STRUCT, DETECTIMPORTOPTIONS.
 
 if nargin < 3

@@ -1,38 +1,41 @@
-% function [dice_hc,IOU_hc] = compare_networks(net1_filepath,net2_filepath)
+function [dice,IOU,vox_num_1,vox_num_2] = dice_iou(kmeans_net_1_path,kmeans_net_2_path,align_net,fig_dice)
+%DICE_IOU Computes the Dice Similarity Coefficient and Intersection of Union (IoU)
+%   between two functional network (FN) atlas NIfTI files. It can optionally
+%   align the second network to the first and generate a visualization of the similarity matrix.
 %
-%     net1 = niftiread(net1_filepath);
-%     net2 = niftiread(net2_filepath);
-%     num_net1 = length(unique(net1));
-%     num_net2 = length(unique(net2));
+%   [DICE, IOU, VOX_NUM_1, VOX_NUM_2] = DICE_IOU(KMEANS_NET_1_PATH, KMEANS_NET_2_PATH, ALIGN_NET, FIG_DICE)
 %
+%   Input Arguments:
+%   KMEANS_NET_1_PATH - Full path to the first FN NIfTI file, or the N-dimensional array itself.
+%   KMEANS_NET_2_PATH - Full path to the second FN NIfTI file, or the N-dimensional array itself.
+%   ALIGN_NET         - (Optional, default 0) Flag to align net_2 to net_1:
+%                       ALIGN_NET = 1: Relabels net_2 based on the maximum Dice match
+%                                      to net_1 and saves the aligned network.
+%                       ALIGN_NET = 0: No alignment.
+%   FIG_DICE          - (Optional, default 0) Flag to visualize the Dice matrix:
+%                       FIG_DICE = 1: Displays a heatmap of the Dice matrix.
+%                       FIG_DICE = 0: No plot generated.
 %
-%     for i = 1:num_net1
-%     temp = zeros(size(k10));
-%     temp(k10==i) = 1;
-%     result(:,:,:,i) = temp;
-% end
+%   Output Arguments:
+%   DICE              - A matrix where DICE(i, j) is the Dice coefficient between
+%                       network 'i' from the first map and network 'j' from the second map.
+%   IOU               - A matrix where IOU(i, j) is the Jaccard Index (IoU) between
+%                       network 'i' from the first map and network 'j' from the second map.
+%   VOX_NUM_1         - A vector of voxel counts for each network in the first map.
+%   VOX_NUM_2         - A vector of voxel counts for each network in the second map.
 %
-% end
-
-% [dice_hc,IOU_hc] = dice_iou(kmeans_net_1_path_h_abide,kmeans_net_1_path_h,'h_abide','h_cud','Healthy controls ABIDE','Healthy controls CUD dataset');
-% [dice_hc,IOU_hc] = dice_iou(net1_filepath,net2_filepath);
-
-function [dice,IOU,vox_num_1,vox_num_2] = dice_iou(kmeans_net_1_path,kmeans_net_2_path,align_net,fig_dice)%,no_vox_1
+%   Dependencies: 'niftiread', 'niftiinfo', 'niftisave', and 'whifun_convert_3d_to_4d_atlas' (assumed).
+%
+%   Author: Pratik Jain
 
 if nargin == 2
     align_net = 0;
     fig_dice = 0;
-%     no_vox_1 = 0;
 end
 
 if nargin == 3
     fig_dice = 0;
-%     no_vox_1 = 0;
 end
-
-% if nargin == 4
-%     fig_dice = 0;
-% end
 
 if ~isnumeric(kmeans_net_1_path)
     net_1 = niftiread(kmeans_net_1_path);
@@ -76,11 +79,6 @@ for i = level_net_1'
     end
 
 end
-% dice2 = dice;
-% zero_cols = sum(dice2,1) == 0;
-% zero_rows = sum(dice2,2) == 0;
-% dice2(:,zero_cols) = [];
-% dice2(zero_rows,:) = [];
 
 net_2_aligned = zeros(size(net_2));
 if align_net == 1
@@ -92,7 +90,7 @@ if align_net == 1
         net_2_aligned(net_2 == i) = max_dice_idx(i);
     end
     info = niftiinfo(kmeans_net_2_path);
-    
+
     level_net_out = double(unique(net_2_aligned));
     level_net_out(level_net_out == 0) = [];
 
@@ -101,7 +99,7 @@ if align_net == 1
     end
     [folder,file,ext] = fileparts(kmeans_net_2_path);
     niftisave(net_2_aligned,fullfile(folder,[file '_aligned' ext]),info)
-    convert3d_4d_atlas(fullfile(folder,[file '_aligned' ext]));
+    whifun_convert_3d_to_4d_atlas(fullfile(folder,[file '_aligned' ext]));
     disp(['Network at ' kmeans_net_2_path ' aligned to network at ' kmeans_net_1_path])
     disp(['Average Dice coeficient between the two networks is ' num2str(mean(max_dice))])
 

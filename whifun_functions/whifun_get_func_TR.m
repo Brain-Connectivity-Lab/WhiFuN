@@ -30,6 +30,7 @@ function [Subj_list_1,tr,report] = whifun_get_func_TR(now_func_path,Subj_list_1)
 %
 %   Author: Pratik Jain
 %   See also NIFTIINFO, WARNING.
+
 try
     v_func = niftiinfo(fullfile(now_func_path(1).folder,now_func_path(1).name));
 

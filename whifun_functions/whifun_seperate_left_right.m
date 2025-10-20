@@ -1,4 +1,36 @@
 function whifun_seperate_left_right(FN_file_path,one_image)
+%WHIFUN_SEPERATE_LEFT_RIGHT Separates a Functional Network (FN) NIfTI volume
+%   into left and right hemispheric components based on the mid-sagittal slice.
+%
+%   WHIFUN_SEPERATE_LEFT_RIGHT(FN_FILE_PATH, ONE_IMAGE)
+%
+%   This utility function is used to create separate NIfTI files for the
+%   left (L) and right (R) halves of a clustered network map (e.g., WM-FN).
+%
+%   Input Arguments:
+%   FN_FILE_PATH - Full path to the NIfTI file containing the clustered Functional Network.
+%                  (e.g., 'WM_FN_K10.nii').
+%   ONE_IMAGE    - (Optional, default 0) Flag to determine output format:
+%                  ONE_IMAGE = 0: Saves two separate NIfTI files: '_L' and '_R'.
+%                  ONE_IMAGE = 1: Saves a single NIfTI file '_L_R_seperated'
+%                                 where the right hemisphere's network labels are
+%                                 offset by K (the total number of original networks)
+%                                 to ensure non-overlapping labels in the combined image.
+%
+%   Output Files:
+%   - If ONE_IMAGE = 0:
+%     - <FN_name>_L.<ext>
+%     - <FN_name>_R.<ext>
+%   - If ONE_IMAGE = 1:
+%     - <FN_name>_L_R_seperated.<ext>
+%
+%   Assumes: The NIfTI image is oriented such that the first dimension (X)
+%   corresponds to the Left-Right axis, and the center slice separates the
+%   left (1:Mid_sagittal_slice) from the right (Mid_sagittal_slice+1:end).
+%
+%   Dependencies: 'whifun_niftiread', 'niftisave' functions.
+%
+%   Author: Pratik Jain
 if ~exist("one_image","var")
     one_image = 0;
 end

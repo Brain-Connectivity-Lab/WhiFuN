@@ -24,7 +24,7 @@ end
 [x1,x2,x3] = ndgrid(1:dim(1),1:dim(2),1:dim(3));
 d     = [hld*[1 1 1]' [1 1 0]'];
 C = spm_bsplinc(SourceHead, d);
-v = zeros(dim);
+% v = zeros(dim);
 
 M = inv(SourceHead.mat)*mat; % M = inv(mat\SourceHead.mat) in spm_reslice.m
 y1   = M(1,1)*x1+M(1,2)*x2+(M(1,3)*x3+M(1,4));

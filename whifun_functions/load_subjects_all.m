@@ -1,5 +1,4 @@
 function Subj_list_all = load_subjects_all(folder,name,new_run,overwrite)
-% Written by Pratik Jain
 % LOAD_SUBJECTS_ALL Loads all subjects from a CSV file, with options for new runs.
 %
 %   Subj_list_all = LOAD_SUBJECTS_ALL(folder, name) loads all subjects
@@ -35,15 +34,18 @@ function Subj_list_all = load_subjects_all(folder,name,new_run,overwrite)
 %
 %   Example:
 %      % Load all subjects from a CSV file in the current folder
-%      subject_list = load_subjects_all(pwd, 'my_subjects.csv');
+%      subject_list = load_subjects_all(pwd, 'Subj_list.csv');
 %
 %      % Start a new run, initializing error and motion exclusion columns
-%      new_subjects = load_subjects_all(pwd, 'my_subjects.csv', true);
+%      new_subjects = load_subjects_all(pwd, 'Subj_list.csv', true);
 %
 %      % Start a new run and overwrite existing motion exclusion data
-%      reset_subjects = load_subjects_all(pwd, 'my_subjects.csv', true, true);
+%      reset_subjects = load_subjects_all(pwd, 'Subj_list.csv', true, true);
 %
 %   See also READTABLE, DETECTIMPORTOPTIONS, TABLE2STRUCT.
+%   Author: Pratik Jain
+
+
 if nargin < 4
     new_run = 0;
 end

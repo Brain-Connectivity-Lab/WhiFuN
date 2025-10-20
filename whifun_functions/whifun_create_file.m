@@ -28,6 +28,7 @@ function file_dir = whifun_create_file(over_write,file_path)
 %
 %   Author: Pratik Jain
 %   See also DIR, DELETE, FULLFILE, WARNING.
+
 if over_write == 1 % if overwrite is 1, even if the file already exists delete it and create a new one
 
     file_dir = dir(file_path) ;

@@ -1,4 +1,4 @@
-function figure_montage(in,x,y)
+function whifun_figure_montage(in,x,y)
 
 out = [];
 for y_i = 1:y

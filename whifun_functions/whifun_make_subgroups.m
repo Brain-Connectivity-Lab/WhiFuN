@@ -1,6 +1,6 @@
 function [subgroups, overlaps] = whifun_make_subgroups(total_subjects, n)
-%WHIFUN_MAKE_SUBGROUPS Creates non-overlapping and potentially one-overlapping
-%                       subgroups of subjects from a total pool.
+%WHIFUN_MAKE_SUBGROUPS Creates minimal overlapping subgroups of subjects
+%                      from a total pool.
 %
 %   [SUBGROUPS, OVERLAPS] = WHIFUN_MAKE_SUBGROUPS(TOTAL_SUBJECTS, N)
 %
