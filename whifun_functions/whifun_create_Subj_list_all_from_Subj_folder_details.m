@@ -66,5 +66,6 @@ for i = 1:length(Subj_list_all)
     Subj_list_all(i).anat_folder = fullfile(Subj_list_all(i).folder, Subj_list_all(i).name,char(comm_sess_name),char(anat_folder_name));
     Subj_list_all(i).anat_name = [char(anat_data_name) '.nii*'];
 end
-Subj_list_all = Subj_list_all(~ismember({Subj_list_all.name},{'.','..','.DS_Store'}));
 Subj_list_all(nt_dir) = [];                                                     % Remove all the files that are not directories (Now Subj_list should have all participant files)
+
+Subj_list_all = Subj_list_all(~ismember({Subj_list_all.name},{'.','..','.DS_Store'}));
