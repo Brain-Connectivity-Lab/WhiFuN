@@ -37,6 +37,7 @@ if ~exist('d_flag','var')
     tot_steps = 0;
 end
 
+
 if ~exist("over_write","var")
     over_write = 0;
 end
@@ -251,19 +252,20 @@ if isempty(mat_dir)
         % Calculating correlation matrix of each WM voxel to the subsampled voxels
         switch sub_sample_choose
             case 'Subsample'
-                current_corr = corr(vox_ts(vox_ts_with_data_idx,:)', vox_ts(sub_sample_grid(vox_ts_sub_sample_with_data_idx),:)');
+                % current_corr = corr(vox_ts(vox_ts_with_data_idx,:)', vox_ts(sub_sample_grid(vox_ts_sub_sample_with_data_idx),:)');
                 % adding the current connectivity matrix to the sum of all participants, for later averaging
-                avg_vox_level_FC(vox_ts_with_data_idx, vox_ts_sub_sample_with_data_idx) = avg_vox_level_FC(vox_ts_with_data_idx, vox_ts_sub_sample_with_data_idx) + current_corr;
+                avg_vox_level_FC(vox_ts_with_data_idx, vox_ts_sub_sample_with_data_idx) = avg_vox_level_FC(vox_ts_with_data_idx, vox_ts_sub_sample_with_data_idx) + corr(vox_ts(vox_ts_with_data_idx,:)', vox_ts(sub_sample_grid(vox_ts_sub_sample_with_data_idx),:)');
                 num_subjs_notnan(vox_ts_with_data_idx, vox_ts_sub_sample_with_data_idx) = num_subjs_notnan(vox_ts_with_data_idx, vox_ts_sub_sample_with_data_idx) + 1;
             case 'Use entire FC'
-                current_corr = corr(vox_ts(vox_ts_with_data_idx,:)', vox_ts(vox_ts_with_data_idx,:)');
+                % current_corr = corr(vox_ts(vox_ts_with_data_idx,:)', vox_ts(vox_ts_with_data_idx,:)');
                 % adding the current connectivity matrix to the sum of all participants, for later averaging
-                avg_vox_level_FC(vox_ts_with_data_idx, vox_ts_with_data_idx) = avg_vox_level_FC(vox_ts_with_data_idx, vox_ts_with_data_idx) + current_corr;
+                avg_vox_level_FC(vox_ts_with_data_idx, vox_ts_with_data_idx) = avg_vox_level_FC(vox_ts_with_data_idx, vox_ts_with_data_idx) + corr(vox_ts(vox_ts_with_data_idx,:)', vox_ts(vox_ts_with_data_idx,:)');
                 num_subjs_notnan(vox_ts_with_data_idx, vox_ts_with_data_idx) = num_subjs_notnan(vox_ts_with_data_idx, vox_ts_with_data_idx) + 1;
             otherwise
                 error('Invalid Subsampling option')
         end
-        clear vox_ts; clear current_corr; clear current_seg_mask; clear vox_ts_with_data_idx; clear vox_ts_sub_sample_with_data_idx;
+        % clear current_corr;
+        clear vox_ts; clear current_seg_mask; clear vox_ts_with_data_idx; clear vox_ts_sub_sample_with_data_idx;
         toc
     end
 

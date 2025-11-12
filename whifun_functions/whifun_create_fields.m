@@ -37,7 +37,7 @@ function Subj_list_all = whifun_create_fields(Subj_list_all)
 Subj_list_all = create_field(Subj_list_all,'error');
 Subj_list_all = create_field(Subj_list_all,'motion_ex');
 Subj_list_all = create_field(Subj_list_all,'manual_ex');
-
+Subj_list_all = create_field(Subj_list_all,'comments');
 Subj_list_all = create_field(Subj_list_all,'x_func');
 Subj_list_all = create_field(Subj_list_all,'y_func');
 Subj_list_all = create_field(Subj_list_all,'z_func');
