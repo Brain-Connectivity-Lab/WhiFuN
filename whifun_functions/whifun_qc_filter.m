@@ -68,8 +68,10 @@ if isempty(fil_qc_file)
     [x,y,z,nt] = size(f_func_image);
     f_file = reshape(f_func_image,x*y*z,nt);
     global_ts_f = mean(f_file,'omitnan');
-
-    f = gcf; plot(global_ts-mean(global_ts));
+    
+    f = gcf;
+    clf(f);
+    plot(global_ts-mean(global_ts));
     hold on
     plot(global_ts_f -mean(global_ts_f))
     title(['Global Time Series (mean subtracted)' ' participant ' Subj_list_1.name])

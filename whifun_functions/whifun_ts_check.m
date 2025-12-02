@@ -252,7 +252,7 @@ set(f,'PaperPosition',[10 50 1500 400]);
 % pause(0.1)
 exportgraphics(f,out_image_path);
 exportgraphics(f,out_image_path);
-
+colormap("gray")
 end
 function mat_mask = create_mask(n)
 mat_mask = zeros(n);

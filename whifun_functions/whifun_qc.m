@@ -167,6 +167,7 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
                 whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,0,over_write)
             end
         end
+        clf(fg)
     else
         disp(['Participant ' Subj_list_1.name ' got rejected due to excessive motion during preprocessing. See b_Head_motion folder for more details'])
     end
