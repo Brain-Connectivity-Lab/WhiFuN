@@ -92,8 +92,8 @@ addParameter(p, 'motion_reg', 0, @(x) islogical(x) || isnumeric(x));
 % filtering
 addParameter(p, 'filter_check', 0, @(x) islogical(x) || isnumeric(x));
 addParameter(p, 'f_pre', 'f', @(x) ischar(x) || isstring(x));
-addParameter(p, 'filter_lp', 0.01,  @(x) isnumeric(x));
-addParameter(p, 'filter_hp', 0.15,  @(x) isnumeric(x));
+addParameter(p, 'filter_lp', 0.01);
+addParameter(p, 'filter_hp', 0.15);
 
 % smoothing
 addParameter(p, 'Smooth_', 0, @(x) islogical(x) || isnumeric(x));
