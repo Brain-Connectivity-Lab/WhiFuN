@@ -92,7 +92,14 @@ function whifun_copyfiles(Subj_list, field_name, dest_folder)
             destPath = fullfile(dest_folder, relPath);
             destDir = fileparts(destPath);
             if ~exist(destDir, 'dir')
-                mkdir(destDir);
+
+                for ii = 1:5
+                    try
+                        mkdir(destDir);
+                        break
+                    catch
+                    end
+                end
             end
 
             copyfile(src, destPath);
