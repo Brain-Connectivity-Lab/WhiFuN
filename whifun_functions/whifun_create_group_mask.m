@@ -129,7 +129,7 @@ if isempty(grp_wm_mask_dir) || isempty(grp_gm_mask_dir)
 
     % reading the Harvard-Oxford atlas and resampling it to the functional image's resolution
     HO_atlas = reslice_data(HO_atlas_filename, func_img1_filename, 0);
-
+    delete(fullfile(fileparts(HO_atlas_filename),'HarvardOxford-sub-maxprob-thr25-2mm_YCG.nii'))
     % find the voxels defined as subcortical structures
     indices_subcortical = [find(HO_atlas==2010);	find(HO_atlas==2049);	find(HO_atlas==3011);	find(HO_atlas==3050);	find(HO_atlas==4012);	find(HO_atlas==4051);	find(HO_atlas==5013);	find(HO_atlas==5052);	find(HO_atlas==8026);	find(HO_atlas==8058);];
 
