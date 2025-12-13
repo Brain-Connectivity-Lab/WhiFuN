@@ -93,13 +93,13 @@ if isempty(head_mot_qc_file) || over_write == 1
     clf(f)
     subplot(2,2,1)
     plot(meany)
-    title('Global mean (raw)');xlabel('Image number')
+    title(['Global mean (Realigned Image) ' now_func_path.name],'Interpreter','none');xlabel('Image number')
     box off
 
     subplot(2,2,3)
     plot(dt)
     yline(mean(dt)+3*std(dt),'-','3 SD','color',[0 0.4470 0.7410]);
-    title('Pairwise variance (raw)');xlabel('Image pair')
+    title(['Pairwise variance (Realigned Image) ' now_func_path.name],'Interpreter','none');xlabel('Image pair')
     box off
 
     subplot(2,2,2)

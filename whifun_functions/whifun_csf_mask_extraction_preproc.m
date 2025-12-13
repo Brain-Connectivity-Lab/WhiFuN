@@ -55,7 +55,7 @@ try
     else
         disp(['CSF_MASK file found, hence skipping this step for ' Subj_list_1.name]);
     end
-    Subj_list_1.CSF_mask_func_native = out_csf_mask_func_path;
+    Subj_list_1.CSF_mask_func = out_csf_mask_func_path;
 
 catch exception
     disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
