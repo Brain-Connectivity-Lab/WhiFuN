@@ -1,4 +1,4 @@
-function [gm_prob_path, wm_prob_path, csf_prob_path] = whifun_fsl_fast_seg(t1_path, out_dir, do_skullstrip)
+function [gm_prob_path, wm_prob_path, csf_prob_path,t1_input_brain] = whifun_fsl_fast_seg(t1_path, out_dir, do_skullstrip)
 % WHIFUN_FSL_FAST_SEG Performs anatomical segmentation with optional skull stripping using FSL.
 %
 %   [gm_prob_path, wm_prob_path, csf_prob_path] = WHIFUN_FSL_FAST_SEG(t1_path, out_dir, do_skullstrip)
@@ -44,7 +44,7 @@ function [gm_prob_path, wm_prob_path, csf_prob_path] = whifun_fsl_fast_seg(t1_pa
 
     % Get filename without extension
     [fold, name, ~] = fileparts(t1_path);
-
+    [~, name, ~] = fileparts(name);
     if nargin < 2
         out_dir = fold;
     end
@@ -60,12 +60,13 @@ function [gm_prob_path, wm_prob_path, csf_prob_path] = whifun_fsl_fast_seg(t1_pa
     % Optionally run BET (skull stripping)
     if do_skullstrip
         bet_out = fullfile(out_dir, [name '_brain']);
-        cmd_bet = sprintf('bet %s %s -R -f 0.5 -g 0', t1_path, bet_out);
+        cmd_bet = sprintf('bet %s %s -R -f 0.5 -g 0 -m', t1_path, bet_out);
         status = system(cmd_bet);
         if status ~= 0
             error('FSL BET (skull stripping) failed!');
         end
         t1_input = [bet_out '.nii.gz'];
+        t1_input_brain = [bet_out '_mask.nii.gz'];
     else
         t1_input = t1_path;
     end
@@ -83,8 +84,11 @@ function [gm_prob_path, wm_prob_path, csf_prob_path] = whifun_fsl_fast_seg(t1_pa
     end
 
     % FAST outputs: <prefix>_pve_0.nii.gz (CSF), _pve_1 (GM), _pve_2 (WM)
-    gm_prob_path = fullfile(out_dir,[out_prefix '_pve_0.nii.gz']);
-    wm_prob_path  = fullfile(out_dir,[out_prefix '_pve_1.nii.gz']);
-    csf_prob_path  = fullfile(out_dir,[out_prefix '_pve_2.nii.gz']);
+    % gm_prob_path = fullfile(out_dir,[out_prefix '_pve_1.nii.gz']);
+    % wm_prob_path  = fullfile(out_dir,[out_prefix '_pve_2.nii.gz']);
+    % csf_prob_path  = fullfile(out_dir,[out_prefix '_pve_0.nii.gz']);
+    gm_prob_path = fullfile([out_prefix '_pve_1.nii.gz']);
+    wm_prob_path  = fullfile([out_prefix '_pve_2.nii.gz']);
+    csf_prob_path  = fullfile([out_prefix '_pve_0.nii.gz']);
 end
 
