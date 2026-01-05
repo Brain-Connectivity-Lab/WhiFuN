@@ -31,3 +31,11 @@ now_func_path = dir(in_func_path);
 % Creating func_mask from the Anat mask
 func_mask_path = fullfile(now_func_path.folder,['func_mask_' now_func_path.name]);
 REST_MASK1= reslice_data(in_anat_mask_subj_space_path,in_func_path,1,1,func_mask_path);
+
+[~,~,ext] = fileparts(in_func_path);
+
+if strcmp(ext,'.gz')
+    [fold,name,~] = fileparts(func_mask_path);
+    gzip(fullfile(fold,name))
+    delete(fullfile(fold,name))
+end
