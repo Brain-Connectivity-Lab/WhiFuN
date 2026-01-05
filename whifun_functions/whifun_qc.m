@@ -78,7 +78,7 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
         whifun_qc_initial_align_check(out_folder,template_path,Subj_list_1,slover_slices_native,slover_contour_range_native,slover_view,over_write)
     end
     %% Head motion QC
-    if ~isempty(motion_txt) || ~whifun_isnan_or_empty(Subj_list_1,'motion_txt')
+    if (~isempty(motion_txt) || ~whifun_isnan_or_empty(Subj_list_1,'motion_txt')) && ~whifun_isnan_or_empty(Subj_list_1,'realigned_func_native')
         out_folder = fullfile(quality_control_path,'b_Head_motion');
         name = Subj_list_1.name; % Extract the subject name for further processing
 
@@ -112,9 +112,10 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
 
         %% CSF mask
         if Reg_CSF
+            in_func = Subj_list_1.func_MNI;
             out_folder = fullfile(quality_control_path,'e_CSF_Masks_for_Regression');
             if ~whifun_isnan_or_empty(Subj_list_1,'coregistered_func_native') && ~whifun_isnan_or_empty(Subj_list_1,'CSF_mask_func_native')
-                whifun_qc_csf_mask_alignment(out_folder,Subj_list_1.coregistered_func_native,Subj_list_1.CSF_mask_func_native,Subj_list_1.name,slover_slices_native,slover_contour_range_native,slover_view,over_write)
+                whifun_qc_csf_mask_alignment(out_folder,in_func,Subj_list_1.CSF_mask_func_native,Subj_list_1.name,slover_slices_native,slover_contour_range_native,slover_view,over_write)
             end
         end
 
@@ -150,7 +151,7 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
 
         %% Seed corr plots
         out_folder = fullfile(quality_control_path,"k_Seed_Based_Corr");
-        thresh = [-0.1,0.1];
+        thresh = [-0.25,0.25];
         % slover_view_array = {'sagittal','axial'};
         rad = 6;
 
