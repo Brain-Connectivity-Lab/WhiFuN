@@ -221,15 +221,14 @@ if isempty(mat_dir)
             clear all_timecourses; clear func_data;
 
             % loading the segmentation files of all participants, for identification of WM voxels in this specific participant
-            current_seg_dir = complete_filepath(fullfile(Subj_list(subji).anat_folder));
             current_GM_file = dir(Subj_list(subji).GM_MNI);
             current_WM_file = dir(Subj_list(subji).WM_MNI);
             current_CSF_file = dir(Subj_list(subji).CSF_MNI);
 
             % resampling the segmentation files to the functional image resolution
-            current_GM_mask = reslice_data(fullfile(current_seg_dir,current_GM_file(1).name), func_img1_filename, 0);
-            current_WM_mask = reslice_data(fullfile(current_seg_dir,current_WM_file(1).name), func_img1_filename, 0);
-            current_CSF_mask = reslice_data(fullfile(current_seg_dir,current_CSF_file(1).name), func_img1_filename, 0);
+            current_GM_mask = reslice_data(fullfile(current_GM_file(1).folder,current_GM_file(1).name), func_img1_filename, 0);
+            current_WM_mask = reslice_data(fullfile(current_WM_file(1).folder,current_WM_file(1).name), func_img1_filename, 0);
+            current_CSF_mask = reslice_data(fullfile(current_CSF_file(1).folder,current_CSF_file(1).name), func_img1_filename, 0);
 
             % finding where probability for white-matter is larger than 0.2 and
             % larger than probability for grey-matter or CSF
