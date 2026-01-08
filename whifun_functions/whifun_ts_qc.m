@@ -73,7 +73,7 @@ ylabel(ax1,'FD');
 
 % Second subplot (8/10 height, below it, shifted down)
 ax2 = axes('Position',[0.1 0.1 0.85 0.75-shiftDown],'Parent',f); 
-imagesc(ax2,1:nT, 1:(n_gm+n_wm+n_deep_wm+n_csf), all_ts);  
+imagesc(ax2,1:nT, 1:(n_gm+n_wm+n_deep_wm+n_csf), all_ts - mean(all_ts,2));  
 colormap(ax2, gray);
 xlim(ax2, [1 nT]);
 xlabel(ax2,'Time');
