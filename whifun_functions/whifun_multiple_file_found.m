@@ -29,9 +29,12 @@ function now_file_path = whifun_multiple_file_found(now_file_path,anat_func)
 if ~exist("anat_func",'var')
     anat_func = '';
 end
-if length(now_file_path) ~= 1
+if length(now_file_path) > 1
     [~,idx] = sort([now_file_path.datenum]);
     now_file_path = now_file_path(idx);
     now_file_path(2:end) = [];
     warning(['More than one ' anat_func ' files found. Choosing the file ' ,char(now_file_path(1).name), ' as it was created the first.']);
+else
+
+    warning(['No ' anat_func ' files found, Structure empty.']);
 end

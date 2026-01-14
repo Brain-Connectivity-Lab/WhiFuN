@@ -43,7 +43,11 @@ end
 % Plot the anatomical image and check its intitial position with reference to the MNI template
 
 now_anat_path = dir(Subj_list_1.nii_anat_native) ;
-now_anat_path = whifun_multiple_file_found(now_anat_path,'anatomical');
+if ~isempty(now_anat_path)
+    now_anat_path = whifun_multiple_file_found(now_anat_path,'anatomical');
+else
+    error(['Following Path in Subj_list.csv (Subj_list_1.nii_anat_native) for subject ' Subj_list_1.name ' does not exist. ' Subj_list_1.nii_anat_native])
+end
 image_2_path = template_path;
 [~,anat_name,~] = fileparts(now_anat_path.name);
 [~,template_name,~] = fileparts(template_path);
