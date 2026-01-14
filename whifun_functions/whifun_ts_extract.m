@@ -86,6 +86,18 @@ now_func_path = dir(func_path);
 [wm_ts,n_wm,n_deep_wm] = extract_ts_wm(func_image,fullfile(now_func_path.folder,[WM_mask_name '_for_vox_ts_qc' '_' num2str(thresh_wm) '.nii']),fullfile(now_func_path.folder,['deep_' WM_mask_name '_for_vox_ts_qc' '_' num2str(thresh_deep_wm) '.nii']));
 [csf_ts,n_csf] = extract_ts(func_image,fullfile(now_func_path.folder,[CSF_mask_name '_for_vox_ts_qc' '_' num2str(thresh_csf) '.nii']));%[pre_ 'CSF_Mask_for_ts_qc' '_' num2str(thresh_csf) '.nii']
 
+gzip(fullfile(now_func_path.folder,[GM_mask_name '_for_vox_ts_qc' '_' num2str(thresh_gm) '.nii']))
+delete(fullfile(now_func_path.folder,[GM_mask_name '_for_vox_ts_qc' '_' num2str(thresh_gm) '.nii']))
+
+gzip(fullfile(now_func_path.folder,[WM_mask_name '_for_vox_ts_qc' '_' num2str(thresh_wm) '.nii']))
+delete(fullfile(now_func_path.folder,[WM_mask_name '_for_vox_ts_qc' '_' num2str(thresh_wm) '.nii']))
+
+gzip(fullfile(now_func_path.folder,['deep_' WM_mask_name '_for_vox_ts_qc' '_' num2str(thresh_deep_wm) '.nii']))
+delete(fullfile(now_func_path.folder,['deep_' WM_mask_name '_for_vox_ts_qc' '_' num2str(thresh_deep_wm) '.nii']))
+
+gzip(fullfile(now_func_path.folder,[CSF_mask_name '_for_vox_ts_qc' '_' num2str(thresh_csf) '.nii']))
+delete(fullfile(now_func_path.folder,[CSF_mask_name '_for_vox_ts_qc' '_' num2str(thresh_csf) '.nii']))
+
 all_ts =    [gm_ts
              wm_ts
              csf_ts];
