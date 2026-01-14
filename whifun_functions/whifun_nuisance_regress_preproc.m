@@ -58,6 +58,7 @@ try
         disp(['Nuisance Regression file found, hence skipping this step for ' Subj_list_1.name]);
         out_func_mask_path = fullfile(now_func_path.folder,['func_mask_' now_func_path.name]);
     end
+    Subj_list_1.before_nuisance_regressed_func_native = in_func_path;
     Subj_list_1.nuisance_regressed_func_native = out_func_path;
     Subj_list_1.func_mask_native = out_func_mask_path; 
 catch exception
