@@ -63,12 +63,13 @@ Subj_list_all = create_field(Subj_list_all,'anat_mask_MNI');
 
 Subj_list_all = create_field(Subj_list_all,'coregistered_func_native');
 Subj_list_all = create_field(Subj_list_all,'CSF_mask_func_native');
+Subj_list_all = create_field(Subj_list_all,'CSF_mask_func_native');
 
 Subj_list_all = create_field(Subj_list_all,'before_nuisance_regressed_func_native');
 Subj_list_all = create_field(Subj_list_all,'nuisance_regressed_func_native');
 Subj_list_all = create_field(Subj_list_all,'nuisance_regression_csf_covariates');
 Subj_list_all = create_field(Subj_list_all,'func_mask_MNI');
-Subj_list_all = create_field(Subj_list_all,'func_mask_native');
+Subj_list_all = create_field(Subj_list_all,'CSF_mask_func');
 
 
 Subj_list_all = create_field(Subj_list_all,'filtered_func_native');
