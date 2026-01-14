@@ -152,7 +152,7 @@ for i=1:func_info.ImageSize(4)    % go over all timepoints (volumes)
     smoothed_WM_data(:,:,:,i) = curr_volume_data;
 end
 clear func_ma curr_volume_data WM_image;
-final_func_matrix = smoothed_GM_data + smoothed_WM_data;    % combining the GM and WM images
+final_func_matrix = cast(smoothed_GM_data + smoothed_WM_data,func_info.Datatype);    % combining the GM and WM images
 niftisave((final_func_matrix-func_info.AdditiveOffset)/func_info.MultiplicativeScaling,fullfile(now_func_path.folder,[smooth_pre now_func_path.name]),func_info);
 
 % deleting the old WM/GM-only functional files
