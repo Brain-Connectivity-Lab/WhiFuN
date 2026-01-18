@@ -46,4 +46,6 @@ for i = 1:length(nii_files)
     fprintf('Deleted the nifti %s from %s\n', nii_files(i).name, nii_files(i).folder);
 end
 
+
+
 end

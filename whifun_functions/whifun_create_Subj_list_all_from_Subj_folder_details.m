@@ -1,5 +1,4 @@
 function Subj_list_all = whifun_create_Subj_list_all_from_Subj_folder_details(data_path,comm_subj_name,comm_sess_name,func_folder_name,func_data_name,anat_folder_name,anat_data_name)
-% Written by Pratik Jain
 
 % WHIFUN_CREATE_SUBJ_LIST_ALL_FROM_SUBJ_LIST_ALL_DETAILS Scans a directory and creates a subject list if the patterns for the data folder is given.
 %
@@ -48,6 +47,8 @@ function Subj_list_all = whifun_create_Subj_list_all_from_Subj_folder_details(da
 %      subj_list = whifun_create_Subj_list_all('sub-*', 'ses-01', 'func', 'task-rest_bold', 'anat', 'T1w');
 %
 %   See also DIR, FULLFILE, STRCMP.
+%   Written by Pratik Jain
+
 
 if strcmp(comm_subj_name,'') == 1
     comm_subj_name = '*';

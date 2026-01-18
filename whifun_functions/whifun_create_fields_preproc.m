@@ -64,6 +64,7 @@ Subj_list_all = create_field(Subj_list_all,'anat_mask_MNI');
 Subj_list_all = create_field(Subj_list_all,'coregistered_func_native');
 Subj_list_all = create_field(Subj_list_all,'CSF_mask_func_native');
 Subj_list_all = create_field(Subj_list_all,'CSF_mask_func_native');
+Subj_list_all = create_field(Subj_list_all,'func_mask_native');
 
 Subj_list_all = create_field(Subj_list_all,'before_nuisance_regressed_func_native');
 Subj_list_all = create_field(Subj_list_all,'nuisance_regressed_func_native');
@@ -86,5 +87,6 @@ end
 function Subj_list_all = create_field(Subj_list_all,field_)
     if ~isfield(Subj_list_all, field_)
         Subj_list_all(1).(field_) = [];
+       
     end
 end

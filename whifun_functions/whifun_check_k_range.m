@@ -22,6 +22,8 @@ function whifun_check_k_range(K_range_l,K_range_h)
 %      % whifun_check_k_range(10, 2);
 %
 %   See also SPRINTF, ERROR.
+%   Author: Pratik Jain
+
 if K_range_l > K_range_h
     error(sprintf('Please check the K-range 1st number in the text field should be less than 2nd number, \nbut found otherwise\n'))
 end

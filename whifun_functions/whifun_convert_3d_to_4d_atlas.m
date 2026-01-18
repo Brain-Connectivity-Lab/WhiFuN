@@ -19,6 +19,7 @@ function whifun_convert_3d_to_4d_atlas(input_atlas_path, output_path)
 %
 % Requires:
 %   SPM toolbox (for spm_vol, spm_read_vols, spm_write_vol)
+% Author: Pratik Jain
 
     if nargin < 1
         error('Usage: whifun_convert_3d_to_4d_atlas(input_atlas_path, [output_path])');

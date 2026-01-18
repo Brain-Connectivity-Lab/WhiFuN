@@ -18,6 +18,7 @@ function whifun_copyfiles(Subj_list, field_name, dest_folder)
 %   - Assumes all files share a common root (e.g., '/data').
 %
 %   You can customize the 'common_root' detection below if needed.
+%  Author: Pratik Jain
 
     if nargin < 3
         error('Usage: whifun_copyfiles(Subj_list, field_name, dest_folder)');

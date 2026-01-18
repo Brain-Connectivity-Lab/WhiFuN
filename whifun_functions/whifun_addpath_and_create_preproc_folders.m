@@ -1,8 +1,5 @@
-%%          Defining Important paths and Creating Output directories
 function quality_control_path = whifun_addpath_and_create_preproc_folders(preproc_code_path,output_folder)
-% Written by Pratik Jain
 % WHIFUN_ADDPATH_AND_CREATE_PREPROC_FOLDERS Sets up paths and output directories for preprocessing.
-%
 %   quality_control_path = WHIFUN_ADDPATH_AND_CREATE_PREPROC_FOLDERS(preproc_code_path, output_folder)
 %   adds necessary code directories to the MATLAB path and creates a
 %   standardized set of output folders for storing preprocessing results,
@@ -41,6 +38,7 @@ function quality_control_path = whifun_addpath_and_create_preproc_folders(prepro
 %       % The 'qc_path' variable now contains the full path to the 'Quality_control' folder.
 %
 %   See also ADDPATH, FULLFILE, WHICH, MKDIR, MSGBOX.
+% Author: Pratik Jain
 
 addpath(preproc_code_path)
 addpath(fullfile(preproc_code_path,'whifun_functions'))

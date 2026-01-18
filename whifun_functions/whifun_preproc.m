@@ -205,6 +205,7 @@ disp(['Currently Processing ' Subj_list_1.name])
 temp_path = mfilename('fullpath');                % path of the toolbox
 preproc_code_path = fileparts(fileparts(temp_path));
 
+tic
 %%     1     Unzipping
 
 now_func_path = dir(fullfile(Subj_list_1.func_folder,Subj_list_1.func_name)) ;
@@ -368,4 +369,11 @@ if ~dartel_
     Subj_list_1.MNI_template = fullfile(preproc_code_path,'Templates','MNI152_T1_2mm_brain.nii');
 
 end
+time_el = toc/60;
+
+fprintf(log_fileID,'---------------------------------------------------------------------------------------------------------\n \n');
+fprintf(log_fileID, [' Total Time Taken for Preprocessing ' num2str(time_el) '\n']);
+fprintf(log_fileID,'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n \n');
+
+Subj_list_1.time_preprocess_min = time_el;
 fclose(log_fileID);

@@ -149,9 +149,6 @@ spm_get_defaults('cmdline', true);
 output = evalc("spm_jobman('run',matlabbatch)");
 if gz_mask
     delete(mask)
-else
-    gzip(mask)
-    delete(mask)
 end
 if gz_func
     delete(func_path)
