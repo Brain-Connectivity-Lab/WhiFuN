@@ -76,7 +76,7 @@ if isempty(fn_file)
                 return
             end
         end
-        IDX_allsubjs = kmeans(avg_vox_level_FC, k,'distance','correlation','replicates',10);            % K-means clustering
+        IDX_allsubjs = kmeans(avg_vox_level_FC, k,'distance','correlation','replicates',20);            % K-means clustering
         clustering_results_allsubjs = zeros(header_file.ImageSize); clustering_results_allsubjs(WM_voxels) = IDX_allsubjs;   % putting the clustering results in an image
         niftisave(clustering_results_allsubjs,out_path,header_file,0,1)
         clear clustering_results_allsubjs;
