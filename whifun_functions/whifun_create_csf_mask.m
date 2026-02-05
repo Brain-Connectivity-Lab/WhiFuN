@@ -35,7 +35,29 @@ function output = whifun_create_csf_mask(csf_tpm_path,now_func_path,CSF_thres)
 %   See also SPM_JOBMAN, EVALC, FULLFILE.
 
 
+
 c3 = dir(csf_tpm_path);
+
+[~,name,ext] = fileparts(c3.name);
+
+if strcmp(ext,'.gz')
+    gunzip(fullfile(c3.folder,c3.name))
+    c3.name = name;
+    g_un_c3 = 1;
+else
+    g_un_c3 = 0; % Set flag for unzipped file
+end
+
+[~,f_name,f_ext] = fileparts(now_func_path.name);
+
+if strcmp(f_ext,'.gz')
+    gunzip(fullfile(now_func_path.folder,now_func_path.name))
+    now_func_path.name = f_name;
+    g_un_f = 1;
+else
+    g_un_f = 0; % Set flag for unzipped file
+end
+
 matlabbatch{1}.spm.util.imcalc.input = {
     [fullfile(now_func_path.folder,now_func_path.name),',1']
     fullfile(c3.folder,c3.name)
@@ -55,3 +77,13 @@ spm_jobman('initcfg');
 % Suppress GUI
 spm_get_defaults('cmdline', true);
 output = evalc("spm_jobman('run',matlabbatch)");
+
+if g_un_c3
+    delete(fullfile(c3.folder, c3.name)); % Remove the unzipped file if it was created
+end
+
+if g_un_f
+    delete(fullfile(now_func_path.folder, now_func_path.name)); % Remove the unzipped file if it was created
+    gzip(fullfile(now_func_path.folder,['CSF_MASK_' char(CSF_thres) '_' now_func_path.name]))
+    delete(fullfile(now_func_path.folder,['CSF_MASK_' char(CSF_thres) '_' now_func_path.name]))
+end
