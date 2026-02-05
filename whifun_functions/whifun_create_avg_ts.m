@@ -1,4 +1,4 @@
-function avg_ts_path = whifun_create_avg_ts(out_folder,ROI_path,Subj_list,field,band_info,QC_plots,over_write,d_flag,d,steps_,tot_steps)
+function [avg_ts_path,Subj_list] = whifun_create_avg_ts(out_folder,ROI_path,Subj_list,field,band_info,QC_plots,over_write,d_flag,d,steps_,tot_steps)
 %WHIFUN_GET_AVG_TS Extracts the average time series for each region in a given ROI atlas.
 %
 %   AVG_TS_PATH = WHIFUN_GET_AVG_TS(OUT_FOLDER, ROI_PATH, SUBJ_LIST, FIELD, BAND_INFO, QC_PLOTS, OVER_WRITE, D_FLAG, D, STEPS_, TOT_STEPS)
@@ -90,7 +90,7 @@ for subji = 1:length(Subj_list)
         out_avg_ts_file = whifun_create_file(over_write,out_avg_ts_path);
     else
         out_avg_ts_file = [];
-        figure('Visible','off'); 
+        figure('Visible','off');
         filter_image_path = fullfile(out_folder,'Filters');
         if ~exist(filter_image_path,"dir")
             mkdir(filter_image_path)
@@ -101,7 +101,7 @@ for subji = 1:length(Subj_list)
         func_file = dir(Subj_list(subji).(field));
         disp(['Obtaining averaged time series of ' ROI_name ' for participant: ' Subj_list(subji).name]);
         if d_flag
-            
+
             steps_ = steps_ + 1;
             d.Value = steps_/tot_steps;
             d.Message = ['Obtaining averaged time series of ' ROI_name ' for participant: ' Subj_list(subji).name];
@@ -110,132 +110,136 @@ for subji = 1:length(Subj_list)
                 return
             end
         end
+        if ~isempty(func_file)
+            [func_image,func_info] = whifun_niftiread(fullfile(func_file.folder,func_file.name));
+            [x,y,z,nT] = size(func_image);
+            Subj = Subj_list(subji);
+            if ~all(func_info.ImageSize(1:3) == ROI_info.ImageSize(1:3))
+                error(['ROI Image dimentions are different as compared to the Functional Image dimentions for Participant' Subj_list(subji).name])
+            end
 
-        [func_image,func_info] = whifun_niftiread(fullfile(func_file.folder,func_file.name));
-        [x,y,z,nT] = size(func_image);
-        Subj = Subj_list(subji);
-        if ~all(func_info.ImageSize(1:3) == ROI_info.ImageSize(1:3))
-            error(['ROI Image dimentions are different as compared to the Functional Image dimentions for Participant' Subj_list(subji).name])
-        end
+            avg_ts = zeros(nT,reg);
+            subMat = reshape(func_image,[x*y*z,nT]);
+            subMat = double(subMat');
+            subMat_mean = mean(subMat,1);
 
-        avg_ts = zeros(nT,reg);
-        subMat = reshape(func_image,[x*y*z,nT]);
-        subMat = double(subMat');
-        subMat_mean = mean(subMat,1);
+            for r = 1:length(level)
 
-        for r = 1:length(level)
+                vox_id = find(ROI==level(r));
+                [vx,vy,vz] = ind2sub(size(ROI),vox_id);
+                pos = [mean(vx);mean(vy);mean(vz)];
+                reg_voxels_ts = subMat(:,vox_id) - subMat_mean(vox_id);
+                vox_count_in_reg(r) = size(reg_voxels_ts,2);
 
-            vox_id = find(ROI==level(r));
-            [vx,vy,vz] = ind2sub(size(ROI),vox_id);
-            pos = [mean(vx);mean(vy);mean(vz)];
-            reg_voxels_ts = subMat(:,vox_id) - subMat_mean(vox_id);
-            vox_count_in_reg(r) = size(reg_voxels_ts,2);
+                voxels_with_data = sum(abs(reg_voxels_ts));
 
-            voxels_with_data = sum(abs(reg_voxels_ts));
-            
-            if nnz(voxels_with_data) == length(voxels_with_data) && nnz(isnan(voxels_with_data)) == 0
-                good_sub = 1;
-                avg_ts(:,r) = mean(reg_voxels_ts,2);  % mean TS of region 'r'
+                if nnz(voxels_with_data) == length(voxels_with_data) && nnz(isnan(voxels_with_data)) == 0
+                    good_sub = 1;
+                    avg_ts(:,r) = mean(reg_voxels_ts,2);  % mean TS of region 'r'
+                else
+                    good_sub = 0;
+                end
+
+                if good_sub == 0
+                    if (nnz(voxels_with_data) < length(voxels_with_data) && nnz(voxels_with_data) > 0) || (nnz(isnan(voxels_with_data)) > 0 && nnz(isnan(voxels_with_data)) < length(voxels_with_data))
+                        reg_voxels_ts(:,voxels_with_data==0) = [];
+                        reg_voxels_ts(:,isnan(voxels_with_data)) = [];
+
+                        vox_count_in_reg(r) = size(reg_voxels_ts,2);
+                        avg_ts(:,r) = mean(reg_voxels_ts,2);
+                        out_msg = sprintf(['ROI: ' ROI_name '\nROI region ' num2str(r) '\nROI has partial data \ndata for Participant' Subj_list(subji).name]);
+                    else
+                        out_msg = sprintf(['ROI: ' ROI_name '\nROI region ' num2str(r) '\nROI does not have \ndata for Participant' Subj_list(subji).name]);
+                        vox_count_in_reg(r) = 0;
+
+                        new_atlas = zeros(size(ROI));
+                        new_atlas(vox_id) = 1;
+                        at_info = niftiinfo(ROI_path);
+                        niftisave(new_atlas,'temp.nii',at_info)
+                        fg = spm_figure('Create','Graphics','Visible','off');
+                        spm_check_registration(char([fullfile(func_file.folder,func_file.name),',1'],...
+                            'temp.nii'))
+                        st1 = spm_vol([fullfile(func_file.folder,func_file.name),',1']);
+                        tmp = st1.mat;
+                        pos1 = tmp(1:3,:)*[pos ; 1];
+
+                        spm_orthviews('Reposition',pos1);
+                        spm_orthviews('Caption', 1, [Subj_list(subji).name ' ROI region ' num2str(r)]);
+                        spm_orthviews('Caption', 2, out_msg);
+                        spm_orthviews('contour','display',2,1);
+                        if ~exist(fullfile(QC_plot_path,['ROI_region_' num2str(r)]),'dir')
+                            mkdir(fullfile(QC_plot_path,['ROI_region_' num2str(r)]))
+                        end
+                        exportgraphics(fg,(fullfile(QC_plot_path,['ROI_region_' num2str(r)],[Subj_list(subji).name '_region_' num2str(r) '.png'])))
+                        delete('temp.nii')
+                    end
+                    %                             spm_image('display',[fullfile(func_file.folder,func_file.name),',1']);
+                    if QC_plots
+                        new_atlas = zeros(size(ROI));
+                        new_atlas(vox_id) = 1;
+                        at_info = niftiinfo(ROI_path);
+                        niftisave(new_atlas,'temp.nii',at_info)
+                        fg = spm_figure('Create','Graphics','Visible','off');
+                        spm_check_registration(char([fullfile(func_file.folder,func_file.name),',1'],...
+                            'temp.nii'))
+                        st1 = spm_vol([fullfile(func_file.folder,func_file.name),',1']);
+                        tmp = st1.mat;
+                        pos1 = tmp(1:3,:)*[pos ; 1];
+
+                        spm_orthviews('Reposition',pos1);
+                        spm_orthviews('Caption', 1, [Subj_list(subji).name ' ROI region ' num2str(r)]);
+                        spm_orthviews('Caption', 2, out_msg);
+                        spm_orthviews('contour','display',2,1);
+                        if ~exist(fullfile(QC_plot_path,['ROI_region_' num2str(r)]),'dir')
+                            mkdir(fullfile(QC_plot_path,['ROI_region_' num2str(r)]))
+                        end
+                        exportgraphics(fg,(fullfile(QC_plot_path,['ROI_region_' num2str(r)],[Subj_list(subji).name '_region_' num2str(r) '.png'])))
+                        delete('temp.nii')
+                    end
+                end
+            end
+
+
+            [~,nan_sub_sub] = functional_connectivity(avg_ts);
+            nan_sub = [nan_sub, nan_sub_sub]; %#ok<AGROW>
+
+            if isempty(band_info)
+                save(out_avg_ts_path,'avg_ts','Subj','voxels_with_data','-v7.3'); %% added
             else
-                good_sub = 0;
-            end
+                for bi = 1:length(band_info)
 
-            if good_sub == 0
-                if (nnz(voxels_with_data) < length(voxels_with_data) && nnz(voxels_with_data) > 0) || (nnz(isnan(voxels_with_data)) > 0 && nnz(isnan(voxels_with_data)) < length(voxels_with_data))
-                    reg_voxels_ts(:,voxels_with_data==0) = [];
-                    reg_voxels_ts(:,isnan(voxels_with_data)) = [];
+                    hp = band_info(bi).hp;
+                    lp = band_info(bi).lp;
+                    band_name = band_info(bi).band_name;
 
-                    vox_count_in_reg(r) = size(reg_voxels_ts,2);
-                    avg_ts(:,r) = mean(reg_voxels_ts,2);
-                    out_msg = sprintf(['ROI: ' ROI_name '\nROI region ' num2str(r) '\nROI has partial data \ndata for Participant' Subj_list(subji).name]);
-                else
-                    out_msg = sprintf(['ROI: ' ROI_name '\nROI region ' num2str(r) '\nROI does not have \ndata for Participant' Subj_list(subji).name]);
-                    vox_count_in_reg(r) = 0;
+                    out_avg_ts_path = fullfile(avg_ts_path, [band_name '_' num2str(lp) '-' num2str(hp)],[Subj_list(subji).name,'_', ROI_name,'_',band_name, '_' num2str(lp) '_' num2str(hp) '_avg_ts.mat']);
 
-                    new_atlas = zeros(size(ROI));
-                    new_atlas(vox_id) = 1;
-                    at_info = niftiinfo(ROI_path);
-                    niftisave(new_atlas,'temp.nii',at_info)
-                    fg = spm_figure('Create','Graphics','Visible','off');
-                    spm_check_registration(char([fullfile(func_file.folder,func_file.name),',1'],...
-                        'temp.nii'))
-                    st1 = spm_vol([fullfile(func_file.folder,func_file.name),',1']);
-                    tmp = st1.mat;
-                    pos1 = tmp(1:3,:)*[pos ; 1];
-
-                    spm_orthviews('Reposition',pos1);
-                    spm_orthviews('Caption', 1, [Subj_list(subji).name ' ROI region ' num2str(r)]);
-                    spm_orthviews('Caption', 2, out_msg);
-                    spm_orthviews('contour','display',2,1);
-                    if ~exist(fullfile(QC_plot_path,['ROI_region_' num2str(r)]),'dir')
-                        mkdir(fullfile(QC_plot_path,['ROI_region_' num2str(r)]))
+                    out_avg_ts_file = whifun_create_file(over_write,out_avg_ts_path);
+                    if ~exist(fileparts(out_avg_ts_path),'dir')
+                        mkdir(fileparts(out_avg_ts_path))
                     end
-                    exportgraphics(fg,(fullfile(QC_plot_path,['ROI_region_' num2str(r)],[Subj_list(subji).name '_region_' num2str(r) '.png'])))
-                    delete('temp.nii')
-                end
-                %                             spm_image('display',[fullfile(func_file.folder,func_file.name),',1']);
-                if QC_plots
-                    new_atlas = zeros(size(ROI));
-                    new_atlas(vox_id) = 1;
-                    at_info = niftiinfo(ROI_path);
-                    niftisave(new_atlas,'temp.nii',at_info)
-                    fg = spm_figure('Create','Graphics','Visible','off');
-                    spm_check_registration(char([fullfile(func_file.folder,func_file.name),',1'],...
-                        'temp.nii'))
-                    st1 = spm_vol([fullfile(func_file.folder,func_file.name),',1']);
-                    tmp = st1.mat;
-                    pos1 = tmp(1:3,:)*[pos ; 1];
-
-                    spm_orthviews('Reposition',pos1);
-                    spm_orthviews('Caption', 1, [Subj_list(subji).name ' ROI region ' num2str(r)]);
-                    spm_orthviews('Caption', 2, out_msg);
-                    spm_orthviews('contour','display',2,1);
-                    if ~exist(fullfile(QC_plot_path,['ROI_region_' num2str(r)]),'dir')
-                        mkdir(fullfile(QC_plot_path,['ROI_region_' num2str(r)]))
+                    filter_band_image_path = fullfile(filter_image_path,[band_name '_' num2str(lp) '-' num2str(hp)]);
+                    if ~exist(filter_band_image_path,'dir')
+                        mkdir(filter_band_image_path);
                     end
-                    exportgraphics(fg,(fullfile(QC_plot_path,['ROI_region_' num2str(r)],[Subj_list(subji).name '_region_' num2str(r) '.png'])))
-                    delete('temp.nii')
+
+                    if isempty(out_avg_ts_file)
+                        tr = func_info.PixelDimensions(4);
+                        fs = 1/tr;
+                        [b,a] = butter(2,[band_info(bi).lp,band_info(bi).hp]/(fs/2),'bandpass');
+                        % freqz(b,a,512,fs);          % Plot the frequency responce using 512 points
+                        % exportgraphics(f,fullfile(filter_band_image_path,[Subj_list(subji).name '_' band_name '_filter_freq_response_',num2str(filter_lp ),'_',num2str(filter_hp ),'.png']))
+                        avg_ts_freq = filtfilt(b,a,avg_ts);
+                        save(out_avg_ts_path,'avg_ts_freq','vox_count_in_reg','Subj','hp','lp','band_name');
+                    else
+                        disp([' Frequency Specific average timeseries already extracted for ' Subj_list(subji).name ' for  band : ' band_name ' lp: ' num2str(lp) ', hp: ' num2str(hp) ])
+                    end
+
                 end
             end
-        end
-
-
-        [~,nan_sub_sub] = functional_connectivity(avg_ts);
-        nan_sub = [nan_sub, nan_sub_sub]; %#ok<AGROW>
-
-        if isempty(band_info)
-            save(out_avg_ts_path,'avg_ts','Subj','voxels_with_data','-v7.3'); %% added
         else
-            for bi = 1:length(band_info)
-                
-                hp = band_info(bi).hp;
-                lp = band_info(bi).lp;
-                band_name = band_info(bi).band_name;
-
-                out_avg_ts_path = fullfile(avg_ts_path, [band_name '_' num2str(lp) '-' num2str(hp)],[Subj_list(subji).name,'_', ROI_name,'_',band_name, '_' num2str(lp) '_' num2str(hp) '_avg_ts.mat']);
-
-                out_avg_ts_file = whifun_create_file(over_write,out_avg_ts_path);
-                if ~exist(fileparts(out_avg_ts_path),'dir')
-                    mkdir(fileparts(out_avg_ts_path))
-                end
-                filter_band_image_path = fullfile(filter_image_path,[band_name '_' num2str(lp) '-' num2str(hp)]);
-                if ~exist(filter_band_image_path,'dir')
-                    mkdir(filter_band_image_path);
-                end
-
-                if isempty(out_avg_ts_file)
-                    tr = func_info.PixelDimensions(4);
-                    fs = 1/tr;
-                    [b,a] = butter(2,[band_info(bi).lp,band_info(bi).hp]/(fs/2),'bandpass');
-                    % freqz(b,a,512,fs);          % Plot the frequency responce using 512 points
-                    % exportgraphics(f,fullfile(filter_band_image_path,[Subj_list(subji).name '_' band_name '_filter_freq_response_',num2str(filter_lp ),'_',num2str(filter_hp ),'.png']))
-                    avg_ts_freq = filtfilt(b,a,avg_ts);
-                    save(out_avg_ts_path,'avg_ts_freq','vox_count_in_reg','Subj','hp','lp','band_name');
-                else
-                    disp([' Frequency Specific average timeseries already extracted for ' Subj_list(subji).name ' for  band : ' band_name ' lp: ' num2str(lp) ', hp: ' num2str(hp) ])
-                end
-
-            end
+            disp([' Average timeseries not extracted for ' Subj_list(subji).name ' as file ' Subj_list(subji).(field) ' not found'])
+            Subj_list(subji).error = 1;
         end
     else
         disp([' Average timeseries already extracted for ' Subj_list(subji).name ])
