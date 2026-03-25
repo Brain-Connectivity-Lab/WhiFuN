@@ -70,13 +70,13 @@ for subji=1:length(Subj_list_all)
 
     Subj_list_all(subji) = whifun_initialise_manual_motion_error_fields(Subj_list_all(subji));
     if ~Subj_list_all(subji).manual_ex
-        [Subj_list_all(subji),voxel_func(subji,:),n_image(subji),tr(subji),no_func(subji),report] = whifun_check_data_func(Subj_list_all(subji),comm_sess_name,func_folder_name,func_data_name,report);
+        [Subj_list_all(subji),voxel_func(subji,:),n_image(subji),tr(subji),no_func(subji),report] = whifun_check_data_func(Subj_list_all(subji),comm_sess_name,func_folder_name,func_data_name,output_folder,report);
         if strlength(report) ~= 0
             p = length(report)+1;
         end
         
         if ~whifun_isnan_or_empty(Subj_list_all,'anat_folder') && ~whifun_isnan_or_empty(Subj_list_all,'anat_name')
-            [Subj_list_all(subji),voxel_anat(subji,:),no_anat(subji),report] = whifun_check_data_anat(Subj_list_all(subji),comm_sess_name,anat_folder_name,anat_data_name,report);
+            [Subj_list_all(subji),voxel_anat(subji,:),no_anat(subji),report] = whifun_check_data_anat(Subj_list_all(subji),comm_sess_name,anat_folder_name,anat_data_name,output_folder,report);
             if strlength(report) ~= 0
                 p = length(report)+1;
             end

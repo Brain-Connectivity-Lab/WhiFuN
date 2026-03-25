@@ -1,4 +1,4 @@
-function [Subj_list_1,voxel_func,n_image,tr,no_func,report] = whifun_check_data_func(Subj_list_1,comm_sess_name,func_folder_name,func_data_name,report)
+function [Subj_list_1,voxel_func,n_image,tr,no_func,report] = whifun_check_data_func(Subj_list_1,comm_sess_name,func_folder_name,func_data_name,output_folder,report)
 % WHIFUN_CHECK_DATA_FUNC Checks for functional data and extracts its properties.
 %
 %   [Subj_list_1, voxel_func, n_image, tr, no_func, report] = WHIFUN_CHECK_DATA_FUNC(...)
@@ -55,7 +55,7 @@ if length(now_func_path)>1  % If more than one func files found choose the one t
     warning(['More than one functional files found. Choosing the file ' ,char(now_func_path(1).name), ' as it was created the first.']);
 end
 if ~isempty(now_func_path)
-    [Subj_list_1,voxel_func,n_image] = whifun_get_func_info(now_func_path,Subj_list_1);
+    [Subj_list_1,voxel_func,n_image] = whifun_get_func_info(now_func_path,Subj_list_1,output_folder);
     [Subj_list_1,tr,report(p)] = whifun_get_func_TR(now_func_path,Subj_list_1);
     no_func = 0;
 else

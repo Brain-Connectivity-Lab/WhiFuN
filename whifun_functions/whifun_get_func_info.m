@@ -1,5 +1,5 @@
 
-function [Subj_list_1,voxel_func,n_image] = whifun_get_func_info(now_func_path,Subj_list_1)
+function [Subj_list_1,voxel_func,n_image] = whifun_get_func_info(now_func_path,Subj_list_1,output_folder)
 % WHIFUN_GET_FUNC_INFO Extracts information from a functional NIfTI file.
 %
 %   [Subj_list_1, voxel_func, n_image] = WHIFUN_GET_FUNC_INFO(now_func_path, Subj_list_1)
@@ -31,6 +31,7 @@ function [Subj_list_1,voxel_func,n_image] = whifun_get_func_info(now_func_path,S
 disp(['Reading functional file from ' fullfile(now_func_path(1).folder,now_func_path(1).name)])
 Subj_list_1.func_folder = now_func_path(1).folder;
 Subj_list_1.func_name = now_func_path(1).name;
+try
 v_func = niftiinfo(fullfile(now_func_path(1).folder,now_func_path(1).name));% Get info of the functional file
 
 if ~sum(isinf(v_func.PixelDimensions))
@@ -65,3 +66,15 @@ else
     Subj_list_1.z_func = nan;
 end
 
+catch exception
+    disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+    disp(['Cannot read the nifti file for ' Subj_list_1.name ])
+    disp(['trying to read ' fullfile(now_func_path(1).folder,now_func_path(1).name) ])
+    disp('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
+
+    Subj_list_1.error = 1;                                                                                    % Remove participant from further preprocessing                             % Subj_list_all(logical(string({Subj_list_all.name}) == Subj_list_1.name)).error = 1;
+    write_error(exception,fullfile(output_folder,'Quality_control'), Subj_list_1.name)                % write error to text file and display                % write error to text file, update csv and display
+    voxel_func = [nan,nan,nan];
+    n_image = nan;
+    Subj_list_1.nt = nan;
+end

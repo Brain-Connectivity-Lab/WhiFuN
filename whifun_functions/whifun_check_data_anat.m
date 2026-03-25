@@ -1,4 +1,4 @@
-function [Subj_list_1,voxel_anat,no_anat,report] = whifun_check_data_anat(Subj_list_1,comm_sess_name,anat_folder_name,anat_data_name,report)
+function [Subj_list_1,voxel_anat,no_anat,report] = whifun_check_data_anat(Subj_list_1,comm_sess_name,anat_folder_name,anat_data_name,output_folder,report)
 %WHIFUN_CHECK_DATA_ANAT Checks for the existence and retrieves metadata of the anatomical NIfTI file for a single subject.
 %
 %   [SUBJ_LIST_1, VOXEL_ANAT, NO_ANAT, REPORT] = WHIFUN_CHECK_DATA_ANAT(SUBJ_LIST_1, COMM_SESS_NAME, ANAT_FOLDER_NAME, ANAT_DATA_NAME, REPORT)
@@ -45,7 +45,7 @@ if length(now_anat_path)>1  % If more than one anat files found choose the one t
     warning(['More than one Anatomical files found. Choosing the file ' ,char(now_anat_path(1).name), ' as it was created the first.']);
 end
 if ~isempty(now_anat_path)
-    [Subj_list_1,voxel_anat] = whifun_get_anat_info(now_anat_path,Subj_list_1);
+    [Subj_list_1,voxel_anat] = whifun_get_anat_info(now_anat_path,Subj_list_1,output_folder);
     no_anat = 0;
 else
     no_anat = 1;

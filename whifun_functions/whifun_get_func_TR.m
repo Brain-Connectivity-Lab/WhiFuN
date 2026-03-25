@@ -46,14 +46,12 @@ try
 catch ex
     % Error in fetching the TR value Please manually
     % mention the TR
-    if no_func(subji) ~=1
-        msg = ['Error in fetching the TR value for participant: ' Subj_list_all(subji).name '. Please manually enter the TR for this participant using the participant Info button.'];
+        msg = ['Error in fetching the TR value for participant: ' Subj_list_1.name '. Please manually enter the TR for this participant using the participant Info button.'];
         warning(msg);
         warning(ex.message)
         report = msg;
         tr = nan;
         Subj_list_1.TR = nan;
-    end
 end
 
 if ~exist("report",'var')
