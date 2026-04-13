@@ -131,6 +131,10 @@ if fig_dice == 1
         subplot(1,2,2)
         heatmap(round(dice,2)); colorbar;clim([0 1]);title('After alignment');colormap('parula')
     else
-        heatmap(round(dice,2)); colorbar;clim([0 1]);colormap('parula')
+        imagesc(round(dice,2)); colorbar;clim([0 1]);colormap('parula')
+        [~,f1] = fileparts(kmeans_net_1_path);
+        [~,f2] = fileparts(kmeans_net_2_path);
+        xlabel(f2,'Interpreter','none');
+        ylabel(f1,'Interpreter','none');
     end
 end
