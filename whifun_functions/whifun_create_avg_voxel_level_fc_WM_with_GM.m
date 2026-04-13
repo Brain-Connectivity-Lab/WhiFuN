@@ -160,20 +160,24 @@ end
 % voxels' signals, averaged across participants
 
 % defining a sub-sampling of the mask voxels
-if sub_samp == 1
+% if sub_samp == 1
     sub_sample_grid = zeros(size(gm_group_mask));    % defining a grid of 1s and 0s across the image
     sub_sample_grid(2:3:end, 2:3:end, 2:2:end) = 1; sub_sample_grid(1:3:end, 1:3:end, 1:2:end) = 1;   % for gray-matter
-else
-    sub_sample_grid = ones(size(gm_group_mask));    % defining a grid of 1s and 0s across the image
-end
+% else
+    % sub_sample_grid = ones(size(gm_group_mask));    % defining a grid of 1s and 0s across the image
+% end
 sub_sample_grid = sub_sample_grid(gm_group_mask_voxels);   % choosing only locations of gray-matter voxels
 sub_sample_grid = find(sub_sample_grid);    % getting the indices of subsampled voxels in the whole mask
-sub_sample_grid = sub_sample_grid(randperm(length(sub_sample_grid)));     % randomly mixing the voxels' indices
+% sub_sample_grid = sub_sample_grid(randperm(length(sub_sample_grid)));     % randomly mixing the voxels' indices
 
 % getting the data from each participant - correlation between all WM voxels and the subsampled WM voxels (num_WM_voxels X num_GM_subsampled_voxels)
-avg_vox_level_FC = zeros(length(wm_group_mask_voxels),length(sub_sample_grid));
-num_subjs_notnan = zeros(length(wm_group_mask_voxels),length(sub_sample_grid));
-
+if sub_samp == 1 
+    avg_vox_level_FC = zeros(length(wm_group_mask_voxels),length(sub_sample_grid));
+    num_subjs_notnan = zeros(length(wm_group_mask_voxels),length(sub_sample_grid));
+else
+    avg_vox_level_FC = zeros(length(wm_group_mask_voxels),length(gm_group_mask_voxels));
+    num_subjs_notnan = zeros(length(wm_group_mask_voxels),length(gm_group_mask_voxels));
+end
 disp('Creating the average voxel level FC matrix')
 % definition of a file name with functional data - so that other files will be resampled to this file's resolution
 func_img1_filename = Subj_list(1).final_func_MNI;%complet
@@ -199,7 +203,7 @@ if isempty(mat_dir)
             d.Message = ['Creating Voxel-based WM with GM FC for participant: ' Subj_list(subji).name];
 
             if d.CancelRequested
-                disp(['Creation of (WM with GM)-FN terminated by User'])
+                disp('Creation of (WM with GM)-FN terminated by User')
                 return
             end
         end
@@ -219,15 +223,14 @@ if isempty(mat_dir)
             clear all_timecourses; clear func_data;
 
             % loading the segmentation files of all participants, for identification of WM voxels in this specific participant
-            current_seg_dir = complete_filepath(fullfile(Subj_list(subji).anat_folder));
             current_GM_file = dir(Subj_list(subji).GM_MNI);
             current_WM_file = dir(Subj_list(subji).WM_MNI);
             current_CSF_file = dir(Subj_list(subji).CSF_MNI);
 
             % resampling the segmentation files to the functional image resolution
-            current_GM_mask = reslice_data(fullfile(current_seg_dir,current_GM_file(1).name), func_img1_filename, 0);
-            current_WM_mask = reslice_data(fullfile(current_seg_dir,current_WM_file(1).name), func_img1_filename, 0);
-            current_CSF_mask = reslice_data(fullfile(current_seg_dir,current_CSF_file(1).name), func_img1_filename, 0);
+            current_GM_mask = reslice_data(fullfile(current_GM_file(1).folder,current_GM_file(1).name), func_img1_filename, 0);
+            current_WM_mask = reslice_data(fullfile(current_WM_file(1).folder,current_WM_file(1).name), func_img1_filename, 0);
+            current_CSF_mask = reslice_data(fullfile(current_CSF_file(1).folder,current_CSF_file(1).name), func_img1_filename, 0);
 
             % finding where probability for white-matter is larger than 0.2 and
             % larger than probability for grey-matter or CSF
@@ -243,9 +246,14 @@ if isempty(mat_dir)
                 gm_vox_ts_sub_with_data_idx = find(var(gm_vox_ts,[],2)~=0 & ~isnan(var(gm_vox_ts,[],2)) & gm_current_seg_mask(gm_group_mask_voxels)==1);
             % end
            
-            save(out_voxts_mat_path,"wm_vox_ts","gm_vox_ts","wm_vox_ts_with_data_idx","sub_sample_grid","gm_vox_ts_sub_sample_with_data_idx",'wm_group_mask_voxels','gm_group_mask_voxels')
+            save(out_voxts_mat_path,"wm_vox_ts","gm_vox_ts","wm_vox_ts_with_data_idx","sub_sample_grid","gm_vox_ts_sub_sample_with_data_idx",'wm_group_mask_voxels','gm_group_mask_voxels','gm_vox_ts_sub_with_data_idx','-v7.3')
         else
-            load(out_voxts_mat_path,"wm_vox_ts","gm_vox_ts","wm_vox_ts_with_data_idx","sub_sample_grid","gm_vox_ts_sub_sample_with_data_idx")
+            switch sub_sample_choose
+                case 'Subsample'
+                    load(out_voxts_mat_path,"wm_vox_ts","gm_vox_ts","wm_vox_ts_with_data_idx","sub_sample_grid","gm_vox_ts_sub_sample_with_data_idx")
+                case 'Use entire FC'
+                    load(out_voxts_mat_path,"wm_vox_ts","gm_vox_ts","wm_vox_ts_with_data_idx","sub_sample_grid","gm_vox_ts_sub_with_data_idx")
+            end
         end
         % Calculating correlation matrix of each WM voxel to the subsampled voxels
         switch sub_sample_choose
@@ -279,6 +287,19 @@ wm_group_mask_voxels(missing_voxels) = []; avg_vox_level_FC(missing_voxels,:)=[]
 
 missing_voxels = std(avg_vox_level_FC,[],1)==0;   % finding voxels with no data
 avg_vox_level_FC(:,missing_voxels)=[];
+if sub_samp == 1
+    sub_sample_grid(missing_voxels) = [];
+    if exist(fullfile(cluster_folder,'kmeans_features_idx.mat'),'file')
+        load(fullfile(cluster_folder,'kmeans_features_idx.mat'),'gm_group_mask_voxels')
+    end
+    save(fullfile(cluster_folder,'kmeans_features_idx.mat'),'sub_sample_grid','gm_group_mask_voxels')
+else
+    gm_group_mask_voxels(missing_voxels) = [];
+    if exist(fullfile(cluster_folder,'kmeans_features_idx.mat'),'file')
+        load(fullfile(cluster_folder,'kmeans_features_idx.mat'),'sub_sample_grid')
+    end
+    save(fullfile(cluster_folder,'kmeans_features_idx.mat'),'sub_sample_grid','gm_group_mask_voxels')
+end
 
 
 
