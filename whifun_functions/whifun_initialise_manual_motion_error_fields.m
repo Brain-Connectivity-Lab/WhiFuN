@@ -29,9 +29,9 @@ function Subj_list_1 = whifun_initialise_manual_motion_error_fields(Subj_list_1)
 %   Author: Pratik Jain
 %   See also ISEMPTY, ISNAN.
 Subj_list_1.error = 0;
-if isempty(Subj_list_1.motion_ex)  || isnan(Subj_list_1.motion_ex)
+if whifun_isnan_or_empty(Subj_list_1,'motion_ex')
     Subj_list_1.motion_ex = 0;
 end
-if isempty(Subj_list_1.manual_ex) || isnan(Subj_list_1.manual_ex)
+if whifun_isnan_or_empty(Subj_list_1,'manual_ex')
     Subj_list_1.manual_ex = 0;
 end
