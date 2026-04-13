@@ -556,15 +556,22 @@ if ~isfield(EC.vol.roi,'color')
         min_roi = min(roi_levels);
         roi_levels = roi_levels - min(roi_levels) +1;
     end
-    cval = round((roi_levels - 1)./(max(roi_levels) - 1) .* (64-1)) +1;
-    EC.vol.roi.color = hsv_64(cval,:); % Modified by Pratik Jain for making it compatible with the WhiFuN toolbox hsv(100);%
-    if EC.vol.roi.drawall ~= 1
+    if roi_levels > 1
+        cval = round((roi_levels - 1)./(max(roi_levels) - 1) .* (64-1)) +1;
+        EC.vol.roi.color = hsv_64(cval,:); % Modified by Pratik Jain for making it compatible with the WhiFuN toolbox hsv(100);%
+        EC.vol.roi.color = hsv_64(cval(EC.vol.roi.draw),:);
+    else
+        cval = 1;
         EC.vol.roi.color = hsv_64(cval(EC.vol.roi.draw),:);
     end
+    % if EC.vol.roi.drawall ~= 1
+    %     EC.vol.roi.color = hsv_64(cval(EC.vol.roi.draw),:);
+    % end
 %     EC.vol.roi.color = [EC.vol.roi.color(1:10:91,:)',EC.vol.roi.color(2:10:92,:)',EC.vol.roi.color(3:10:93,:)',EC.vol.roi.color(4:10:94,:)',EC.vol.roi.color(5:10:95,:)',EC.vol.roi.color(6:10:96,:)',EC.vol.roi.color(7:10:97,:)',EC.vol.roi.color(8:10:98,:)',EC.vol.roi.color(9:10:99,:)',EC.vol.roi.color(10:10:100,:)']';
 % EC.vol.roi.color = repmat(EC.vol.roi.color,11,1);
 end
 if ~isfield(EC.vol.roi,'colort')
+     
     EC.vol.roi.colort =  hsv_64(cval,:); % Modified by Pratik Jain for making it compatible with the WhiFuN toolbox
     
 end
