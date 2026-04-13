@@ -8,6 +8,14 @@ function S_common = whifun_get_common_subjects(S1, S2)
 %
 % Output:
 %   S_common - structure array with common 'name' entries
+if ischar(S1) || isstring(S1)
+    [fold,name] = fileparts(S1);
+    S1 = load_subjects_all(fold,name);
+end
+if ischar(S2) || isstring(S2)
+    [fold,name] = fileparts(S2);
+    S2 = load_subjects_all(fold,name);
+end
 
     % Extract names
     names1 = {S1.name};
