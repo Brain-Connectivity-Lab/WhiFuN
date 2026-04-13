@@ -60,7 +60,7 @@ try
         Subj_list = table2struct(T(~rm,:));
     end
 catch ex
-    warning(['Error in loading the Subjects: ' ex.message])
+    warning(['Error in loading the bad Subjects: ' ex.message])
 
     Subj_list = [] ;
 end
