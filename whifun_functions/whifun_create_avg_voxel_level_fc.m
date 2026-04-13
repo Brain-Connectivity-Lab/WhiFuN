@@ -172,7 +172,7 @@ else
 end
 sub_sample_grid = sub_sample_grid(group_mask_voxels);   % choosing only locations of white-matter voxels
 sub_sample_grid = find(sub_sample_grid);    % getting the indices of subsampled voxels in the whole mask
-sub_sample_grid = sub_sample_grid(randperm(length(sub_sample_grid)));     % randomly mixing the voxels' indices
+% sub_sample_grid = sub_sample_grid(randperm(length(sub_sample_grid)));     % randomly mixing the voxels' indices
 
 % getting the data from each participant - correlation between all WM voxels and the subsampled WM voxels (num_WM_voxels X num_subsampled_voxels)
 avg_vox_level_FC = zeros(length(group_mask_voxels),length(sub_sample_grid));
@@ -280,6 +280,7 @@ group_mask_voxels(missing_voxels) = []; avg_vox_level_FC(missing_voxels,:)=[];
 
 missing_voxels = std(avg_vox_level_FC,[],1)==0;   % finding voxels with no data
 avg_vox_level_FC(:,missing_voxels)=[];
-
+sub_sample_grid(missing_voxels) = [];
+save(fullfile(cluster_folder,'subsample_grid_idx.mat'),'sub_sample_grid')
 
 
