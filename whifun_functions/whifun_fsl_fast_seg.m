@@ -69,6 +69,10 @@ function [gm_prob_path, wm_prob_path, csf_prob_path,t1_input_brain] = whifun_fsl
         t1_input_brain = [bet_out '_mask.nii.gz'];
     else
         t1_input = t1_path;
+        [t1,head] = whifun_niftiread(t1_path);
+        t1_brain_mask = t1 > 0;
+        niftisave(double(t1_brain_mask),fullfile(fold,[name '_mask.nii.gz']),head);
+        t1_input_brain = fullfile(fold,[name '_mask.nii.gz']);
     end
 
     % Build system command for FSL FAST
