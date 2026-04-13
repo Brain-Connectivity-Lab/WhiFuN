@@ -78,9 +78,10 @@ if K_range_l ~= K_range_h           % If the lower and upper values of Grid sear
         IDX_folds = zeros(size(avg_vox_level_FC,1),num_CV_folds); IDX_folds_new{K} = zeros(size(IDX_folds));
         size_fold = size(avg_vox_level_FC,2)/num_CV_folds;
         sumD = zeros(K,num_CV_folds);
+        perm_features = randperm(size(avg_vox_level_FC,2));
         for c=1:num_CV_folds        % going over folds (sub-matrices)
             disp(['Cross validation fold ' num2str(c) ' in progress'])
-            mat_corr_current = avg_vox_level_FC(:,round((c-1)*size_fold+1):round(c*size_fold));     % the sub-correlation-matrix
+            mat_corr_current = avg_vox_level_FC(:,perm_features(round((c-1)*size_fold+1):round(c*size_fold)));     % the sub-correlation-matrix
             [IDX_folds(:,c),~,sumD(:,c)] = kmeans(mat_corr_current, K,'distance','correlation','replicates',num_replicates);  % calculating the clustering result for this K
         end
 
