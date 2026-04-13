@@ -39,7 +39,7 @@ if ~exist("over_write","var")
 end
 
 
-fn_folder = fileparts(out_path);
+[fn_folder,name] = fileparts(out_path);
 % Ensure the output directory exists
 if ~exist(fn_folder, 'dir')
     mkdir(fn_folder);
@@ -76,9 +76,10 @@ if isempty(fn_file)
                 return
             end
         end
-        IDX_allsubjs = kmeans(avg_vox_level_FC, k,'distance','correlation','replicates',20);            % K-means clustering
+        [IDX_allsubjs,C] = kmeans(avg_vox_level_FC, k,'replicates',20,'distance','correlation');       %,'distance','correlation'     % K-means clustering
         clustering_results_allsubjs = zeros(header_file.ImageSize); clustering_results_allsubjs(WM_voxels) = IDX_allsubjs;   % putting the clustering results in an image
         niftisave(clustering_results_allsubjs,out_path,header_file,0,1)
+        save(fullfile(fn_folder,[name '_clusters_centers.mat']),"C")
         clear clustering_results_allsubjs;
 
     end
