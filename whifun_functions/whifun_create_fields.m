@@ -54,7 +54,7 @@ end
 function Subj_list_all = create_field(Subj_list_all,field_)
 
     if ~isfield(Subj_list_all, field_)
-        Subj_list_all(1).(field_) = ' ';
+        Subj_list_all(1).(field_) = [];
         
     end
 end
