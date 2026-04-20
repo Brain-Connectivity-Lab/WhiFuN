@@ -28,6 +28,16 @@ function output = whifun_smooth_together(nt,now_func_path,smooth_fwhm,Smooth_pre
 %   Author: Pratik Jain
 
 % Load Regressed Images
+
+[fold,func_name,ext] = fileparts (fullfile(now_func_path.folder,now_func_path.name));
+
+if strcmp(ext,'.gz')
+    gunzip(fullfile(now_func_path.folder,now_func_path.name),fold)
+    gz = 1;
+    nii_file_path = fullfile(fold,func_name);
+    now_func_path = dir(fullfile(fold,func_name));
+end
+
 reg_images = cell(nt,1);
 for imagei = 1:nt
     reg_images{imagei, 1} = (fullfile(now_func_path.folder,[now_func_path.name,',',num2str(imagei)]));
@@ -45,3 +55,10 @@ spm_jobman('initcfg');
 % Suppress GUI
 spm_get_defaults('cmdline', true);
 output = evalc("spm_jobman('run',matlabbatch)");
+
+if gz == 1
+    delete(nii_file_path)
+    gzip(fullfile(fullfile(fold,[Smooth_pre func_name])),fold)
+    delete(fullfile(fullfile(fold,[Smooth_pre func_name])))
+
+end

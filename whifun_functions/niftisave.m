@@ -50,5 +50,11 @@ if exist("multi_scale",'var')
 end
 %
 info.Filesize = [];
-niftiwrite(niftiimage,filename,info)
+[fold,name,ext] = fileparts(filename);
+
+if strcmp(ext,'.gz')
+    niftiwrite(niftiimage,fullfile(fold,name),info,"Compressed",true);
+else
+    niftiwrite(niftiimage,filename,info,"Compressed",false);
+end
 end
