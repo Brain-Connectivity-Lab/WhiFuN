@@ -1,4 +1,4 @@
-function [Subj_list_all,output_folder] = whifun_create_Subj_list(output_folder)
+function [Subj_list_all,output_folder] = whifun_create_Subj_list(output_folder,dataFolder,choice,finalData)
 % WHIFUN_CREATE_SUBJ_LIST Interactively creates a subject list structure.
 %
 %   [Subj_list_all, output_folder] = WHIFUN_CREATE_SUBJ_LIST(output_folder)
@@ -61,9 +61,16 @@ if isempty(output_folder_dir)
     mkdir(output_folder);
 end
 
-dataFolder = uigetdir(pwd, 'Select main data folder containing subject folders');
-if isequal(dataFolder,0)
-    error('No folder selected');
+if ~exist('dataFolder','var')
+    dataFolder = uigetdir(pwd, 'Select main data folder containing subject folders');
+    if isequal(dataFolder,0)
+        error('No folder selected');
+    end
+end
+
+dataFolder_dir = dir(dataFolder);
+if isempty(dataFolder_dir)
+    error(['dataFolder : ' dataFolder ' is not a valid path'])
 end
 
 %% Step 2: Subject Folder Selection
@@ -71,9 +78,21 @@ subfolders = dir(dataFolder);
 subfolders = subfolders([subfolders.isdir]); % only directories
 subfolders = subfolders(~ismember({subfolders.name},{'.','..'}));
 
-choice = questdlg('How do you want to select subject folders?', ...
-    'Subject Selection', ...
-    'All', 'Pattern', 'Manual', 'All');
+if ~exist('choice','var')
+    choice = questdlg('How do you want to select subject folders?', ...
+        'Subject Selection', ...
+        'All', 'Pattern', 'Manual', 'All');
+else
+    % validate provided choice
+    validChoices = {'All','Pattern','Manual'};
+    if ~ischar(choice) && ~isstring(choice)
+        error('choice must be a char or string scalar');
+    end
+    choice = char(choice); % ensure char for comparison
+    if ~ismember(choice, validChoices)
+        error('Invalid choice. Expected one of: ''All'', ''Pattern'', or ''Manual''.');
+    end
+end
 
 switch choice
     case 'All'
@@ -91,98 +110,44 @@ switch choice
 end
 
 %% Step 3: Define Field Patterns
-fieldNames = {
-    'motion_txt'
-    'GM_MNI'
-    'WM_MNI'
-    'CSF_MNI'
-    'anat_mask_MNI'
-    'func_MNI'
-    'anat_MNI'
-    'func_mask_MNI'
-    'MNI_template'
-    'final_func_MNI'
-    };
+if ~exist("finalData",'var')
+    fieldNames = {
+        'motion_txt'
+        'GM_MNI'
+        'WM_MNI'
+        'CSF_MNI'
+        'anat_mask_MNI'
+        'func_MNI'
+        'anat_MNI'
+        'func_mask_MNI'
+        'MNI_template'
+        'final_func_MNI'
+        };
 
-% GUI for field patterns
-f = figure('Name', 'Define field patterns (relative to subject folder)', ...
-    'Position', [200 200 500 600], ...
-    'MenuBar', 'none', 'ToolBar', 'none', 'NumberTitle', 'off');
+    % GUI for field patterns
+    f = figure('Name', 'Define field patterns (relative to subject folder)', ...
+        'Position', [200 200 500 600], ...
+        'MenuBar', 'none', 'ToolBar', 'none', 'NumberTitle', 'off');
 
-t = uitable('Parent', f, ...
-    'Data', [fieldNames, repmat({''}, numel(fieldNames), 1)], ...
-    'ColumnName', {'Field', 'Pattern (relative)'}, ...
-    'ColumnEditable', [false true], ...
-    'ColumnWidth', {150, 300}, ...
-    'Units', 'normalized', ...
-    'Position', [0.05 0.2 0.9 0.75]);
+    t = uitable('Parent', f, ...
+        'Data', [fieldNames, repmat({''}, numel(fieldNames), 1)], ...
+        'ColumnName', {'Field', 'Pattern (relative)'}, ...
+        'ColumnEditable', [false true], ...
+        'ColumnWidth', {150, 300}, ...
+        'Units', 'normalized', ...
+        'Position', [0.05 0.2 0.9 0.75]);
 
-uicontrol('Style', 'pushbutton', 'String', 'Save & Validate', ...
-    'Units', 'normalized', ...
-    'Position', [0.3 0.05 0.4 0.1], ...
-    'Callback', @(~,~) uiresume(f));
+    uicontrol('Style', 'pushbutton', 'String', 'Save & Validate', ...
+        'Units', 'normalized', ...
+        'Position', [0.3 0.05 0.4 0.1], ...
+        'Callback', @(~,~) uiresume(f));
 
-uiwait(f);
-finalData = get(t, 'Data');
-delete(f);
-
-% %% Step 4: Validate Patterns & Fix Interactively
-% Subj_list_all = struct();
-% for i = 1:size(finalData,1)
-%     field = finalData{i,1};
-%     pattern = finalData{i,2};
-%     if isempty(pattern)
-%         continue; % skip empty fields
-%     end
-%
-%     valid = false;
-%     while ~valid
-%         allMatches = cell(numel(subjFolders),1);
-%         multipleProblem = false;
-%         zeroProblem = false;
-%
-%         for s = 1:numel(subjFolders)
-%             subjPath = fullfile(dataFolder, subjFolders{s});
-%             matches = dir(fullfile(subjPath, pattern));
-%             allMatches{s} = matches;
-%             if numel(matches) == 0
-%                 zeroProblem = true;
-%             elseif numel(matches) > 1
-%                 multipleProblem = true;
-%             end
-%         end
-%
-%         if zeroProblem
-%             answer = inputdlg(sprintf(['Pattern "%s" failed: No matches for at least one subject.\n' ...
-%                                        'Field: %s\n\nEnter a new pattern:'], ...
-%                                        pattern, field), ...
-%                               'Fix Pattern', 1, {pattern});
-%             if isempty(answer), break; end
-%             pattern = answer{1};
-%             continue;
-%         elseif multipleProblem
-%             answer = inputdlg(sprintf(['Pattern "%s" failed: Multiple matches for at least one subject.\n' ...
-%                                        'Field: %s\n\nEnter a new pattern:'], ...
-%                                        pattern, field), ...
-%                               'Fix Pattern', 1, {pattern});
-%             if isempty(answer), break; end
-%             pattern = answer{1};
-%             continue;
-%         else
-%             % Success: assign to all subjects
-%             for s = 1:numel(subjFolders)
-%                 m = allMatches{s}(1);
-%                 if m.isdir
-%                     Subj_list_all(s).(field) = fullfile(dataFolder, subjFolders{s}, m.name, filesep);
-%                 else
-%                     Subj_list_all(s).(field) = fullfile(dataFolder, subjFolders{s}, m.name);
-%                 end
-%             end
-%             valid = true;
-%         end
-%     end
-% end
+    uiwait(f);
+    finalData = get(t, 'Data');
+    delete(f);
+end
 %% Step 4: Validate Patterns & Fix Interactively
+
 Subj_list_all = struct();
 for s = 1:numel(subjFolders)
     Subj_list_all(s).name = subjFolders{s};
