@@ -556,7 +556,7 @@ if ~isfield(EC.vol.roi,'color')
         min_roi = min(roi_levels);
         roi_levels = roi_levels - min(roi_levels) +1;
     end
-    if roi_levels > 1
+    if length(roi_levels) > 1
         cval = round((roi_levels - 1)./(max(roi_levels) - 1) .* (64-1)) +1;
         EC.vol.roi.color = hsv_64(cval,:); % Modified by Pratik Jain for making it compatible with the WhiFuN toolbox hsv(100);%
         EC.vol.roi.color = hsv_64(cval(EC.vol.roi.draw),:);
