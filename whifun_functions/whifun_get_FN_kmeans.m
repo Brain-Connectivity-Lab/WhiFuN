@@ -1,4 +1,4 @@
-function whifun_get_FN_kmeans(out_path,K,avg_vox_level_FC,WMmask_,header_file,over_write,d_flag,d,steps_,tot_steps)
+function whifun_get_FN_kmeans(out_path,K,avg_vox_level_FC,WMmask_,header_file,num_replicates,over_write,d_flag,d,steps_,tot_steps)
 %WHIFUN_GET_FN_KMEANS Performs k-means clustering on the Voxel-Level Functional
 %   Connectivity (FC) matrix to create a Functional Network (FN) map.
 %
@@ -53,7 +53,7 @@ if isempty(fn_file)
         header_file = niftiinfo(WMmask_);
     elseif isnumeric(WMmask_)
         if ~exist("header_file",'var')
-            error('Header file needed if WM mask matrix or indexes are given')
+            error('Header file needed if mask matrix or indexes are given')
         end
         if length(size(WMmask_)) == 3
             WM_voxels = WMmask_>0.5;
@@ -64,7 +64,7 @@ if isempty(fn_file)
 
 
     for k=K
-        disp(['Creating WM networks using ' 'K = ' num2str(k)]);
+        disp(['Creating networks using ' 'K = ' num2str(k)]);
 
         if d_flag
             steps_ = steps_ + 1;
@@ -72,11 +72,11 @@ if isempty(fn_file)
             d.Message = ['Creating clusters with K = ' num2str(K)];
 
             if d.CancelRequested
-                disp('Creation of WM-FN terminated by User')
+                disp('Creation of FN terminated by User')
                 return
             end
         end
-        [IDX_allsubjs,C] = kmeans(avg_vox_level_FC, k,'replicates',20,'distance','correlation');       %,'distance','correlation'     % K-means clustering
+        [IDX_allsubjs,C] = kmeans(avg_vox_level_FC, k,'replicates',num_replicates,'distance','correlation');       %,'distance','correlation'     % K-means clustering
         clustering_results_allsubjs = zeros(header_file.ImageSize); clustering_results_allsubjs(WM_voxels) = IDX_allsubjs;   % putting the clustering results in an image
         niftisave(clustering_results_allsubjs,out_path,header_file,0,1)
         save(fullfile(fn_folder,[name '_clusters_centers.mat']),"C")
