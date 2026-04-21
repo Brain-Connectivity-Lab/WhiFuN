@@ -100,7 +100,7 @@ if build_net == 1
     
     
     out_path = fullfile(FN_folder,[ WM_or_GM '_FN_K' num2str(K)],[ WM_or_GM '_FN_K' num2str(K) '.nii']);
-    whifun_get_FN_kmeans(out_path,K,avg_vox_level_FC,group_mask_voxels,niftiinfo(group_mask_path),over_write,d_flag,d,steps_,tot_steps);
+    whifun_get_FN_kmeans(out_path,K,avg_vox_level_FC,group_mask_voxels,niftiinfo(group_mask_path),2*num_replicates,over_write,d_flag,d,steps_,tot_steps);
 
 else
     if d_flag
