@@ -20,22 +20,24 @@ matlabbatch{1}.spm.tools.dartel.mni_norm.template = {fullfile(char(output_folder
 
 for subji = 1:length(Subj_list)
     % Define functional folders
-    [~,name,ext] = fileparts(Subj_list(subji).anat_name);
-    now_anat_path = dir(fullfile(Subj_list(subji).anat_folder,['u_rc1' name '_Template' ext]));
+    [anat_fold,anat_name,anat_ext] = fileparts(Subj_list(subji).nii_anat_native);
+    [func_fold,func_name,func_ext] = fileparts(Subj_list(subji).nii_func_native);
+    now_anat_path = dir(fullfile(anat_fold,['u_rc1' anat_name '_Template' anat_ext]));
+    
     if func_anat == 1
-        now_warp_path = dir(fullfile(Subj_list(subji).func_folder,[Smooth_pre,f_pre,Reg_pre,Realign_pre Cut_pre Subj_list(subji).func_name])) ;
+        now_warp_path = dir(fullfile(func_fold,[Smooth_pre,f_pre,Reg_pre,Realign_pre Cut_pre func_name func_ext])) ;
     elseif func_anat == 0
-        now_warp_path = dir(fullfile(Subj_list(subji).anat_folder,[skull_pre Subj_list(subji).anat_name])) ;
+        now_warp_path = dir(fullfile(anat_fold,[skull_pre anat_name anat_ext])) ;
     elseif func_anat == 2
-        now_warp_path = dir(fullfile(Subj_list(subji).anat_folder,['c1' Subj_list(subji).anat_name])) ;
-        movefile(fullfile(Subj_list(subji).anat_folder,['wc1' Subj_list(subji).anat_name]),fullfile(Subj_list(subji).anat_folder,['wc1_old' Subj_list(subji).anat_name]))
+        now_warp_path = dir(fullfile(anat_fold,['c1' anat_name anat_ext])) ;
+        movefile(fullfile(anat_fold,['wc1' anat_name anat_ext]),fullfile(anat_fold,['wc1_old' anat_name anat_ext]))
 
     elseif func_anat == 3
-        now_warp_path = dir(fullfile(Subj_list(subji).anat_folder,['c2' Subj_list(subji).anat_name])) ;
-        movefile(fullfile(Subj_list(subji).anat_folder,['wc2' Subj_list(subji).anat_name]),fullfile(Subj_list(subji).anat_folder,['wc2_old' Subj_list(subji).anat_name]))
+        now_warp_path = dir(fullfile(anat_fold,['c2' anat_name anat_ext])) ;
+        movefile(fullfile(anat_fold,['wc2' anat_name anat_ext]),fullfile(anat_fold,['wc2_old' anat_name anat_ext]))
     elseif func_anat == 4
-        now_warp_path = dir(fullfile(Subj_list(subji).anat_folder,['c3' Subj_list(subji).anat_name])) ;
-        movefile(fullfile(Subj_list(subji).anat_folder,['wc3' Subj_list(subji).anat_name]),fullfile(Subj_list(subji).anat_folder,['wc3_old' Subj_list(subji).anat_name]))
+        now_warp_path = dir(fullfile(anat_fold,['c3' anat_name anat_ext])) ;
+        movefile(fullfile(anat_fold,['wc3' anat_name anat_ext]),fullfile(anat_fold,['wc3_old' anat_name anat_ext]))
     end
 
     matlabbatch{1}.spm.tools.dartel.mni_norm.data.subj(subji).flowfield = {fullfile(now_anat_path.folder,now_anat_path.name)};

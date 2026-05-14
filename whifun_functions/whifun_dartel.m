@@ -10,11 +10,15 @@ function output = whifun_dartel(Subj_list)
 dartel_gm = cell(length(Subj_list),1);
 dartel_wm = cell(length(Subj_list),1);
 dartel_csf = cell(length(Subj_list),1);
+
 for subji = 1:length(Subj_list)
+
+    anat_file_path = Subj_list(subji).nii_anat_native;
+    [anat_folder,anat_name,nii_ext] = fileparts(anat_file_path);
     % Dartel imports
-    dartel_gm{subji,1} = fullfile(Subj_list(subji).anat_folder,['rc1' Subj_list(subji).anat_name]);
-    dartel_wm{subji,1} = fullfile(Subj_list(subji).anat_folder,['rc2' Subj_list(subji).anat_name]);
-    dartel_csf{subji,1} = fullfile(Subj_list(subji).anat_folder,['rc3' Subj_list(subji).anat_name]);
+    dartel_gm{subji,1} = fullfile(anat_folder,['rc1' anat_name nii_ext]);
+    dartel_wm{subji,1} = fullfile(anat_folder,['rc2' anat_name nii_ext]);
+    dartel_csf{subji,1} = fullfile(anat_folder,['rc3' anat_name nii_ext]);
 end
 
 clear matlabbatch

@@ -90,11 +90,11 @@ for subji = 1:length(Subj_list)
         out_avg_ts_file = whifun_create_file(over_write,out_avg_ts_path);
     else
         out_avg_ts_file = [];
-        figure('Visible','off');
-        filter_image_path = fullfile(out_folder,'Filters');
-        if ~exist(filter_image_path,"dir")
-            mkdir(filter_image_path)
-        end
+        % figure('Visible','off');
+        % filter_image_path = fullfile(out_folder,'Filters');
+        % if ~exist(filter_image_path,"dir")
+        %     mkdir(filter_image_path)
+        % end
     end
 
     if isempty(out_avg_ts_file)
@@ -218,10 +218,10 @@ for subji = 1:length(Subj_list)
                     if ~exist(fileparts(out_avg_ts_path),'dir')
                         mkdir(fileparts(out_avg_ts_path))
                     end
-                    filter_band_image_path = fullfile(filter_image_path,[band_name '_' num2str(lp) '-' num2str(hp)]);
-                    if ~exist(filter_band_image_path,'dir')
-                        mkdir(filter_band_image_path);
-                    end
+                    % filter_band_image_path = fullfile(filter_image_path,[band_name '_' num2str(lp) '-' num2str(hp)]);
+                    % if ~exist(filter_band_image_path,'dir')
+                    %     mkdir(filter_band_image_path);
+                    % end
 
                     if isempty(out_avg_ts_file)
                         tr = func_info.PixelDimensions(4);
