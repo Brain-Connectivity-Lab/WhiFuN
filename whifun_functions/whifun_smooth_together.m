@@ -36,6 +36,8 @@ if strcmp(ext,'.gz')
     gz = 1;
     nii_file_path = fullfile(fold,func_name);
     now_func_path = dir(fullfile(fold,func_name));
+else
+    gz = 0;
 end
 
 reg_images = cell(nt,1);
