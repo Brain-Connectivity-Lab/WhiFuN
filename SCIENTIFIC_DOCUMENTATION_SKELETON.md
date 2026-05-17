@@ -16,9 +16,10 @@ flowchart TD
     E --> F[Voxel-level FC matrices]
     F --> G[K-means FN construction and K stability search]
     G --> H[FN NIfTI maps and BrainNet images]
-    H --> I[Network/atlas average time series]
+    D --> I[Network/atlas average time series]
     I --> J[FC display and GLM/statistics apps]
-    I --> K[Focus-region partial correlation and t-test assignment]
+    I --> K[t-test assignment]
+    G --> K[t-test assignment]
 ```
 
 ## 2. Module-by-Module Deep Dive
