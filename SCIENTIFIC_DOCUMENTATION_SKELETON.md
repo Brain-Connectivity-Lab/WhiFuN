@@ -12,7 +12,7 @@ flowchart TD
     A[Participant BIDS or custom folders] --> B[Data check and Subj_list.csv]
     B --> C[Preprocessing: unzip, discard volumes, realign, segment, coregister, regress, filter, smooth, normalize]
     C --> D[Quality control: motion, segmentation, coregistration, masks, regression, smoothing, normalization, seed FC]
-    C --> E[Group WM and GM masks]
+    D --> E[Group WM and GM masks]
     E --> F[Voxel-level FC matrices]
     F --> G[K-means FN construction and K stability search]
     G --> H[FN NIfTI maps and BrainNet images]
