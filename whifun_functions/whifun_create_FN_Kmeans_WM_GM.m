@@ -109,9 +109,9 @@ if build_net == 1
     out_path = fullfile(FN_folder,[ WM_or_GM '_FN_K' num2str(K)],[ WM_or_GM '_FN_K' num2str(K) '.nii']);
 
     if strcmp(WM_or_GM,'WM-GM') || strcmp(WM_or_GM,'Noise-GM')
-        whifun_get_FN_kmeans(out_path,K,avg_vox_level_FC,group_mask_voxels,niftiinfo(group_mask_path_wm),over_write,d_flag,d,steps_,tot_steps);
+        whifun_get_FN_kmeans(out_path,K,avg_vox_level_FC,group_mask_voxels,niftiinfo(group_mask_path_wm),num_replicates,over_write,d_flag,d,steps_,tot_steps);
     elseif strcmp(WM_or_GM,'GM-WM') || strcmp(WM_or_GM,'GM-noise')
-        whifun_get_FN_kmeans(out_path,K,avg_vox_level_FC,group_mask_voxels,niftiinfo(group_mask_path_gm),over_write,d_flag,d,steps_,tot_steps);
+        whifun_get_FN_kmeans(out_path,K,avg_vox_level_FC,group_mask_voxels,niftiinfo(group_mask_path_gm),num_replicates,over_write,d_flag,d,steps_,tot_steps);
     end
 else
     if d_flag

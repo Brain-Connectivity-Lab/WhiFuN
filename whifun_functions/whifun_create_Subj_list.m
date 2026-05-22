@@ -1,196 +1,79 @@
-function [Subj_list_all,output_folder] = whifun_create_Subj_list(output_folder,dataFolder,choice,finalData)
-% WHIFUN_CREATE_SUBJ_LIST Interactively creates a subject list structure.
-%
-%   [Subj_list_all, output_folder] = WHIFUN_CREATE_SUBJ_LIST(output_folder)
-%   provides a user-friendly, GUI-based tool for setting up a subject list
-%   structure for a preprocessing pipeline. The function guides the user
-%   through selecting data, defining patterns for files, and validating the
-%   paths for each subject.
-%
-%   The function performs the following steps:
-%   1.  **Select Folders**: It prompts the user to select an output folder
-%       and a main data folder containing all subject directories.
-%   2.  **Subject Selection**: It offers options to select subjects from the
-%       main data folder, either by selecting all, using a wildcard pattern,
-%       or manually picking from a list.
-%   3.  **Define Patterns**: A graphical user interface (GUI) is displayed,
-%       where the user can define patterns (relative to the subject folder)
-%       for various files generated or used during the preprocessing pipeline
-%       (e.g., segmented tissue files, masks, normalized data).
-%   4.  **Populate Structure**: It iterates through each subject, attempting
-%       to find files matching the defined patterns. It populates a structure
-%       array `Subj_list_all` with the full paths to these files.
-%   5.  **Error Handling**: If a pattern results in zero or multiple matches
-%       for a subject, it issues a warning. This helps the user identify and
-%       fix potential naming inconsistencies in their data.
-%   6.  **Save Output**: The final subject list structure is converted to a
-%       table and saved as a `Subj_list.csv` file in the specified output folder.
-%
-%   This function streamlines the initial setup of a preprocessing pipeline,
-%   making it less prone to manual errors and more adaptable to different
-%   data organization schemes.
-%
-%   Input Arguments:
-%   output_folder - (Optional) The path to the directory where the output
-%                   CSV file will be saved. If not provided, a dialog box
-%                   prompts the user to select one.
-%
-%   Output Arguments:
-%   Subj_list_all - A structure array where each element represents a subject
-%                   and contains the full file paths for the specified fields.
-%   output_folder - The path to the selected output directory.
-%
-%   Author: Pratik Jain
-%   See also UIGETDIR, UITALBE, INPUTDLG, DIR, FULLFILE.
+function [Subj_list,try_again] = whifun_create_Subj_list(output_folder,data_path,final_func_MNI,GM_MNI,WM_MNI,CSF_MNI,varargin)
 
-%% Step 1: Select Data Folder
+%% ---------------- Input Parser ----------------
+p = inputParser;
+p.FunctionName = 'whifun_create_preproc_files_cell';
 
-if ~exist('output_folder',"var")
+% Optional with defaults
+addParameter(p,'motion_txt','');
+addParameter(p,'anat_mask_MNI','');
+addParameter(p,'func_MNI','');
+addParameter(p,'anat_MNI','');
+addParameter(p,'func_mask_MNI','');
+addParameter(p,'MNI_template','');
 
-    output_folder = uigetdir(pwd, 'Select output folder');
-    if isequal(output_folder,0)
-        error('No folder selected');
-    end
+parse(p,varargin{:});
+
+% Assign parsed inputs
+motion_txt     = p.Results.motion_txt;
+anat_mask_MNI  = p.Results.anat_mask_MNI;
+func_MNI       = p.Results.func_MNI;
+anat_MNI       = p.Results.anat_MNI;
+func_mask_MNI  = p.Results.func_mask_MNI;
+MNI_template   = p.Results.MNI_template;
+
+if ~exist(output_folder,'dir')
+    mkdir(output_folder)
 end
-output_folder_dir = dir(output_folder);
-if isempty(output_folder_dir)
-    output_folder_dir =  dir(fileparts(output_folder));
-    if isempty(output_folder_dir)
-        error(['output_folder : ' output_folder ' is not a valid path'])
-    end
-    mkdir(output_folder);
+spm_path = which('spm.m');
+if isempty(spm_path)
+    error('SPM toolbox not found. Please check the SPM path. Add path to the folder that contains spm.m file');
 end
 
-if ~exist('dataFolder','var')
-    dataFolder = uigetdir(pwd, 'Select main data folder containing subject folders');
-    if isequal(dataFolder,0)
-        error('No folder selected');
-    end
+whifun_func_path = which('whifun.m');
+if isempty(whifun_func_path)
+    error('Whifun toolbox not found. Please check the Whifun path. Add path to the folder that contains whifun.m file');
 end
+whifun_path = fileparts(whifun_func_path);
 
-dataFolder_dir = dir(dataFolder);
-if isempty(dataFolder_dir)
-    error(['dataFolder : ' dataFolder ' is not a valid path'])
+addpath(fullfile(whifun_path,'whifun_functions'))
+finalData = whifun_create_preproc_files_cell(final_func_MNI, GM_MNI, WM_MNI, CSF_MNI,...
+    'motion_txt',motion_txt,...
+    'anat_mask_MNI',anat_mask_MNI, ...
+    'func_MNI',func_MNI,...
+    'anat_MNI',anat_MNI,...
+    'func_mask_MNI',func_mask_MNI,...
+    'MNI_template',MNI_template);
+
+[Subj_list,output_folder] = whifun_create_Subj_list_gui(output_folder,data_path,'All',finalData);
+
+whifun_save_parameters(output_folder,'parameters.mat',...
+                                data_path,output_folder,0,...
+                                '','','','','','',...
+                                0,5,0.2,0.2,0,0.95,'Mean CSF',0,1,0,0.01,0.15,'WM-GM Seperate',"4","3")
+if isempty(Subj_list)
+    error('No Subject files found, Please check the ''Preproccessed file paths'' ')
+
 end
-
-%% Step 2: Subject Folder Selection
-subfolders = dir(dataFolder);
-subfolders = subfolders([subfolders.isdir]); % only directories
-subfolders = subfolders(~ismember({subfolders.name},{'.','..'}));
-
-if ~exist('choice','var')
-    choice = questdlg('How do you want to select subject folders?', ...
-        'Subject Selection', ...
-        'All', 'Pattern', 'Manual', 'All');
-else
-    % validate provided choice
-    validChoices = {'All','Pattern','Manual'};
-    if ~ischar(choice) && ~isstring(choice)
-        error('choice must be a char or string scalar');
-    end
-    choice = char(choice); % ensure char for comparison
-    if ~ismember(choice, validChoices)
-        error('Invalid choice. Expected one of: ''All'', ''Pattern'', or ''Manual''.');
-    end
+Subj_list = whifun_create_fields(Subj_list);
+for i = 1:length(Subj_list)
+    Subj_list(i).error = 0;
+    Subj_list(i).manual_ex = 0;
+    Subj_list(i).motion_ex = 0;
 end
+my_writetable(struct2table(Subj_list),fullfile(output_folder,"Subj_list.csv"))
 
-switch choice
-    case 'All'
-        subjFolders = {subfolders.name};
-    case 'Pattern'
-        pattern = inputdlg('Enter folder name pattern (supports wildcards, e.g. sub*):', ...
-            'Folder Pattern', 1, {'sub*'});
-        matches = dir(fullfile(dataFolder, pattern{1}));
-        subjFolders = {matches([matches.isdir]).name};
-    case 'Manual'
-        [indx,tf] = listdlg('PromptString','Select subject folders:', ...
-            'ListString',{subfolders.name});
-        if ~tf, error('No subjects selected'); end
-        subjFolders = {subfolders(indx).name};
-end
+%% Check the created Subj_list.csv
+Sub_info_properties = Sub_info(output_folder);
+msgbox('Please check the fields in Subj_list.csv an ensure that they are correct?','Verify Subj_list.csv');
 
-%% Step 3: Define Field Patterns
-if ~exist("finalData",'var')
-    fieldNames = {
-        'motion_txt'
-        'GM_MNI'
-        'WM_MNI'
-        'CSF_MNI'
-        'anat_mask_MNI'
-        'func_MNI'
-        'anat_MNI'
-        'func_mask_MNI'
-        'MNI_template'
-        'final_func_MNI'
-        };
+uiwait(Sub_info_properties.ParticipantsInformationUIFigure)
 
-    % GUI for field patterns
-    f = figure('Name', 'Define field patterns (relative to subject folder)', ...
-        'Position', [200 200 500 600], ...
-        'MenuBar', 'none', 'ToolBar', 'none', 'NumberTitle', 'off');
+resp_ = questdlg('Do you want to continue with this Subj_list.csv?','Continue?','yes','no','yes');
 
-    t = uitable('Parent', f, ...
-        'Data', [fieldNames, repmat({''}, numel(fieldNames), 1)], ...
-        'ColumnName', {'Field', 'Pattern (relative)'}, ...
-        'ColumnEditable', [false true], ...
-        'ColumnWidth', {150, 300}, ...
-        'Units', 'normalized', ...
-        'Position', [0.05 0.2 0.9 0.75]);
-
-    uicontrol('Style', 'pushbutton', 'String', 'Save & Validate', ...
-        'Units', 'normalized', ...
-        'Position', [0.3 0.05 0.4 0.1], ...
-        'Callback', @(~,~) uiresume(f));
-
-    uiwait(f);
-    finalData = get(t, 'Data');
-    delete(f);
-end
-%% Step 4: Validate Patterns & Fix Interactively
-
-Subj_list_all = struct();
-for s = 1:numel(subjFolders)
-    Subj_list_all(s).name = subjFolders{s};
-    Subj_list_all(s).folder = dataFolder;
-end
-
-for i = 1:size(finalData,1)
-    field = finalData{i,1};
-    pattern = strtrim(finalData{i,2});
-    % Always create the field
-    for s = 1:numel(subjFolders)
-        if strcmp(field,'name')
-            Subj_list_all(s).(field) = subjFolders{s};
-        elseif strcmp(field,'folder')
-            Subj_list_all(s).(field) = dataFolder;
-        else
-            Subj_list_all(s).(field) = '';
-        end
-    end
-
-    if isempty(pattern)
-        % Field left blank by user → leave as ''
-        continue;
-    end
-
-    % Try to resolve pattern for each subject
-    for s = 1:numel(subjFolders)
-
-        subjPath = fullfile(dataFolder, subjFolders{s});
-        matches = dir(fullfile(subjPath, pattern));
-
-        if isscalar(matches)
-            Subj_list_all(s).(field) = fullfile(matches.folder, matches.name);
-        elseif isempty(matches)
-            warning('No match found for field "%s" in subject folder "%s"', ...
-                field, subjFolders{s});
-        else
-            warning('Multiple matches for field "%s" in subject folder "%s". Leaving blank.', ...
-                field, subjFolders{s});
-        end
-    end
-end
-Subj_list_all = whifun_create_fields(Subj_list_all);
-my_writetable(struct2table(Subj_list_all), fullfile(output_folder,"Subj_list.csv"))
-disp(['Subj_list.csv created, See : ' output_folder]);
+switch resp_
+    case 'no'
+        try_again = 1;
+    case 'yes'
+        try_again = 0;
 end

@@ -1,4 +1,4 @@
-function S_common = whifun_get_common_subjects(S1, S2)
+function [S_common,idx1,idx2] = whifun_get_common_subjects(S1, S2)
 % WHIFUN_GET_COMMON_SUBJECTS
 % Returns a structure containing elements whose 'name' field
 % is common between two structure arrays.
@@ -22,11 +22,11 @@ end
     names2 = {S2.name};
 
     % Find common names
-    common_names = intersect(names1, names2);
+    [~,idx1,idx2] = intersect(names1, names2);
 
-    % Logical index for S1 entries with common names
-    idx_common = ismember(names1, common_names);
+    % % Logical index for S1 entries with common names
+    % idx_common = ismember(names1, common_names);
 
     % Return subset of S1 (structure preserved)
-    S_common = S1(idx_common);
+    S_common = S1(idx1);
 end

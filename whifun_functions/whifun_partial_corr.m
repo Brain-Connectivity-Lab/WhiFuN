@@ -54,7 +54,7 @@ end
 [~,fr_mask_name,~] = fileparts(fr_mask_name);
 
 disp(['Partial correlation between the ' fr_mask_name ' Voxels timeseries and ' WM_or_GM ' Network Average timseries'])
-pcor_ts_path = fullfile(fileparts(mask_subj_ts_folder),[fr_mask_name '_FN_from_' WM_or_GM '_K' num2str(K)],[fr_mask_name '_par_cor_WM']);
+pcor_ts_path = fullfile(fileparts(mask_subj_ts_folder),[fr_mask_name '_FN_from_' WM_or_GM '_K' num2str(K)],[fr_mask_name '_par_cor_' WM_or_GM]);
 if ~exist(pcor_ts_path,'dir')
     mkdir(pcor_ts_path)
 end

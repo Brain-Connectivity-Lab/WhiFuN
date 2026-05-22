@@ -66,7 +66,6 @@ params = p.Results;
 % You can refer to any parameter as params.<name>
 % e.g.:
 output_folder = params.output_folder;          % string
-
 over_write = logical(params.over_write);   % logical
 Cut_pre    = char(params.Cut_pre);         % char
 n_vol_dis  = params.n_vol_dis;             % numeric scalar
@@ -105,9 +104,8 @@ n_workers = params.n_workers;
 gui = params.gui;
 app = params.app;
 
-load(fullfile(output_folder,'parameters.mat'),'data_path','comm_sess_name','comm_subj_name','anat_data_name','func_data_name','anat_folder_name','comm_subj_name','func_folder_name')                           % load parameters saved during initial data check, if they were changed after initial data check, the change will be applied later in the code.
-Subj_list_all = load_subjects_all(output_folder,'Subj_list.csv');
-Subj_list = load_subjects(output_folder,'Subj_list.csv');
+temp_path = mfilename('fullpath');                % path of the toolbox
+preproc_code_path = fileparts(fileparts(temp_path));
 
 if isempty(output_folder)
     msgbox('Please specify the output_folder,then Run Data Check, define Preprocessing parameters and then Run Preprocessing.','Output folder Path empty')
@@ -119,6 +117,12 @@ if ~exist(qc_path,'dir')
     msgbox('Quality_control folder not found. Please Run Initial Data check before Running the Preprocessing and Analyses ', 'Run Initial Data Check')
     return
 end
+
+load(fullfile(output_folder,'parameters.mat'),'data_path','comm_sess_name','anat_data_name','func_data_name','anat_folder_name','comm_subj_name','func_folder_name')                           % load parameters saved during initial data check, if they were changed after initial data check, the change will be applied later in the code.
+Subj_list_all = load_subjects_all(output_folder,'Subj_list.csv');
+Subj_list = load_subjects(output_folder,'Subj_list.csv');
+
+
 
 
 %%
@@ -199,6 +203,11 @@ switch smooth_drop
         WM_GM = 0;
 end
 
+if gui
+    d = uiprogressdlg(app.WhiFuNv33UIFigure,'Title','WhiFuN Preprocessing ','Message','Please wait, See Matlab Command window for progress.',...
+        'Indeterminate','on');
+end
+
 if ~all(mean(n_image) == n_image)
     for_warning = struct2table(Subj_list);
     disp(for_warning)
@@ -221,6 +230,7 @@ whifun_save_parameters(output_folder,'parameters.mat',...
                                 smooth_drop,smooth_fwhm,...
                                 vox)
 
+
 %   Loop all participants in this group
 n_tot = length(Subj_list);
 if ~par_on
@@ -229,10 +239,7 @@ else
     par_p = Par(n_tot);
 end
 
-if gui
-    d = uiprogressdlg(app.WhiFuNv33UIFigure,'Title','WhiFuN Preprocessing ','Message','Please wait, See Matlab Command window for progress.',...
-        'Indeterminate','on');
-end
+
 Subj_list_all = whifun_create_fields_preproc(Subj_list_all);
 Subj_list = whifun_create_fields_preproc(Subj_list);
 dq = parallel.pool.DataQueue;
