@@ -1,9 +1,0 @@
-#####################################################################################################################
- 
-Subject Name: 0050952
- 
-Code ran on 14-May-2026 16:41:11
- 
-MATLAB:UndefinedFunction 
-Error Message :Unrecognized function or variable 'gz'.
-Error using whifun_smooth_together (line 59)\nError using whifun_smooth_preproc (line 87)\nError using whifun_preproc (line 348)\nError using parallel_function (line 460)\nError using main.RunPreprocessingButtonPushed (line 801)\nError using @(source,event)executeCallback(ams,app,callback,requiresEventData,event) (line 54)\n
