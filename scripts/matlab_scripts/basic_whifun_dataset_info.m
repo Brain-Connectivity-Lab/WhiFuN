@@ -1,7 +1,7 @@
 % Define your patterns
-myDir = '/media/biswal5090pc/Expansion1/NKI_all_data/data';
-fPat  = 'sub*_acq-1400_bold.nii.gz';
-aPat  = 'sub*_T1w.nii.gz';
+myDir = 'M:\TRACK2-selected\Data';%'/media/biswal5090pc/Expansion1/NKI_all_data/data';
+fPat  = 'sub-*_ses-*_task-rest_run-*_space-MNI152NLin2009cAsym_desc-preproc_bold_3mm.nii.gz';%'sub*_acq-1400_bold.nii.gz';
+aPat  = 'sub-*_space-MNI152NLin2009cAsym_desc-preproc_T1w.nii.gz';%'sub*_T1w.nii.gz';
 
 % Run the function
 stats = whifun_get_datastructure_info(myDir, fPat, aPat);
