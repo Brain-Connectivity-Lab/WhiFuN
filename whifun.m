@@ -209,7 +209,7 @@ end
 
 switch Action
 
-    case 'Welcome'
+    case 'cite'
         clc;
         fprintf('\n');
         fprintf('----------------------------------------------------------------------\n');
@@ -223,7 +223,6 @@ switch Action
         fprintf('----------------------------------------------------------------------\n');
         fprintf('            White matter Functional Network Toolbox   \n');
         fprintf('----------------------------------------------------------------------\n');
-        fprintf('          WhiFuN initialized. Ready to explore WM-FC! 🚀\n\n');
 
         disp('<a href="https://github.com/Brain-Connectivity-Lab/WhiFuN/blob/main/WhiFuN-Manual.pdf">                Click here for WhiFuN documentation                   </a>') % Link to MATLAB documentation
         disp('<a href="https://direct.mit.edu/imag/article/doi/10.1162/IMAG.a.3/130628/WhiFuN-A-toolbox-to-map-the-white-matter">                             WhiFuN Paper                             </a>') % Link to an external website
@@ -234,10 +233,15 @@ switch Action
         disp(' ')
         disp('Thank you for using WhiFuN.')
         whifun('ver')
+        
+
+    case 'Welcome'
+        whifun('cite')
         temp_path = mfilename('fullpath');                % path of the toolbox
         preproc_code_path = fileparts(temp_path);
 
         addpath(preproc_code_path)
+        addpath(fullfile(preproc_code_path,'whifun_functions'))
         run(fullfile(preproc_code_path,'main.mlapp'))
 
     case 'ver'
