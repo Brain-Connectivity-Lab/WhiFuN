@@ -1,8 +1,8 @@
 function Subj_list_all = whifun_create_Subj_list_all_from_Subj_folder_details(data_path,comm_subj_name,comm_sess_name,func_folder_name,func_data_name,anat_folder_name,anat_data_name)
 
-% WHIFUN_CREATE_SUBJ_LIST_ALL_FROM_SUBJ_LIST_ALL_DETAILS Scans a directory and creates a subject list if the patterns for the data folder is given.
+% WHIFUN_CREATE_SUBJ_LIST_ALL_FROM_SUBJ_FOLDER_DETAILS Scans a directory and creates a subject list if the patterns for the data folder is given.
 %
-%   Subj_list_all = WHIFUN_CREATE_SUBJ_LIST_ALL(comm_subj_name, ..., anat_data_name)
+%   Subj_list_all = WHIFUN_CREATE_SUBJ_LIST_ALL_FROM_SUBJ_FOLDER_DETAILS(comm_subj_name, ..., anat_data_name)
 %   scans the current directory (or a specified pattern) for subject folders
 %   and constructs a list of subject data. It assumes a specific directory
 %   structure where each subject has folders for a session, and within that,

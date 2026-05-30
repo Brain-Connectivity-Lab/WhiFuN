@@ -37,14 +37,10 @@ function [Subj_list_all,output_folder] = whifun_create_Subj_list_gui(output_fold
 %   data_folder   - (Optional) The path to the directory where the output
 %                   CSV file will be saved. If not provided, a dialog box
 %                   prompts the user to select one.
-%   choice        - (Optional) How do you want to select subject folders? Options:
+%   choice        - How do you want to select subject folders? Options:
 %                                           'All'    : Select All Subjects
-%                                           'Pattern': Wild Card pattern to select subjects
-%                                           'Manual' : Manully Select subjects
-%   finalData     - (Optional) A cell structure that has information about
-%                   the patterns corresponding to the different fields in Subj_list.csv
-%                   file. (Can be created using the whifun_create_preproc_files_cell
-%                   function)
+%                                           'Pattern': 
+%                                           'Manual' :
 %
 %   Output Arguments:
 %   Subj_list_all - A structure array where each element represents a subject
