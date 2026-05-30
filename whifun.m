@@ -211,7 +211,6 @@ preproc_code_path = fileparts(temp_path);
 
 addpath(preproc_code_path)
 addpath(fullfile(preproc_code_path,'whifun_functions'))
-run(fullfile(preproc_code_path,'main.mlapp'))
 
 switch Action
 
@@ -220,6 +219,8 @@ switch Action
 
     case 'Welcome'
         whifun('cite')
+        run(fullfile(preproc_code_path,'main.mlapp'))
+
     case 'ver'
         disp('Version : WhiFuN v3.3.1')
 
