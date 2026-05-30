@@ -1,17 +1,42 @@
 function whifun_multiOverlay(volumes, overlayTypes, colormaps, slices, sliceType)
-% whifun_multiOverlay  Display multiple slices with overlays from volumes
+%WHIFUN_MULTIOVERLAY Displays a montage of structural MRI slices with contour overlays.
 %
-% Inputs:
-%   volumes      - 3D matrix or cell array of volumes (or file paths)
-%   overlayTypes - cell array: {'structure','contours'} for each volume
-%   colormaps    - cell array of colormaps (e.g., {'gray','jet'})
-%   slices       - vector of slice indices (e.g. [20 30 40])
-%   sliceType    - 'axial','coronal','sagittal'
+%   WHIFUN_MULTIOVERLAY(volumes, overlayTypes, colormaps, slices, sliceType)
+%   extracts specified slices along a given anatomical plane, processes structural 
+%   backgrounds, computes edge contours for overlays, and bundles them into a 
+%   clean, multi-slice RGB montage figure.
 %
-% Example:
-%   vol1 = rand(50,50,50);
-%   vol2 = rand(50,50,50) > 0.7;
-%   whifun_multiOverlay({vol1,vol2},{'structure','contours'},{'gray','jet'},[10 20 30],'axial');
+%   Processing Details:
+%       - Automatically loads NIfTI file paths or handles pre-loaded 3D/4D arrays.
+%       - Truncates 4D volumes to their first frame automatically.
+%       - Uses a Canny edge detector to extract contour overlays.
+%       - Requires exactly one volume designated as 'Structural' to serve as the background.
+%
+%   Inputs:
+%       volumes      - A single string/char path, numeric array, or a cell array 
+%                      containing a mix of file paths and 3D/4D matrices.
+%       overlayTypes - Cell array of strings corresponding to each item in 'volumes'.
+%                      Supported types:
+%                        'Structural' - Used as the grayscale background slice.
+%                        'contours'   - Edge detected and blended onto the background.
+%       colormaps    - Cell array of strings or function handles specifying colormaps 
+%                      for each volume (e.g., {'gray', 'hot'}). The last color 
+%                      of the contour's colormap is used for its edge color.
+%       slices       - Vector of integers denoting the slice numbers to display.
+%       sliceType    - String specifying the viewing plane. Options are:
+%                      'axial', 'coronal', or 'sagittal'.
+%
+%   Outputs:
+%       Generates a standard MATLAB figure containing the tiled slice montage.
+%
+%   Example:
+%       vols     = {'C:\Data\T1.nii', 'C:\Data\LesionMask.nii'};
+%       types    = {'Structural', 'contours'};
+%       cmaps    = {'gray', 'hot'};
+%       sliceVec = [45, 50, 55, 60];
+%       whifun_multiOverlay(vols, types, cmaps, sliceVec, 'axial');
+%   Author: Pratik Jain
+
 
 %% --- Load Volumes ---
 if ~iscell(volumes), volumes = {volumes}; end

@@ -42,6 +42,8 @@ function quality_control_path = whifun_addpath_and_create_preproc_folders(prepro
 
 addpath(preproc_code_path)
 addpath(fullfile(preproc_code_path,'whifun_functions'))
+addpath(fullfile(preproc_code_path,'parTicToc'));
+
 quality_control_path = fullfile(output_folder,'Quality_control');
 spm_path = which('spm');
 if isempty(spm_path)

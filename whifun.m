@@ -56,28 +56,7 @@ function whifun(varargin)
 %% White matter Functional Networks Toolbox
 %% This code and Readme file was written by Pratik Jain.
 %% This code was written with the help of different preprocessing scripts given by
-%% Dr. Xin Di, Dr. Rakibul Hafeez, Donna Chen and Wohnbum Sohn.
-% Run this code to start using the White Matter Functional Network toolbox. once you run
-% this code a GUI window will pop up and you can look at the following steps
-% to understand how to use the toolbox.
-%
-% # WhiFuN
-% This GUI-based toolbox offers researchers a user-friendly suite of automated tools for investigating brain functional connectivity in WM and GM. One of the key advantages of WhiFuN is that it fully automates the preprocessing steps to derive data that can be used to analyze the WM and GM BOLD signals.
-%
-% ## New to WhiFuN?
-% WhiFuN is based on MATLAB; hence, it will not work if MATLAB is not installed.
-% MATLAB R2022a or later versions are recommended.
-%
-%
-% Additionally WhiFuN uses
-% 1) Image Processing Toolbox
-% 2) Signal processing Toolbox
-% 3) Statistics and Machine Learning Toolbox
-% 4) Bioinformatics toolbox
-%
-% These toolboxes can be downloaded by using the Add ons feature in Matlab. More details here: https://www.mathworks.com/help/matlab/matlab_env/get-add-ons.html
-%
-%
+
 % ### Follow these steps to get started
 %
 % 1) Download WhiFuN in a local folder and unzip all the contents (Download WhiFuN by clicking on the green 'Code' button and then selecting Download zip, the toolbox will take about 24MB od disk space)
@@ -230,7 +209,7 @@ end
 
 switch Action
 
-    case 'Welcome'
+    case 'cite'
         clc;
         fprintf('\n');
         fprintf('----------------------------------------------------------------------\n');
@@ -244,7 +223,6 @@ switch Action
         fprintf('----------------------------------------------------------------------\n');
         fprintf('            White matter Functional Network Toolbox   \n');
         fprintf('----------------------------------------------------------------------\n');
-        fprintf('          WhiFuN initialized. Ready to explore WM-FC! 🚀\n\n');
 
         disp('<a href="https://github.com/Brain-Connectivity-Lab/WhiFuN/blob/main/WhiFuN-Manual.pdf">                Click here for WhiFuN documentation                   </a>') % Link to MATLAB documentation
         disp('<a href="https://direct.mit.edu/imag/article/doi/10.1162/IMAG.a.3/130628/WhiFuN-A-toolbox-to-map-the-white-matter">                             WhiFuN Paper                             </a>') % Link to an external website
@@ -255,13 +233,18 @@ switch Action
         disp(' ')
         disp('Thank you for using WhiFuN.')
         whifun('ver')
+        
+
+    case 'Welcome'
+        whifun('cite')
         temp_path = mfilename('fullpath');                % path of the toolbox
         preproc_code_path = fileparts(temp_path);
 
         addpath(preproc_code_path)
+        addpath(fullfile(preproc_code_path,'whifun_functions'))
         run(fullfile(preproc_code_path,'main.mlapp'))
 
     case 'ver'
-        disp('Version : WhiFuN v3.2.8')
+        disp('Version : WhiFuN v3.3.0')
 
 end

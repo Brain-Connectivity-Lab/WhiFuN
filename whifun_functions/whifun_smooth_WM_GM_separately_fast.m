@@ -1,42 +1,4 @@
 function [output_gm, output_wm] = whifun_smooth_WM_GM_separately_fast(in_func_path, GM_file_path, WM_file_path ,smooth_pre, gaussian_FWHM, over_write)
-% WHIFUN_SMOOTH_WM_GM_SEPARATELY_FAST Spatially smooths functional data in GM and WM regions separately.
-%
-%   [output_gm, output_wm] = WHIFUN_SMOOTH_WM_GM_SEPARATELY_FAST(...) performs
-%   spatial smoothing on the functional time series, applying the smoothing
-%   kernel separately to the Gray Matter (GM) and White Matter (WM) tissue
-%   compartments. This method can help prevent "bleeding" of signal across
-%   tissue boundaries.
-%
-%   The function performs the following steps:
-%   1.  **Reslices Masks**: Resamples the GM and WM tissue probability maps
-%       (TPMs) to match the dimensions of the functional data.
-%   2.  **Creates Sub-volumes**: Creates two new functional NIfTI files: one
-%       containing only the GM voxels and another containing only the WM
-%       voxels, based on a tissue probability threshold of 0.5.
-%   3.  **Applies SPM Smoothing**: Calls SPM's `spm.spatial.smooth` job
-%       to apply a Gaussian smoothing kernel with the specified FWHM
-%       to each of the GM and WM sub-volumes.
-%   4.  **Combines and Saves**: After smoothing, it re-combines the smoothed
-%       GM and WM sub-volumes into a single, final output file.
-%   5.  **Cleans Up**: Deletes the temporary GM-only and WM-only functional
-%       files to keep the directory tidy.
-%
-%   Input Arguments:
-%   in_func_path      - The path to the input functional file to be smoothed.
-%   GM_file_path      - The path to the Gray Matter segmented file.
-%   WM_file_path      - The path to the White Matter segmented file.
-%   smooth_pre        - The prefix for the final smoothed output file.
-%   gaussian_FWHM     - The Full Width at Half Maximum of the Gaussian kernel in mm.
-%   over_write        - A logical value (0 or 1) to force overwriting of
-%                       intermediate and output files.
-%
-%   Output Arguments:
-%   output_gm - A string containing the SPM log output for GM smoothing.
-%   output_wm - A string containing the SPM log output for WM smoothing.
-%
-%   Author: Pratik Jain (Modified from Michael Peer's code)
-%   See also RESLICE_DATA, NIFTIINFO, NIFTIREAD, NIFTISAVE, SPM_JOBMAN.
-
 
 if ~exist('over_write','var')
     over_write = 0;
@@ -152,8 +114,8 @@ for i=1:func_info.ImageSize(4)    % go over all timepoints (volumes)
     smoothed_WM_data(:,:,:,i) = curr_volume_data;
 end
 clear func_ma curr_volume_data WM_image;
-final_func_matrix = cast(smoothed_GM_data + smoothed_WM_data,func_info.Datatype);    % combining the GM and WM images
-niftisave((final_func_matrix-func_info.AdditiveOffset)/func_info.MultiplicativeScaling,fullfile(now_func_path.folder,[smooth_pre now_func_path.name]),func_info);
+final_func_matrix = cast(((smoothed_GM_data + smoothed_WM_data)-func_info.AdditiveOffset)/func_info.MultiplicativeScaling,func_info.Datatype);    % combining the GM and WM images
+niftisave(final_func_matrix,fullfile(now_func_path.folder,[smooth_pre now_func_path.name]),func_info);
 
 % deleting the old WM/GM-only functional files
 delete(fullfile(now_func_path.folder,'GM_func_data.nii')); delete(fullfile(now_func_path.folder,'WM_func_data.nii'));

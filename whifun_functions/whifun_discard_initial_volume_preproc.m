@@ -81,4 +81,5 @@ if n_vol_dis ~= 0
     disp(['Discarding Volumes over for ' Subj_list_1.name])
 else
     Subj_list_1.nt_dis = Subj_list_1.nt;
+    Subj_list_1.initial_func_native = in_func_path;
 end

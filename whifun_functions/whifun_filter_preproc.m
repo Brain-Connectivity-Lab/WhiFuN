@@ -53,8 +53,7 @@ try
     
     if isempty(f_path)
 
-        func_info = niftiinfo(fullfile(now_func_path.folder,now_func_path.name));
-        func_image = double(niftiread(fullfile(now_func_path.folder,now_func_path.name)));
+        [func_image,func_info] = whifun_niftiread(fullfile(now_func_path.folder,now_func_path.name));
         dim = size(func_image);
         nt  = dim(4);
         func_image = reshape(func_image,[],nt);
@@ -76,7 +75,7 @@ try
         f_func_image = f_func_image + mean(func_image,2);
 
         f_func_image = reshape(f_func_image,dim);
-        f_func_image = cast(f_func_image,func_info.Datatype);
+        f_func_image = cast((f_func_image-func_info.AdditiveOffset)/func_info.MultiplicativeScaling,func_info.Datatype);
 
         niftisave(f_func_image,out_func_path,func_info);
         

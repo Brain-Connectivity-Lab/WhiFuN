@@ -51,7 +51,7 @@ if isempty(fn_file)
         WMmask = niftiread(WMmask_);
         WM_voxels = WMmask>0.5;
         header_file = niftiinfo(WMmask_);
-    elseif isnumeric(WMmask_)
+    elseif isnumeric(WMmask_) || islogical(WMmask_)
         if ~exist("header_file",'var')
             error('Header file needed if mask matrix or indexes are given')
         end

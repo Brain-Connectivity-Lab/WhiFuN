@@ -25,6 +25,8 @@ addParameter(p, 'motion_reg', 0, @islogical);
 addParameter(p, 'pca_for_temp_reg', 0, @islogical);
 addParameter(p, 'filter_lp', 0.1, @isnumeric);
 addParameter(p, 'filter_hp', 0.01, @isnumeric);
+addParameter(p, 'Reg_MNI', 0, @isnumeric);
+
 if isfield(Subj_list_1,'motion_txt')
     addParameter(p, 'motion_txt', Subj_list_1.motion_txt);
 else
@@ -54,13 +56,14 @@ pca_for_temp_reg     = params.pca_for_temp_reg;
 filter_lp            = params.filter_lp;
 filter_hp            = params.filter_hp;
 motion_txt           = params.motion_txt;
-
+Reg_MNI              = params.Reg_MNI;
 
 if any(isnan(template_path)) || isempty(template_path)
     whifun_path = fileparts(which('whifun'));
     template_path = fullfile(whifun_path,'Templates','MNI152_T1_2mm_brain.nii');
     warning('Choosing the Default WhifuN MNI template: MNI152_T1_2mm_brain.nii, as template was not specified')
 end
+
 % ---- Your function logic here ---- %
 % disp('Running QC with these params:');
 % disp(params);
@@ -75,6 +78,7 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
 
     if ~whifun_isnan_or_empty(Subj_list_1,'nii_func_native') && ~whifun_isnan_or_empty(Subj_list_1,'nii_anat_native')
         out_folder = fullfile(quality_control_path,'a_Initial_check');
+
         whifun_qc_initial_align_check(out_folder,template_path,Subj_list_1,slover_slices_native,slover_contour_range_native,slover_view,over_write)
     end
     %% Head motion QC
@@ -112,10 +116,14 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
 
         %% CSF mask
         if Reg_CSF
-            in_func = Subj_list_1.func_MNI;
+            if Reg_MNI
+                in_func = Subj_list_1.func_MNI;
+            else
+                in_func = Subj_list_1.coregistered_func_native;
+            end
             out_folder = fullfile(quality_control_path,'e_CSF_Masks_for_Regression');
-            if ~whifun_isnan_or_empty(Subj_list_1,'coregistered_func_native') && ~whifun_isnan_or_empty(Subj_list_1,'CSF_mask_func_native')
-                whifun_qc_csf_mask_alignment(out_folder,in_func,Subj_list_1.CSF_mask_func_native,Subj_list_1.name,slover_slices_native,slover_contour_range_native,slover_view,over_write)
+            if ~whifun_isnan_or_empty(Subj_list_1,'coregistered_func_native') && ~whifun_isnan_or_empty(Subj_list_1,'CSF_mask_func')
+                whifun_qc_csf_mask_alignment(out_folder,in_func,Subj_list_1.CSF_mask_func,Subj_list_1.name,slover_slices_native,slover_contour_range_native,slover_view,over_write)
             end
         end
 
@@ -151,7 +159,7 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
 
         %% Seed corr plots
         out_folder = fullfile(quality_control_path,"k_Seed_Based_Corr");
-        thresh = [-0.25,0.25];
+        thresh = [-0.1,0.1];
         % slover_view_array = {'sagittal','axial'};
         rad = 6;
 

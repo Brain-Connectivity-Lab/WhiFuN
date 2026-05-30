@@ -1,29 +1,37 @@
 function output = whifun_anat_mask(out_mask_path,anat_path,GM_path,WM_path,CSF_path)
-% WHIFUN_WANAT_MASK Creates a brain mask from segmented anatomical images in MNI space using SPM.
+%WHIFUN_ANAT_MASK Generates a binary anatomical brain mask using SPM imcalc.
 %
-%   output = WHIFUN_ANAT_MASK(m_file, now_anat_path, norm) creates a binary
-%   brain mask by combining the segmented Gray Matter (GM), White Matter
-%   (WM), and Cerebrospinal Fluid (CSF) images.
+%   output = WHIFUN_ANAT_MASK(out_mask_path, anat_path, GM_path, WM_path, CSF_path)
+%   combines Gray Matter (GM), White Matter (WM), and Cerebrospinal Fluid (CSF) 
+%   tissue probability maps to create a single binary brain mask. A voxel is 
+%   included in the mask if the sum of its GM, WM, and CSF probabilities is 
+%   greater than 0.5. The SPM GUI is suppressed during execution.
 %
-%   This function configures and runs the `imcalc` module in SPM to perform a
-%   simple logical operation. It sums the segmented GM, WM, and CSF images
-%   and creates a binary mask where any voxel with a combined probability
-%   greater than 0.5 is set to 1 (brain tissue), and all other voxels are
-%   set to 0.
+%   Dependencies: 
+%       This function requires SPM (Statistical Parametric Mapping) to be 
+%       installed and in the MATLAB search path.
 %
-%   The function can create the mask in either native or MNI space, based on
-%   the `norm` input argument. This is a crucial step for subsequent
-%   preprocessing, such as skull stripping or calculating average signal.
+%   Inputs:
+%       out_mask_path - String or char array specifying the full path and 
+%                       filename for the resulting mask (e.g., '.nii' or '.img').
+%       anat_path     - String or char array path to the base anatomical image 
+%                       (loaded as i1 in imcalc).
+%       GM_path       - String or char array path to the Gray Matter map (loaded as i2).
+%       WM_path       - String or char array path to the White Matter map (loaded as i3).
+%       CSF_path      - String or char array path to the CSF map (loaded as i4).
 %
-%   Input Arguments:
-%   now_anat_path - A `dir` structure pointing to the original anatomical file,
-%                   used for path and name information.
+%   Outputs:
+%       output        - Character array containing the console output generated 
+%                       by spm_jobman, captured via evalc.
 %
-%   Output Arguments:
-%   output - A string containing the log output from the SPM jobman.
-%
+%   Example:
+%       log_out = whifun_anat_mask('C:\Data\Sub01_mask.nii', ...
+%                                  'C:\Data\T1.nii', ...
+%                                  'C:\Data\c1T1.nii', ...
+%                                  'C:\Data\c2T1.nii', ...
+%                                  'C:\Data\c3T1.nii');
 %   Author: Pratik Jain
-%   See also SPM_JOBMAN, FULLFILE, EVALC.
+
 
 matlabbatch{1}.spm.util.imcalc.input = {
     anat_path

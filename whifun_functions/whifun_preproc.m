@@ -1,4 +1,4 @@
-function Subj_list_1 = whifun_preproc(quality_control_path, Subj_list_1, varargin)
+function Subj_list_1 = whifun_preproc(output_folder, Subj_list_1, varargin)
 % WHIFUN_PREPROC Orchestrates a comprehensive fMRI preprocessing pipeline.
 %
 %   Subj_list_1 = WHIFUN_PREPROC(quality_control_path, Subj_list_1, varargin)
@@ -58,7 +58,7 @@ p = inputParser;
 p.FunctionName = 'whifun_preproc';
 
 % required
-addRequired(p, 'quality_control_path', @(x) ischar(x) || isstring(x));
+addRequired(p, 'output_folder', @(x) ischar(x) || isstring(x));
 addRequired(p, 'Subj_list_1', @isstruct);
 
 % general
@@ -107,14 +107,14 @@ addParameter(p, 'Norm_pre', 'w', @(x) ischar(x) || isstring(x));
 addParameter(p, 'vox', 3, @isnumeric);
 
 % parse inputs
-parse(p, quality_control_path, Subj_list_1, varargin{:});
+parse(p, output_folder, Subj_list_1, varargin{:});
 params = p.Results;
 
 %% ---- Accessing parsed values (examples) ----
 % You can refer to any parameter as params.<name>
 % e.g.:
-qc_path   = params.quality_control_path;   % string
-Subj_list_1      = params.Subj_list_1;            % struct
+output_folder = params.output_folder;          % string
+Subj_list_1   = params.Subj_list_1;            % struct
 
 over_write = logical(params.over_write);   % logical
 Cut_pre    = char(params.Cut_pre);         % char
@@ -150,12 +150,17 @@ dartel_ = logical(params.dartel_);
 Norm_pre = char(params.Norm_pre);
 vox = params.vox;  % 1x3 numeric
 
-%% ---- Example usage snippets inside the pipeline ----
-% (place these where appropriate in your pipeline)
-fprintf('QC folder: %s\n', qc_path);
-if over_write
-    fprintf('Overwriting enabled.\n');
+if isempty(output_folder)
+    msgbox('Please specify the output_folder, Run Data Check, define Preprocessing parameters and then Run Preprocessing.','Output folder Path empty')
+    return
 end
+
+qc_path = fullfile(output_folder,'Quality_control');
+if ~exist(qc_path,'dir')
+    msgbox('Quality_control folder not found. Please Run Initial Data check before Running the Preprocessing and Analyses ', 'Run Initial Data Check')
+    return
+end
+
 
 % Discarding volumes
 if n_vol_dis > 0
@@ -189,11 +194,11 @@ else
     fprintf('DARTEL pipeline requested (skip standard normalization)\n');
 end
 
-if ~exist(fullfile(quality_control_path,'logs'),'dir')
-    mkdir(fullfile(quality_control_path,'logs'))
+if ~exist(fullfile(qc_path,'logs'),'dir')
+    mkdir(fullfile(qc_path,'logs'))
 end
 
-[log_fileID,errmsg] = fopen(fullfile(quality_control_path,'logs',[Subj_list_1.name '_log_info.txt']),'a');
+[log_fileID,errmsg] = fopen(fullfile(qc_path,'logs',[Subj_list_1.name '_log_info.txt']),'a');
 
 if log_fileID == -1
     error(errmsg)
@@ -220,13 +225,13 @@ now_anat_path = dir(fullfile(Subj_list_1.anat_folder,Subj_list_1.anat_name)) ;
 in_func_path = out_func_path;
 now_func_path = dir(in_func_path);
 out_func_path = fullfile(now_func_path.folder,[Cut_pre,now_func_path.name]);
-Subj_list_1 = whifun_discard_initial_volume_preproc(quality_control_path,Subj_list_1,in_func_path,out_func_path,n_vol_dis,over_write);
+Subj_list_1 = whifun_discard_initial_volume_preproc(qc_path,Subj_list_1,in_func_path,out_func_path,n_vol_dis,over_write);
 
 %%     4     Realignment
 
 in_func_path = out_func_path;
 
-[Subj_list_1,out_func_path,out_motion_txt_path] = whifun_realignment_preproc(quality_control_path,Subj_list_1,in_func_path,Realign_pre,log_fileID, over_write);
+[Subj_list_1,out_func_path,out_motion_txt_path] = whifun_realignment_preproc(qc_path,Subj_list_1,in_func_path,Realign_pre,log_fileID, over_write);
 if Subj_list_1.error
     fclose(log_fileID);
     return
@@ -234,7 +239,7 @@ end
 
 %% 5 Framewise displacement
 in_motion_txt_path = out_motion_txt_path;
-Subj_list_1 = whifun_fd_preproc(quality_control_path,Subj_list_1,in_motion_txt_path,max_fd,mean_fd,greater_than_20);
+Subj_list_1 = whifun_fd_preproc(qc_path,Subj_list_1,in_motion_txt_path,max_fd,mean_fd,greater_than_20);
 if Subj_list_1.motion_ex
     fclose(log_fileID);
     return
@@ -243,7 +248,7 @@ end
 %%     6     Segmentation
 in_anat_path = out_anat_path;
 
-[Subj_list_1,out_def_path,GM_native_space_path,WM_native_space_path,CSF_native_space_path,GM_MNI_path,WM_MNI_path,CSF_MNI_path] = whifun_segment_preproc(quality_control_path,Subj_list_1,in_anat_path,log_fileID,over_write);
+[Subj_list_1,out_def_path,GM_native_space_path,WM_native_space_path,CSF_native_space_path,GM_MNI_path,WM_MNI_path,CSF_MNI_path] = whifun_segment_preproc(qc_path,Subj_list_1,in_anat_path,log_fileID,over_write);
 if Subj_list_1.error
     fclose(log_fileID);
     return
@@ -251,7 +256,7 @@ end
 
 %%     7     Skull Stripping
 
-[Subj_list_1,out_anat_path,out_anat_mask_native_space_path] = whifun_skull_strip_and_anat_mask_preproc(quality_control_path,Subj_list_1,in_anat_path,skull_pre,GM_native_space_path,WM_native_space_path,CSF_native_space_path,log_fileID,over_write);
+[Subj_list_1,out_anat_path,out_anat_mask_native_space_path] = whifun_skull_strip_and_anat_mask_preproc(qc_path,Subj_list_1,in_anat_path,skull_pre,GM_native_space_path,WM_native_space_path,CSF_native_space_path,log_fileID,over_write);
 if Subj_list_1.error
     fclose(log_fileID);
     return
@@ -263,7 +268,7 @@ end
 in_func_path_bef = in_func_path;                           % Input to realignment
 in_func_path_after = out_func_path;                        % Output to realignment (That has to be co-registered)
 in_anat_path = out_anat_path;
-Subj_list_1  = whifun_coreg_preproc(quality_control_path,Subj_list_1,in_func_path_bef,in_func_path_after,in_anat_path,log_fileID,over_write);
+Subj_list_1  = whifun_coreg_preproc(qc_path,Subj_list_1,in_func_path_bef,in_func_path_after,in_anat_path,log_fileID,over_write);
 if Subj_list_1.error
     fclose(log_fileID);
     return
@@ -274,7 +279,7 @@ if Reg_CSF == 1
     in_func_path = out_func_path;
     in_csf_tpm_path = CSF_native_space_path;
     
-    [Subj_list_1,out_csf_mask_func_path] = whifun_csf_mask_extraction_preproc(quality_control_path,Subj_list_1,in_func_path,in_csf_tpm_path,CSF_thres,log_fileID,over_write);
+    [Subj_list_1,out_csf_mask_func_path] = whifun_csf_mask_extraction_preproc(qc_path,Subj_list_1,in_func_path,in_csf_tpm_path,CSF_thres,log_fileID,over_write);
     if Subj_list_1.error
         fclose(log_fileID);
         return
@@ -285,7 +290,7 @@ end
 
 if Reg_CSF == 1
     in_csf_mask_func_path = out_csf_mask_func_path;
-    [Subj_list_1,out_csf_mat_path] = whifun_extract_csf_ts_preproc(quality_control_path,Subj_list_1,in_func_path,in_csf_mask_func_path,pca_for_temp_reg,n_pca,log_fileID,over_write);
+    [Subj_list_1,out_csf_mat_path] = whifun_extract_csf_ts_preproc(qc_path,Subj_list_1,in_func_path,in_csf_mask_func_path,pca_for_temp_reg,n_pca,log_fileID,over_write);
     if Subj_list_1.error
         fclose(log_fileID);
         return
@@ -307,7 +312,7 @@ if motion_reg == 1 || Reg_CSF == 1
         in_motion_txt_path = [];
     end
     
-    [Subj_list_1,out_func_path,out_func_mask_path] = whifun_nuisance_regress_preproc(quality_control_path,Subj_list_1,in_func_path,in_anat_mask_native_space_path,Reg_pre,n_pca,in_csf_mat_path,in_motion_txt_path,log_fileID,over_write);
+    [Subj_list_1,out_func_path,out_func_mask_path] = whifun_nuisance_regress_preproc(qc_path,Subj_list_1,in_func_path,in_anat_mask_native_space_path,Reg_pre,n_pca,in_csf_mat_path,in_motion_txt_path,log_fileID,over_write);
 
     if Subj_list_1.error
         fclose(log_fileID);
@@ -334,7 +339,7 @@ end
 if filter_check
     in_func_mask_path = out_func_mask_path;
     in_func_path = out_func_path;
-    [Subj_list_1,out_func_path] = whifun_filter_preproc(quality_control_path,Subj_list_1,in_func_path,in_func_mask_path,filter_lp,filter_hp,f_pre,log_fileID,over_write);
+    [Subj_list_1,out_func_path] = whifun_filter_preproc(qc_path,Subj_list_1,in_func_path,in_func_mask_path,filter_lp,filter_hp,f_pre,log_fileID,over_write);
     if Subj_list_1.error
         fclose(log_fileID);
         return
@@ -345,7 +350,7 @@ end
 
 if Smooth_ == 1
     in_func_path = out_func_path;
-    [Subj_list_1,out_func_path] = whifun_smooth_preproc(quality_control_path,Subj_list_1,in_func_path,GM_native_space_path,WM_native_space_path,WM_GM_seperate,smooth_fwhm,Smooth_pre,log_fileID,over_write);
+    [Subj_list_1,out_func_path] = whifun_smooth_preproc(qc_path,Subj_list_1,in_func_path,GM_native_space_path,WM_native_space_path,WM_GM_seperate,smooth_fwhm,Smooth_pre,log_fileID,over_write);
     if Subj_list_1.error
         fclose(log_fileID);
         return
@@ -359,7 +364,7 @@ if ~dartel_
     %%    14     Normalization
     in_func_path = out_func_path;
     in_def_path = out_def_path;
-    [Subj_list_1,out_func_path] = whifun_normalise_preproc(quality_control_path,Subj_list_1,in_func_path,in_anat_path,in_def_path,vox,Norm_pre,GM_MNI_path,WM_MNI_path,CSF_MNI_path,log_fileID,over_write);
+    [Subj_list_1,out_func_path] = whifun_normalise_preproc(qc_path,Subj_list_1,in_func_path,in_anat_path,in_def_path,vox,Norm_pre,GM_MNI_path,WM_MNI_path,CSF_MNI_path,log_fileID,over_write);
     if Subj_list_1.error
         fclose(log_fileID);
         return

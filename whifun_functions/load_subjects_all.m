@@ -1,4 +1,4 @@
-function Subj_list_all = load_subjects_all(folder,name,new_run,overwrite)
+function Subj_list_all = load_subjects_all(folder,name,ini_error,ini_motion)
 % LOAD_SUBJECTS_ALL Loads all subjects from a CSV file, with options for new runs.
 %
 %   Subj_list_all = LOAD_SUBJECTS_ALL(folder, name) loads all subjects
@@ -21,10 +21,10 @@ function Subj_list_all = load_subjects_all(folder,name,new_run,overwrite)
 %   Input Arguments:
 %   folder    - The path to the folder containing the CSV file (char or string).
 %   name      - The name of the CSV file (e.g., 'subjects.csv') (char or string).
-%   new_run   - (Optional) A logical value to indicate a new run. If true,
-%               it adds or initializes 'error' and 'motion_ex' columns.
+%   ini_error - (Optional) A logical value to reinitialize error column. If true,
+%               it adds or initializes 'error' columns.
 %               Defaults to false if not provided.
-%   overwrite - (Optional) A logical value. If true and `new_run` is also
+%   ini_motion- (Optional) A logical value. If true and `ini_run` is also
 %               true, it overwrites the 'motion_ex' column with zeros.
 %               Defaults to false.
 %
@@ -36,18 +36,18 @@ function Subj_list_all = load_subjects_all(folder,name,new_run,overwrite)
 %      % Load all subjects from a CSV file in the current folder
 %      subject_list = load_subjects_all(pwd, 'Subj_list.csv');
 %
-%      % Start a new run, initializing error and motion exclusion columns
-%      new_subjects = load_subjects_all(pwd, 'Subj_list.csv', true);
+%      % Initializing (or overwriting) error columns
+%      subject_list = load_subjects_all(pwd, 'Subj_list.csv', true);
 %
-%      % Start a new run and overwrite existing motion exclusion data
-%      reset_subjects = load_subjects_all(pwd, 'Subj_list.csv', true, true);
+%      % Initializing (or overwriting) existing motion exclusion data
+%      subject_list = load_subjects_all(pwd, 'Subj_list.csv', true, true);
 %
 %   See also READTABLE, DETECTIMPORTOPTIONS, TABLE2STRUCT.
 %   Author: Pratik Jain
 
 
 if nargin < 4
-    new_run = 0;
+    ini_error = 0;
 end
 
 opts = detectImportOptions(fullfile(folder,name),'Delimiter',',');
@@ -59,13 +59,13 @@ T = readtable(fullfile(folder,name),'Delimiter',',');
 T.name = T1.name;
 
 try
-    if new_run
+    if ini_error
         T.error = zeros(height(T),1);
         if ~ismember('motion_ex', T.Properties.VariableNames)
             T.motion_ex = zeros(height(T),1);
         end
 
-        if overwrite
+        if ini_motion
             T.motion_ex = zeros(height(T),1);
         end
         Subj_list_all = table2struct(T);
