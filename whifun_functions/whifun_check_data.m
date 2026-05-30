@@ -88,7 +88,7 @@ for subji=1:length(Subj_list_all)
 
 end
 
-my_writetable(struct2table(Subj_list_all), fullfile(output_folder,"Subj_list.csv"))
+my_writetable(struct2table(Subj_list_all,"AsArray",true), fullfile(output_folder,"Subj_list.csv"))
 n_image(isinf(n_image)) = [];
 tr(isinf(tr)) = [];
 voxel_func(isinf(voxel_func(:,1)),:) = [];
