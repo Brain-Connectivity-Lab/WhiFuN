@@ -196,7 +196,7 @@ function whifun(varargin)
 % References
 % Pratik Jain, Andrew M. Michael, Pan Wang, Xin Di, Bharat Biswal; WhiFuN:
 % A toolbox to map the white matter functional networks of the human brain.
-% Imaging Neuroscience 2025; doi: https://doi.org/10.1162/IMAG.a.3 
+% Imaging Neuroscience 2025; doi: https://doi.org/10.1162/IMAG.a.3
 
 
 %%
@@ -206,44 +206,20 @@ if nargin == 0
 else
     Action = varargin{1};
 end
+temp_path = mfilename('fullpath');                % path of the toolbox
+preproc_code_path = fileparts(temp_path);
+
+addpath(preproc_code_path)
+addpath(fullfile(preproc_code_path,'whifun_functions'))
+run(fullfile(preproc_code_path,'main.mlapp'))
 
 switch Action
 
     case 'cite'
-        clc;
-        fprintf('\n');
-        fprintf('----------------------------------------------------------------------\n');
-        disp('      _       _    _     _    _    ______    _     _    __      _      ');
-        disp('     | |     | |  | |   | |  | |  |  ____|  | |   | |  |   \   | |     ');
-        disp('     | |     | |  | |___| |  | |  | |____   | |   | |  | |\ \  | |     ');
-        disp('     | |  |  | |  |  ___  |  | |  |  ____|  | |   | |  | | \ \ | |     ');
-        disp('     | | |_| | |  | |   | |  | |  | |       | |___| |  | |  \ \| |     ');
-        disp('      |_|   |_|   |_|   |_|  |_|  |_|        |_____|   |_|   \___|     ');
-
-        fprintf('----------------------------------------------------------------------\n');
-        fprintf('            White matter Functional Network Toolbox   \n');
-        fprintf('----------------------------------------------------------------------\n');
-
-        disp('<a href="https://github.com/Brain-Connectivity-Lab/WhiFuN/blob/main/WhiFuN-Manual.pdf">                Click here for WhiFuN documentation                   </a>') % Link to MATLAB documentation
-        disp('<a href="https://direct.mit.edu/imag/article/doi/10.1162/IMAG.a.3/130628/WhiFuN-A-toolbox-to-map-the-white-matter">                             WhiFuN Paper                             </a>') % Link to an external website
-        disp('Please cite')
-        disp('Pratik Jain, Andrew M. Michael, Pan Wang, Xin Di, Bharat Biswal; WhiFuN: ')
-        disp('A toolbox to map the white matter functional networks of the human brain.')
-        disp('Imaging Neuroscience 2025; doi: https://doi.org/10.1162/IMAG.a.3')
-        disp(' ')
-        disp('Thank you for using WhiFuN.')
-        whifun('ver')
-        
+        whifun_cite
 
     case 'Welcome'
         whifun('cite')
-        temp_path = mfilename('fullpath');                % path of the toolbox
-        preproc_code_path = fileparts(temp_path);
-
-        addpath(preproc_code_path)
-        addpath(fullfile(preproc_code_path,'whifun_functions'))
-        run(fullfile(preproc_code_path,'main.mlapp'))
-
     case 'ver'
         disp('Version : WhiFuN v3.3.1')
 
