@@ -79,12 +79,13 @@ else
     rp_rest = motion_txt;  % Load motion parameters
 end
 
-rp_diff_trans = diff(rp_rest(:,1:3));                      % The first 3 parameters tell the displacement in x,y, and z direction in mm. Here the vector difference operator is used to get the derivative of vector. (framewise difference)
-%                 rp_diff_rotat = diff(rp_rest(:,4:6)*180/pi);             % % The last  3 parameters tell the rotation values pitch, yaw and roll in radians (here we convert them to degrees)
-rp_diff_rotat = diff(rp_rest(:,4:6)*50);                   % Converting angles to mm by asuming a 50mm radius circle
-
-
-fd = sum(rp_diff_trans,2) + sum(rp_diff_rotat,2)  ;
+fd = whifun_calculate_fd(motion_txt);
+% rp_diff_trans = diff(rp_rest(:,1:3));                      % The first 3 parameters tell the displacement in x,y, and z direction in mm. Here the vector difference operator is used to get the derivative of vector. (framewise difference)
+% %                 rp_diff_rotat = diff(rp_rest(:,4:6)*180/pi);             % % The last  3 parameters tell the rotation values pitch, yaw and roll in radians (here we convert them to degrees)
+% rp_diff_rotat = diff(rp_rest(:,4:6)*50);                   % Converting angles to mm by asuming a 50mm radius circle
+% 
+% 
+% fd = sum(rp_diff_trans,2) + sum(rp_diff_rotat,2)  ;
 
 % plots
 if isempty(head_mot_qc_file) || over_write == 1

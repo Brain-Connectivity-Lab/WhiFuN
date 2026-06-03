@@ -159,7 +159,7 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
 
         %% Seed corr plots
         out_folder = fullfile(quality_control_path,"k_Seed_Based_Corr");
-        thresh = [-0.1,0.1];
+        thresh = [-0.25,0.25];
         % slover_view_array = {'sagittal','axial'};
         rad = 6;
 

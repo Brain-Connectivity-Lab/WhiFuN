@@ -120,7 +120,7 @@ end
 
 load(fullfile(output_folder,'parameters.mat'),'data_path','comm_sess_name','anat_data_name','func_data_name','anat_folder_name','comm_subj_name','func_folder_name')                           % load parameters saved during initial data check, if they were changed after initial data check, the change will be applied later in the code.
 Subj_list_all = load_subjects_all(output_folder,'Subj_list.csv');
-Subj_list = load_subjects(output_folder,'Subj_list.csv');
+Subj_list = load_subjects(output_folder,'Subj_list.csv',1);
 
 
 
