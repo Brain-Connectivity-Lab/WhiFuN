@@ -448,7 +448,7 @@ for subji = 1:length(Subj_list)
     disp(['Currently Processing ' Subj_list(subji).name])
 
     Subj_list_1 = Subj_list(subji);
-
+tic
     whifun_qc(qc_path,Subj_list_1,...
         'over_write',over_write,...
         'max_fd',max_fd,'mean_fd',mean_fd,'greater_than_20',greater_than_20,...
@@ -463,6 +463,9 @@ for subji = 1:length(Subj_list)
         'over_write',over_write,...
         'max_fd',max_fd,'mean_fd',mean_fd,'greater_than_20',greater_than_20,...
         'Reg_CSF',logical(Reg_CSF),'n_pca',n_pca,'motion_reg',logical(motion_reg),'pca_for_temp_reg',logical(pca_for_temp_reg),'slover_view','coronal');
+qc_time = toc;
+
+disp(['Time taken to create QC plots for participant ' Subj_list_1.name ' is ' num2str(qc_time)]);
 end
 close(fg)
 if gui
