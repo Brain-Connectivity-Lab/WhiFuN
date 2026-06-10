@@ -56,7 +56,73 @@ T1 = readtable(fullfile(folder,name),opts);
 
 T = readtable(fullfile(folder,name),'Delimiter',',');
 
-T.name = T1.name;
+try
+T1.error = T.error;
+catch
+end
+
+try
+T1.motion_ex = T.motion_ex;
+catch
+end
+
+try
+T1.manual_ex = T.manual_ex;
+catch
+end
+
+try
+T1.x_func = T.x_func;
+catch
+end
+
+try
+T1.y_func = T.y_func;
+catch
+end
+
+try
+T1.z_func = T.z_func;
+catch
+end
+
+try
+T1.x_Anat = T.x_Anat;
+catch
+end
+
+try
+T1.y_Anat = T.y_Anat;
+catch
+end
+
+try
+T1.z_Anat = T.z_Anat;
+catch
+end
+
+try
+T1.nt = T.nt;
+catch
+end
+
+try
+T1.TR = T.TR;
+catch
+end
+
+try
+T1.time_preprocess_min = T.time_preprocess_min;
+catch
+end
+
+try
+T1.nt_dis = T.nt_dis;
+catch
+end
+
+T = T1;
+
 
 try
     if ini_error

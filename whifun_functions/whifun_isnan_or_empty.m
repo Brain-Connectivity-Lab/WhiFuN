@@ -25,6 +25,17 @@ function y = whifun_isnan_or_empty(x,field)
 if isfield(x,field)
     x = x.(field);
     y = isempty(x) || (isnumeric(x) && isnan(x));
+
+    if ~y
+        if isstring(x) || ischar(x)
+            if strcmp(x,'NaN')
+                y = true; % Set y to true if the string representation is 'NaN'
+            else
+                y = false; % Set y to false if the string representation is not 'NaN'
+            end
+
+        end
+    end
 else
     y = true;
 end
