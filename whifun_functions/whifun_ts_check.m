@@ -197,7 +197,7 @@ else
     mat_mask = create_mask(8);
     % mat_mask = [0 1 0;1 0 1; 0 1 0];
 end
-[x,y] = find((pval_raw<0.05).*mat_mask);
+[x,y] = find((pval_raw<0.05 & abs(corr_raw)>0.3).*mat_mask);
 hold on; scatter(x,y,[],'r','filled')
 
 subplot(2,5,10)
@@ -244,7 +244,7 @@ else
     mat_mask = create_mask(3);
     % mat_mask = [0 1 0;1 0 1; 0 1 0];
 end
-[x,y] = find((pval_dt<0.05).*mat_mask);
+[x,y] = find((pval_dt<0.05 & abs(corr_dt)>0.3).*mat_mask);
 hold on; scatter(x,y,[],'r','filled')
 
 set(f,'position',[10 50 1500 400]);
