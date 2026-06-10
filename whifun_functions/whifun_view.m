@@ -40,10 +40,10 @@ end
 
 % Extract NIfTI info
 if ischar(vol1) || isstring(vol1)
-    v1_info = niftiinfo(vol1); vol1 = niftiread(vol1); M1 = v1_info.Transform.T;
+    v1_info = niftiinfo(vol1); vol1 = whifun_niftiread(vol1); M1 = v1_info.Transform.T;
 end
 if hasOverlay && (ischar(vol2) || isstring(vol2))
-    v2_info = niftiinfo(vol2); vol2 = niftiread(vol2); M2 = v2_info.Transform.T;
+    v2_info = niftiinfo(vol2); vol2 = whifun_niftiread(vol2); M2 = v2_info.Transform.T;
 end
 
 nd1 = ndims(vol1);
