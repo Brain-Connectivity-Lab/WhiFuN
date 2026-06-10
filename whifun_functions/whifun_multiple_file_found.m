@@ -34,7 +34,8 @@ if length(now_file_path) > 1
     now_file_path = now_file_path(idx);
     now_file_path(2:end) = [];
     warning(['More than one ' anat_func ' files found. Choosing the file ' ,char(now_file_path(1).name), ' as it was created the first.']);
-else
+elseif isempty(now_file_path)
 
     warning(['No ' anat_func ' files found, Structure empty.']);
+    now_file_path = [];
 end
