@@ -42,7 +42,7 @@ function whifun_ortho_slover_single_image_save(image_path,out_image_ortho_path,o
 %
 %   See also: niftiinfo, spm_check_registration, spm_orthviews, exportgraphics.
 
-if ~isempty(out_image_ortho_path) & ~isempty(out_image_slover_path)
+if ~isempty(out_image_ortho_path) || ~isempty(out_image_slover_path)
     image_info = niftiinfo(image_path);
 else
     return

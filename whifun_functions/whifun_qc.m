@@ -58,12 +58,20 @@ filter_hp            = params.filter_hp;
 motion_txt           = params.motion_txt;
 Reg_MNI              = params.Reg_MNI;
 
+if isstring(template_path) || ischar(template_path)
+    if strcmp(template_path,'NaN')
+        template_path = nan;
+    end
+end
+
 if any(isnan(template_path)) || isempty(template_path)
+    
     whifun_path = fileparts(which('whifun'));
     template_path = fullfile(whifun_path,'Templates','MNI152_T1_2mm_brain.nii');
     warning('Choosing the Default WhifuN MNI template: MNI152_T1_2mm_brain.nii, as template was not specified')
 end
 
+    
 % ---- Your function logic here ---- %
 % disp('Running QC with these params:');
 % disp(params);
