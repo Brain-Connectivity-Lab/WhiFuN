@@ -1,0 +1,65 @@
+################################################
+# ITK-SnAP Label Description File
+# File format: 
+# IDX   -R-  -G-  -B-  -A--  VIS MSH  LABEL
+# Fields: 
+#    IDX:   Zero-based index 
+#    -R-:   Red color component (0..255)
+#    -G-:   Green color component (0..255)
+#    -B-:   Blue color component (0..255)
+#    -A-:   Label transparency (0.00 .. 1.00)
+#    VIS:   Label visibility (0 or 1)
+#    IDX:   Label mesh visibility (0 or 1)
+#  LABEL:   Label description 
+################################################
+    0     0    0    0        0  0  0    "Clear Label"
+    1   189   16  172        1  1  1    "WM Auditory R"
+    2    27  132  185        1  1  1    "WM Sensorimotor R"
+    3   189   16  172        1  1  1    "WM Auditory R"
+    4   189   16  172        1  1  1    "WM Auditory R"
+    5    27  132  185        1  1  1    "WM Sensorimotor R"
+    6   189   16  172        1  1  1    "WM Auditory R"
+    7    27  132  185        1  1  1    "WM Sensorimotor R"
+    8   255  153   20        1  1  1    "WM Frontoparietal R"
+    9    27  132  185        1  1  1    "WM Sensorimotor R"
+   10   229   39   72        1  1  1    "WM Visual R"
+   11    27  132  185        1  1  1    "WM Sensorimotor R"
+   12   229   39   72        1  1  1    "WM Visual R"
+   13   255  153   20        1  1  1    "WM Frontoparietal R"
+   14   255  153   20        1  1  1    "WM Frontoparietal R"
+   15   227  224   32        1  1  1    "WM Default Mode R"
+   16   144  229  205        1  1  1    "WM Cerebellum R"
+   17    27  132  185        1  1  1    "WM Sensorimotor R"
+   18    27  132  185        1  1  1    "WM Sensorimotor R"
+   19   229   39   72        1  1  1    "WM Visual R"
+   20    27  132  185        1  1  1    "WM Sensorimotor R"
+   21   255  153   20        1  1  1    "WM Frontoparietal R"
+   22    27  132  185        1  1  1    "WM Sensorimotor R"
+   23    27  132  185        1  1  1    "WM Sensorimotor R"
+   24   248  155  176        1  1  1    "WM Brainstem R"
+   25   248  155  176        1  1  1    "WM Brainstem M"
+   26    27  132  185        1  1  1    "WM Sensorimotor M"
+   27   227  224   32        1  1  1    "WM Default Mode M"
+   28   248  155  176        1  1  1    "WM Brainstem M"
+   29    27  132  185        1  1  1    "WM Sensorimotor L"
+   30   248  155  176        1  1  1    "WM Brainstem L"
+   31   144  229  205        1  1  1    "WM Cerebellum L"
+   32    27  132  185        1  1  1    "WM Sensorimotor L"
+   33    27  132  185        1  1  1    "WM Sensorimotor L"
+   34   255  153   20        1  1  1    "WM Frontoparietal L"
+   35   255  153   20        1  1  1    "WM Frontoparietal L"
+   36   255  153   20        1  1  1    "WM Frontoparietal L"
+   37    27  132  185        1  1  1    "WM Sensorimotor L"
+   38   229   39   72        1  1  1    "WM Visual L"
+   39    27  132  185        1  1  1    "WM Sensorimotor L"
+   40   227  224   32        1  1  1    "WM Default Mode L"
+   41   229   39   72        1  1  1    "WM Visual L"
+   42    27  132  185        1  1  1    "WM Sensorimotor L"
+   43    27  132  185        1  1  1    "WM Sensorimotor L"
+   44   255  153   20        1  1  1    "WM Frontoparietal L"
+   45    27  132  185        1  1  1    "WM Sensorimotor L"
+   46    27  132  185        1  1  1    "WM Sensorimotor L"
+   47   189   16  172        1  1  1    "WM Auditory L"
+   48   189   16  172        1  1  1    "WM Auditory L"
+   49   189   16  172        1  1  1    "WM Auditory L"
+   50    27  132  185        1  1  1    "WM Sensorimotor L"
