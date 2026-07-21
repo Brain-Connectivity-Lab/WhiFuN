@@ -5,7 +5,7 @@ if ~exist('over_write','var')
 end
 temp_path = mfilename('fullpath');                                                 % path of the toolbox
 preproc_code_path = fileparts(fileparts(temp_path));                                          % path where the code is stored
-HO_atlas_filename = fullfile(preproc_code_path,'Atlases','HarvardOxford-sub-maxprob-thr25-2mm_YCG.nii.gz'); %%% choose the HarvardOxford-sub-maxprob-thr25-2mm_YCG.nii from the mask file
+HO_atlas_filename = fullfile(preproc_code_path,'Atlases','HarvardOxford-sub-maxprob-thr25-2mm_YCG.nii'); %%% choose the HarvardOxford-sub-maxprob-thr25-2mm_YCG.nii from the mask file
 
 
 GM_WM_threshold = 0.5;
@@ -22,7 +22,7 @@ WM_image = reslice_data(WM_file_path, in_func_path, 1);
 
 % reading the Harvard-Oxford atlas and resampling it to the functional image's resolution
 HO_atlas = reslice_data(HO_atlas_filename, in_func_path, 0);
-delete(fullfile(fileparts(HO_atlas_filename),'HarvardOxford-sub-maxprob-thr25-2mm_YCG.nii'))
+% delete(fullfile(fileparts(HO_atlas_filename),'HarvardOxford-sub-maxprob-thr25-2mm_YCG.nii'))
 % find the voxels defined as subcortical structures
 indices_subcortical = [find(HO_atlas==2010);	find(HO_atlas==2049);	find(HO_atlas==3011);	find(HO_atlas==3050);	find(HO_atlas==4012);	find(HO_atlas==4051);	find(HO_atlas==5013);	find(HO_atlas==5052);	find(HO_atlas==8026);	find(HO_atlas==8058); find(HO_atlas==6017);	find(HO_atlas==6053);	find(HO_atlas==7018);	find(HO_atlas==7054);];
 
@@ -138,8 +138,8 @@ for i=1:func_info.ImageSize(4)    % go over all timepoints (volumes)
     smoothed_WM_data(:,:,:,i) = curr_volume_data;
 end
 clear func_ma curr_volume_data WM_image;
-final_func_matrix = cast(smoothed_GM_data + smoothed_WM_data,func_info.Datatype);    % combining the GM and WM images
-niftisave((final_func_matrix-func_info.AdditiveOffset)/func_info.MultiplicativeScaling,fullfile(now_func_path.folder,[smooth_pre now_func_path.name]),func_info);
+[final_func_matrix,func_info.AdditiveOffset,func_info.MultiplicativeScaling] = whifun_cast(((smoothed_GM_data + smoothed_WM_data)),func_info.Datatype);    % combining the GM and WM images
+niftisave(final_func_matrix,fullfile(now_func_path.folder,[smooth_pre now_func_path.name]),func_info);
 
 % deleting the old WM/GM-only functional files
 delete(fullfile(tempdir,['GM_func_data_' func_name '.nii'])); delete(fullfile(tempdir,['WM_func_data_' func_name '.nii']));
