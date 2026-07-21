@@ -61,7 +61,9 @@ if K_range_l ~= K_range_h           % If the lower and upper values of Grid sear
     IDX_folds_new = cell(1,num_CV_folds);
     Dice_coefficient_folds_all = zeros(1,K_range_h - K_range_l + 1);
     elb = zeros(1,K_range_h - K_range_l + 1);
-
+    stream = RandStream('mlfg6331_64');  % Random number stream
+    options = statset('UseParallel',1,'UseSubstreams',1,...
+        'Streams',stream);
     for K= K_range_l:K_range_h          % going over all possible numbers of clusters, to measure each one's stability
         disp(['Currently making clusters with K = ' num2str(K)]);
 
@@ -82,7 +84,7 @@ if K_range_l ~= K_range_h           % If the lower and upper values of Grid sear
         for c=1:num_CV_folds        % going over folds (sub-matrices)
             disp(['Cross validation fold ' num2str(c) ' in progress'])
             mat_corr_current = avg_vox_level_FC(:,perm_features(round((c-1)*size_fold+1):round(c*size_fold)));     % the sub-correlation-matrix
-            [IDX_folds(:,c),~,sumD(:,c)] = kmeans(mat_corr_current, K,'distance','correlation','replicates',num_replicates);  % calculating the clustering result for this K
+            [IDX_folds(:,c),~,sumD(:,c)] = kmeans(mat_corr_current, K,'distance','correlation','replicates',num_replicates,'Options',options);  % calculating the clustering result for this K
         end
 
         % computing the difference between adjacency matrices for each fold
