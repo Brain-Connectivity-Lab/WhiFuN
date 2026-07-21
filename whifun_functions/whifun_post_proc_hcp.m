@@ -189,7 +189,7 @@ if Smooth_ == 1
     end
     gm_prob_path = Subj_list_1.GM_MNI;
     wm_prob_path = Subj_list_1.WM_MNI;
-    [Subj_list_1,out_func_path] = whifun_smooth_preproc(quality_control_path,Subj_list_1,in_func_path,gm_prob_path,wm_prob_path,WM_GM_seperate,smooth_fwhm,Smooth_pre,log_fileID,over_write);
+    [Subj_list_1,out_func_path] = whifun_smooth_preproc_MNI(quality_control_path,Subj_list_1,in_func_path,gm_prob_path,wm_prob_path,WM_GM_seperate,smooth_fwhm,Smooth_pre,log_fileID,over_write);
     if Subj_list_1.error
         fclose(log_fileID);
         return
@@ -199,3 +199,4 @@ else
     disp('No smoothing is selected hence skipping this step')
 end
 disp(['Smoothing is done for ' Subj_list_1.name])
+fclose(log_fileID)
