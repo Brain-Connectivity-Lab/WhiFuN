@@ -1,17 +1,26 @@
 function [casted_data, additive_offset, multiplicative_scale] = whifun_cast(data, data_type)
-    % WHIFUN_CAST Quantizes input data into a specified integer type.
-    %
-    % INPUTS:
-    %   data      - The original double-precision array/matrix
-    %   data_type - The target integer type as a string (e.g., 'int16', 'uint8')
-    %
-    % OUTPUTS:
-    %   casted_data - The quantized data in the requested data_type
-    %   offset      - The additive offset used for scaling
-    %   scale       - The multiplicative scale used for scaling
+% WHIFUN_CAST Quantizes input data into a specified integer type.
+%
+% INPUTS:
+%   data      - The original double-precision array/matrix
+%   data_type - The target integer type as a string (e.g., 'int16', 'uint8')
+%
+% OUTPUTS:
+%   casted_data - The quantized data in the requested data_type
+%   offset      - The additive offset used for scaling
+%   scale       - The multiplicative scale used for scaling
 
-    % 1. Get the boundaries of the target integer type
-    % Cast to double to ensure precision during calculation
+% 1. Get the boundaries of the target integer type
+% Cast to double to ensure precision during calculation
+if strcmp(data_type,'double')
+    casted_data = data;
+    additive_offset = 0;
+    multiplicative_scale = 1;
+elseif strcmp(data_type,'single')
+    casted_data = cast(data, data_type);
+    additive_offset = 0;
+    multiplicative_scale = 1;
+else
     int_min = double(intmin(data_type));
     int_max = double(intmax(data_type));
 
@@ -32,4 +41,6 @@ function [casted_data, additive_offset, multiplicative_scale] = whifun_cast(data
 
     % 4. Apply formula, round, and cast to the target type
     casted_data = cast(round((data - additive_offset) / multiplicative_scale), data_type);
+
+end
 end
