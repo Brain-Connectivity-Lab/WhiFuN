@@ -84,7 +84,7 @@ nan_sub = [];
 
 disp(['Computing Average ROI timeseries using : ' ROI_name])
 for subji = 1:length(Subj_list)
-    if isempty(band_info)
+    if ~isfield(band_info,'hp') && ~isfield(band_info,'lp')
         out_avg_ts_path = fullfile(avg_ts_path, [Subj_list(subji).name '_'  ROI_name '_avg_ts.mat']);
 
         out_avg_ts_file = whifun_create_file(over_write,out_avg_ts_path);
@@ -203,7 +203,7 @@ for subji = 1:length(Subj_list)
             [~,nan_sub_sub] = functional_connectivity(avg_ts);
             nan_sub = [nan_sub, nan_sub_sub]; %#ok<AGROW>
 
-            if isempty(band_info)
+            if ~isfield(band_info,'hp') && ~isfield(band_info,'lp')
                 save(out_avg_ts_path,'avg_ts','Subj','voxels_with_data','-v7.3'); %% added
             else
                 for bi = 1:length(band_info)
