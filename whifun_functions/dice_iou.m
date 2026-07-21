@@ -39,11 +39,13 @@ end
 
 if ~isnumeric(kmeans_net_1_path)
     net_1 = niftiread(kmeans_net_1_path);
+    disp(['Net 1 (Yaxis): ' kmeans_net_1_path])
 else
     net_1 = kmeans_net_1_path;
 end
 if ~isnumeric(kmeans_net_2_path)
     net_2 = niftiread(kmeans_net_2_path);
+    disp(['Net 2 (Xaxis): ' kmeans_net_2_path])
 else
     net_2 = kmeans_net_2_path;
 end
@@ -136,5 +138,7 @@ if fig_dice == 1
         [~,f2] = fileparts(kmeans_net_2_path);
         xlabel(f2,'Interpreter','none');
         ylabel(f1,'Interpreter','none');
+        disp(['Average Dice coeficient between the two networks is ' num2str(mean(max(dice)))])
+        title(['Average Dice coeficient between the two networks is ' num2str(mean(max(dice)))])
     end
 end
