@@ -38,7 +38,9 @@ if ~exist("over_write","var")
     over_write = 0;
 end
 
-
+% stream = RandStream('mlfg6331_64');  % Random number stream
+% options = statset('UseParallel',1,'UseSubstreams',1,...
+%     'Streams',stream);
 [fn_folder,name] = fileparts(out_path);
 % Ensure the output directory exists
 if ~exist(fn_folder, 'dir')
@@ -76,7 +78,7 @@ if isempty(fn_file)
                 return
             end
         end
-        [IDX_allsubjs,C] = kmeans(avg_vox_level_FC, k,'replicates',num_replicates,'distance','correlation');       %,'distance','correlation'     % K-means clustering
+        [IDX_allsubjs,C] = kmeans(avg_vox_level_FC, k,'replicates',num_replicates,'distance','correlation');  %,'Options',options     %,'distance','correlation'     % K-means clustering
         clustering_results_allsubjs = zeros(header_file.ImageSize); clustering_results_allsubjs(WM_voxels) = IDX_allsubjs;   % putting the clustering results in an image
         niftisave(clustering_results_allsubjs,out_path,header_file,0,1)
         save(fullfile(fn_folder,[name '_clusters_centers.mat']),"C")
