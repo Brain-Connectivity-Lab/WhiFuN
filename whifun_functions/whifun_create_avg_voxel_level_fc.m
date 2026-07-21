@@ -164,6 +164,7 @@ if sub_samp == 1
     switch WM_or_GM
         case 'WM'
             sub_sample_grid(2:2:end, 2:2:end, 2:2:end) = 1; sub_sample_grid(1:2:end, 1:2:end, 1:2:end) = 1;
+            % sub_sample_grid(2:3:end, 2:3:end, 2:2:end) = 1; sub_sample_grid(1:3:end, 1:3:end, 1:2:end) = 1;
         case 'GM'
             sub_sample_grid(2:3:end, 2:3:end, 2:2:end) = 1; sub_sample_grid(1:3:end, 1:3:end, 1:2:end) = 1;   % for gray-matter
     end
