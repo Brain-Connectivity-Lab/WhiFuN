@@ -167,7 +167,7 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
 
         %% Seed corr plots
         out_folder = fullfile(quality_control_path,"k_Seed_Based_Corr");
-        thresh = [-0.25,0.25];
+        thresh = [-0.1,0.1];
         % slover_view_array = {'sagittal','axial'};
         rad = 6;
 
@@ -176,14 +176,14 @@ if Subj_list_1.error == 0 && Subj_list_1.manual_ex == 0
         end
 
         %% Time series Quality Check
-        out_folder = fullfile(quality_control_path,'j_Time_series_check');
-        if ~whifun_isnan_or_empty(Subj_list_1,'initial_func_native')
-            if ~whifun_isnan_or_empty(Subj_list_1,'nuisance_regression_csf_covariates')
-                whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,Reg_CSF,over_write,Subj_list_1.nuisance_regression_csf_covariates,n_pca,pca_for_temp_reg)
-            else
-                whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,0,over_write)
-            end
-        end
+        % out_folder = fullfile(quality_control_path,'j_Time_series_check');
+        % if ~whifun_isnan_or_empty(Subj_list_1,'initial_func_native')
+        %     if ~whifun_isnan_or_empty(Subj_list_1,'nuisance_regression_csf_covariates')
+        %         whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,Reg_CSF,over_write,Subj_list_1.nuisance_regression_csf_covariates,n_pca,pca_for_temp_reg)
+        %     else
+        %         whifun_qc_global_ts(out_folder,Subj_list_1.initial_func_native,Subj_list_1.final_func_MNI,Subj_list_1.motion_txt,Subj_list_1.func_mask_MNI,Subj_list_1.name,0,over_write)
+        %     end
+        % end
         clf(fg)
     else
         disp(['Participant ' Subj_list_1.name ' got rejected due to excessive motion during preprocessing. See b_Head_motion folder for more details'])
