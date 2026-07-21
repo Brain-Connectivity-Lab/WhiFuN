@@ -222,6 +222,6 @@ switch Action
         run(fullfile(preproc_code_path,'main.mlapp'))
 
     case 'ver'
-        disp('Version : WhiFuN v3.3.1')
+        disp('Version : WhiFuN v3.4')
 
 end
