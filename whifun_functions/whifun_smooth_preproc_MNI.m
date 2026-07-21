@@ -53,7 +53,7 @@ if WM_GM == 1
 
         if isempty(smooth_path)
 
-            whifun_smooth_WM_GM_separately_MNI_conv(in_func_path, GM_path, WM_path ,Smooth_pre, smooth_fwhm, over_write);
+            whifun_smooth_WM_GM_separately_fast_MNI_sub_sep(in_func_path, GM_path, WM_path ,Smooth_pre, smooth_fwhm, over_write);
             fprintf(log_fileID,'#####################################################################################################################\n \n');
             fprintf(log_fileID, 'Smoothing White Matter and Gray Matter seperately convn\n');
             % fprintf(log_fileID,'Gray Matter Smoothing\n');
